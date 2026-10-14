@@ -85,10 +85,14 @@ def check_tui(binary, directory, environment):
         # No isTTY override is applied to the application.
         launcher = directory / "console-smoke.py"
         launcher.write_text(
-            'import subprocess, sys\n'
-            'with open("CONIN$", "r+b", buffering=0) as inp, '
-            'open("CONOUT$", "r+b", buffering=0) as out:\n'
+            'import os, subprocess, sys\n'
+            'inp = os.open("CONIN$", os.O_RDWR | os.O_BINARY)\n'
+            'out = os.open("CONOUT$", os.O_RDWR | os.O_BINARY)\n'
+            'try:\n'
             '    result = subprocess.run([sys.argv[1]], stdin=inp, stdout=out, stderr=out)\n'
+            'finally:\n'
+            '    os.close(inp)\n'
+            '    os.close(out)\n'
             'sys.exit(result.returncode)\n')
         command = ctypes.create_unicode_buffer(
             subprocess.list2cmdline([sys.executable, str(launcher), str(binary)]))

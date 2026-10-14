@@ -108,18 +108,21 @@ def check_tui(binary, directory, environment):
         # with read/write access so GetConsoleMode can identify both handles.
         # No isTTY override is applied to the application.
         launcher = directory / "console-smoke.py"
+        errors = directory / "console-stderr.log"
         launcher.write_text(
             'import os, subprocess, sys\n'
             'inp = os.open("CONIN$", os.O_RDWR | os.O_BINARY)\n'
             'out = os.open("CONOUT$", os.O_RDWR | os.O_BINARY)\n'
+            'err = os.open(sys.argv[2], os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)\n'
             'try:\n'
-            '    result = subprocess.run([sys.argv[1]], stdin=inp, stdout=out, stderr=out)\n'
+            '    result = subprocess.run([sys.argv[1]], stdin=inp, stdout=out, stderr=err)\n'
             'finally:\n'
             '    os.close(inp)\n'
             '    os.close(out)\n'
+            '    os.close(err)\n'
             'sys.exit(result.returncode)\n')
         command = ctypes.create_unicode_buffer(
-            subprocess.list2cmdline([sys.executable, str(launcher), str(binary)]))
+            subprocess.list2cmdline([sys.executable, str(launcher), str(binary), str(errors)]))
         block = ctypes.create_unicode_buffer("\0".join(f"{key}={value}" for key, value in
             sorted(environment.items(), key=lambda item: item[0].upper())) + "\0\0")
         require(k.CreateProcessW(sys.executable, command, None, None, False, 0x00080000 | 0x00000400,
@@ -147,7 +150,8 @@ def check_tui(binary, directory, environment):
                 ready_since = time.monotonic()
             if ready_since is not None and time.monotonic() - ready_since >= 1 and not sent_exit:
                 count = w.DWORD()
-                require(k.WriteFile(input_write, ctypes.create_string_buffer(b"\x04"), 1, ctypes.byref(count), None))
+                request = b"/exit\r"
+                require(k.WriteFile(input_write, ctypes.create_string_buffer(request), len(request), ctypes.byref(count), None))
                 sent_exit = True
             if k.WaitForSingleObject(process.process, 100) == 0:
                 break
@@ -159,7 +163,10 @@ def check_tui(binary, directory, environment):
         time.sleep(0.25)
         detail = output.decode(errors="replace")
         detail = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", detail)
+        detail = re.sub(r"[ \t]{2,}", " ", detail)
         detail = "\n".join(line.strip() for line in detail.splitlines() if line.strip())[-10000:]
+        if errors.exists():
+            detail += "\n" + errors.read_text(errors="replace")[-4000:]
         detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
         assert exit_code.value == 0, f"ConPTY exit code {exit_code.value}: {detail}"
     finally:

@@ -1,0 +1,100 @@
+# Quick Start validation
+
+Checked on **2026-10-14**. The guide uses standalone release archives; starting
+PHINs needs no Bun, pnpm or agent package installation. Node.js 22+ and Git
+are needed only for the bundled repository's demo/tests.
+
+## Platform checks
+
+The offline helper opens the actual executable with a fresh profile, checks
+version/help and non-terminal rejection, waits for the no-argument TUI composer
+and exits cleanly. It makes no model request.
+
+| Target | Observed startup result |
+| --- | --- |
+| macOS ARM64 | Passed natively on Apple Silicon |
+| macOS x64 | Passed under Rosetta; no physical Intel-machine claim |
+| Linux ARM64 | Passed in an unprivileged, network-disabled container |
+| Linux x64 | Passed in an unprivileged, network-disabled container under emulation |
+| Windows x64 | Passed on GitHub's native Windows runner: Ready composer, typed `/exit`, exit 0 and runtime cleanup |
+
+Windows Terminal human visual review and Linux/Windows hardened coding
+workflows remain outside this qualification. The macOS sandbox/independent-check
+profile is the recommended competition demo path. Binaries are not notarized
+on macOS or Authenticode-signed on Windows.
+
+[The successful Windows workflow](https://github.com/phins-group/phins-agent-cli/actions/runs/38586278238)
+checks the downloaded archive's checksum before running it. Earlier Ctrl+D
+ConPTY trials returned exit 1; that shortcut is not qualified on Windows.
+Use the documented `/exit` command. This check uses real console input/output,
+redirected diagnostic stderr and no provider credentials or inference.
+
+## Provider and coding evidence
+
+The preset and implementation confirm endpoint
+`https://api.tokenfactory.nebius.com/v1`, optional credential variable
+`NEBIUS_API_KEY`, and model **`nvidia/nemotron-3-super-120b-a12b`**. Masked setup
+needs no environment variables. A real Nebius account model-catalog refresh
+and selected model were verified; saved fallback lists are not connection proof.
+No key value is included in this report.
+
+The genuine recorded demo used macOS ARM64 executable SHA-256
+`fdfb8a28db31a8b8ba650609f20944676a89b602fa2b98976cd3699d12e789eb`.
+Its outcome was **22/27 → 26/27 → 27/27**, with actual
+Nebius/NVIDIA inference, a failed tool command and recovery, protected tests,
+and independent verification. The release also includes a Windows runtime-metadata ACL compatibility fix.
+That earlier result is not a new inference run of the rebuilt archive or a
+guarantee for every prompt. See the
+[benchmark and evidence](BENCHMARK.md).
+
+A separate fresh anonymous checkout was also tested with Node.js 24.12.0,
+Bun 1.3.12, pnpm 10.26.0 and Git 2.50.1 on macOS 27.0.1 Apple Silicon:
+
+| Check | Actual result |
+| --- | --- |
+| Frozen source installation | Passed using the existing dependency cache |
+| Preparation and original regression command | 22 passed / 5 failed / 27 total; expected exit 1 |
+| Masked setup and source TUI | Real catalog refresh passed; TUI reached Ready with the selected model |
+| First live repair attempt | Stopped at the configured estimated token budget after about 72 seconds; independent tests 25 passed / 2 failed |
+| Explicit continuation in the same session | Stopped at the token budget after about 38 seconds; independent tests 27 passed / 0 failed |
+| Protected oracle | Unchanged in both attempts |
+| Agent completion / independent-check receipt for those two attempts | **Not achieved**; no final agent completion or receipt was recorded |
+
+The continuation used real model/tool actions; no manual patch or reference
+patch was applied. Two token-budget stops are a real limitation even though
+the later external tests pass. The guide does not promise unattended success.
+
+## Installation and documentation checks
+
+The bundled helper prefers the adjacent executable over the source launcher;
+regression tests cover that selection, symlink refusal, pinned source integrity,
+refusal to overwrite trials and modified-oracle detection. Extraction/startup
+and the bundled baseline passed from an extracted macOS archive with neither Bun
+nor pnpm on PATH. All five archives passed checksum and configured-key absence
+checks; dependency notices were retained. Final executables passed the four
+macOS/Linux startup checks above. Windows additionally passed five native ACL
+tests and reproduced the bundled 22/27 baseline using Node/Git without package
+installation.
+
+The preparation workspace's suite recorded **1,904 passed, 14 skipped and zero
+failed**. After the final Windows-only ACL helper changes, typechecks and the
+focused runtime/session tests passed (**36 passed, one Windows-only skip** on
+macOS); native Windows ACL checks covered that skipped case separately.
+Eight compiled macOS coding/recovery fixtures passed with the real local
+sandbox and fixture model responses; these are not live-provider benchmarks.
+
+Binary-string secret scanning reported 13 reviewed false positives: generated
+schema/Babel fields, a public crypto algorithm identifier and runtime diagnostic
+labels. No unresolved finding or configured key was found. Pattern scans are
+not exhaustive proof of secret absence. Final source export integrity, source
+scanning and public download URLs are checked separately before publication.
+
+The repository, historical bug and official Nebius links returned HTTP 200.
+The Devpost homepage returned HTTP 403 to this automated check; its current
+content was not reverified by that request.
+
+A five-minute start is a target with prerequisites/key ready, not a cold-download
+guarantee. One historical task is not a general success benchmark. No shared
+public key, free judge-access arrangement or published Devpost project entry is
+implied. The official hackathon and Nebius links were checked separately from
+provider inference.

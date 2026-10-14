@@ -5,7 +5,7 @@ import { cp, mkdir, mkdtemp, readFile, realpath, rm, symlink, writeFile } from "
 import os from "node:os"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
-import { prepareDemo, checkOracle } from "./demo.mjs"
+import { prepareDemo, checkOracle, demoLauncher } from "./demo.mjs"
 
 test("historical demo reproduces the real bug in an independent copy and protects its oracle", async () => {
   const temporary = await mkdtemp(path.join(os.tmpdir(), "phins-demo-test-"))
@@ -58,4 +58,18 @@ test("demo preparation refuses changed inputs, traversal and symlinked oracles",
   upstream.files[0].path = "../escape"
   await writeFile(upstreamFile, JSON.stringify(upstream))
   await assert.rejects(prepareDemo(root, destination), /Invalid demo input path/)
+})
+
+test("demo launches the bundled executable without Bun and rejects symlink substitution", async t => {
+  const root = await realpath(await mkdtemp(path.join(os.tmpdir(), "phins-demo-launch-")))
+  t.after(() => rm(root, { recursive: true, force: true }))
+  const project = path.join(root, "project with spaces")
+  const binary = path.join(root, process.platform === "win32" ? "phins.exe" : "phins")
+  assert.deepEqual(await demoLauncher(root, "tui", project), ["bun", path.join(root, "scripts/local-agent.ts"), project])
+  await writeFile(binary, "fixture", { mode: 0o755 })
+  assert.deepEqual(await demoLauncher(root, "setup", project), [binary, "setup", "--project", project])
+  assert.deepEqual(await demoLauncher(root, "tui", project), [binary, project])
+  await rm(binary)
+  await symlink("replacement", binary)
+  await assert.rejects(demoLauncher(root, "tui", project), /regular file/)
 })

@@ -1,4 +1,5 @@
-"""Create local review archives from the five compiled targets. Never uploads."""
+"""Package five compiled targets with notices. Never uploads."""
+import argparse
 import gzip
 import hashlib
 import io
@@ -7,7 +8,6 @@ from pathlib import Path
 import re
 import shutil
 import stat
-import sys
 import tarfile
 import zipfile
 
@@ -109,8 +109,13 @@ def archive_directory(directory, destination, windows):
 
 
 def main():
-    name = sys.argv[1] if len(sys.argv) == 2 else "binary-candidate"
-    if len(sys.argv) > 2 or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]*", name):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("name", nargs="?", default="binary-candidate")
+    parser.add_argument("--release-review", type=Path,
+                        help="Completed local review binding exact binaries, notices and source")
+    args = parser.parse_args()
+    name = args.name
+    if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]*", name):
         raise ValueError("Use a simple, new candidate directory name")
     builds = []
     sources = load_notice_sources()
@@ -123,6 +128,26 @@ def main():
         if sum(e["name"] == "Bun" and e["version"] == build["bun"] for e in sources["runtimes"]) != 1:
             raise ValueError(f'Exactly one Bun {build["bun"]} notice is required')
         builds.append((target, directory, build))
+    review = None
+    if args.release_review:
+        review = json.loads(args.release_review.read_text())
+        if review.get("status") != "pass" or review.get("blockers") != []:
+            raise ValueError("Binary redistribution review is incomplete")
+        if not review.get("sourceAssets") or not review.get("noticeSha256"):
+            raise ValueError("Reviewed source assets and runtime notices are required")
+        if digest(ROOT / "notices/runtime-sources.json") != review["sourceIndexSha256"]:
+            raise ValueError("Reviewed runtime-source index changed")
+        for target, _, build in builds:
+            if review["binarySha256"].get(target) != build["sha256"]:
+                raise ValueError(f"Review does not cover this binary: {target}")
+        for entry in review["sourceAssets"]:
+            if digest(Path(entry["path"])) != entry["sha256"]:
+                raise ValueError("Reviewed corresponding-source asset changed")
+        notices = Path(review["noticeDirectory"]).resolve(strict=True)
+        actual = {file.relative_to(notices).as_posix(): digest(file)
+                  for file in notices.rglob("*") if file.is_file() and not file.is_symlink()}
+        if any(file.is_symlink() for file in notices.rglob("*")) or actual != review["noticeSha256"]:
+            raise ValueError("Reviewed runtime notices changed")
     destination = ROOT / "artifacts" / name
     destination.parent.mkdir(exist_ok=True, mode=0o700)
     destination.mkdir(mode=0o700)  # Refuse to replace any previous candidate.
@@ -137,17 +162,25 @@ def main():
             (bundle / "phins").chmod(0o755)
         for file in ("LICENSE", "NOTICE", "PROVENANCE.md", "THIRD_PARTY.md"):
             shutil.copyfile(ROOT / file, bundle / file)
-        shutil.copyfile(ROOT / "docs/BINARY_DISTRIBUTION.md", bundle / "README.md")
+        readme = (ROOT / "docs/BINARY_DISTRIBUTION.md").read_text()
+        for guide in ("QUICKSTART.md", "QUICKSTART_VALIDATION.md", "RUNTIME_SOURCE.md"):
+            readme = readme.replace(f"]({guide})", f"](docs/{guide})")
+        (bundle / "README.md").write_text(readme)
         (bundle / "notices").mkdir()
         for file in ("third-party-source-LICENSE", "seq-queue-LICENSE", "node-forge-LICENSE",
                      "packages__http-recorder__LICENSE", "dependency-licenses.json"):
             shutil.copyfile(ROOT / "notices" / file, bundle / "notices" / file)
         # Keep referenced attribution evidence and its local documentation links.
-        for file in ("examples/live/UPSTREAM.json", "examples/live/ms-pr111/license.md",
+        demo_inputs = json.loads((ROOT / "examples/live/UPSTREAM.json").read_text())["files"]
+        demo_files = ["examples/live/ms-pr111/" + item["path"] for item in demo_inputs]
+        for file in (*demo_files, "examples/live/UPSTREAM.json", "examples/live/ms-pr111/license.md",
+                     "examples/live/ms-pr111-strict/test/regression.test.mjs",
+                     "configs/nebius.example.json", "scripts/demo.mjs",
+                     "docs/QUICKSTART.md", "docs/QUICKSTART_VALIDATION.md",
                      "docs/SUBMISSION.md", "docs/ARCHITECTURE.md", "docs/BENCHMARK.md",
                      "docs/JUDGING_GUIDE.md", "docs/LOCAL_OPERATION.md",
                      "docs/DEMO_SCRIPT.md", "docs/BINARY_DISTRIBUTION.md",
-                     "scripts/smoke-binary.py", "docs/evidence/live-20261014.json",
+                     "scripts/smoke-binary.py", "scripts/smoke-windows.py", "docs/evidence/live-20261014.json",
                      "docs/evidence/ms-pr111.patch", "docs/evidence/ms-pr111-before.tap",
                      "docs/evidence/ms-pr111-after.tap", "docs/evidence/ms-pr111-correction.tap"):
             target_file = bundle / file
@@ -155,11 +188,30 @@ def main():
             shutil.copyfile(ROOT / file, target_file)
         inputs = json.loads((directory / "build-inputs.json").read_text())["inputs"]
         copy_notices(inputs, bundle, sources, build["bun"])
-        (bundle / "REVIEW_STATUS.txt").write_text(
-            "LOCAL REVIEW BUILD - NOT CLEARED FOR PUBLIC REDISTRIBUTION\n"
-            "A completed build is not proof of runtime qualification on this OS.\n"
-            "See README.md and DEPENDENCIES.json for limitations and outstanding notices.\n"
-            "No API key, provider balance, hosted access or model weights are included.\n")
+        if review:
+            inventory_path = bundle / "DEPENDENCIES.json"
+            inventory = json.loads(inventory_path.read_text())
+            if inventory["missingNoticeText"]:
+                raise ValueError(f"Dependency notice missing: {inventory['missingNoticeText']}")
+            shutil.copytree(notices, bundle / "runtime-notices")
+            shutil.copyfile(ROOT / "notices/runtime-sources.json", bundle / "notices/runtime-sources.json")
+            shutil.copyfile(ROOT / "docs/RUNTIME_SOURCE.md", bundle / "docs/RUNTIME_SOURCE.md")
+            inventory.update(scope="Release build-input inventory with retained license texts",
+                             remainingReview=[], sourceAvailability="notices/runtime-sources.json",
+                             reviewLimitations=review["limitations"])
+            inventory_path.write_text(json.dumps(inventory, indent=2) + "\n")
+            (bundle / "RELEASE_STATUS.txt").write_text(
+                "PHINS AGENT HACKATHON PREVIEW\n"
+                "Keep all accompanying notices. Runtime sources are available with this release.\n"
+                "A completed build is not proof of coding-workflow qualification on this OS.\n"
+                "See docs/QUICKSTART.md and docs/QUICKSTART_VALIDATION.md.\n"
+                "No API key, provider balance, hosted access or model weights are included.\n")
+        else:
+            (bundle / "REVIEW_STATUS.txt").write_text(
+                "LOCAL REVIEW BUILD - NOT CLEARED FOR PUBLIC REDISTRIBUTION\n"
+                "A completed build is not proof of runtime qualification on this OS.\n"
+                "See README.md and DEPENDENCIES.json for limitations and outstanding notices.\n"
+                "No API key, provider balance, hosted access or model weights are included.\n")
         windows = target.startswith("windows")
         archive = destination / (label + (".zip" if windows else ".tar.gz"))
         archive_directory(bundle, archive, windows)
@@ -169,7 +221,8 @@ def main():
         print(f"Packaged {archive.name}", flush=True)
     (destination / "SHA256SUMS").write_text("".join(f'{s["sha256"]}  {s["archive"]}\n' for s in summaries))
     (destination / "packages.json").write_text(json.dumps({
-        "status": "local-review-only", "uploaded": False, "packages": summaries,
+        "status": "release-candidate" if review else "local-review-only",
+        "uploaded": False, "packages": summaries,
     }, indent=2) + "\n")
     print(destination)
 

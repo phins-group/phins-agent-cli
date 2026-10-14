@@ -34,8 +34,18 @@
       "version": "1.0.0-rc.2",
       "path": "notices/drizzle-LICENSE",
       "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
-      "source": "https://raw.githubusercontent.com/drizzle-team/drizzle-orm/48e5406027103a9fca6eb66417187c4a8b5c6aa3/LICENSE",
-      "basis": "Matching v1.0.0-rc.2 release tag; npm has no gitHead. Exact source correlation remains under review."
+      "source": "https://raw.githubusercontent.com/drizzle-team/drizzle-orm/eec7260841c468ab4c2f2dc9d8ebb69105da0c34/LICENSE",
+      "basis": "Published npm SLSA provenance identifies source commit eec7260841c468ab4c2f2dc9d8ebb69105da0c34; its LICENSE byte-matches the retained Apache-2.0 text. Attestation payload was inspected; independent Sigstore verification is not claimed."
+    },
+    {
+      "names": [
+        "opentui-spinner"
+      ],
+      "version": "0.0.7",
+      "path": "notices/opentui-spinner-MIT.txt",
+      "sha256": "482100cb134e1e7a4f94337e3fe8135b067b366b6c8a8ed2a5da1edaa1bd0572",
+      "source": "https://registry.npmjs.org/opentui-spinner/0.0.7",
+      "basis": "Package metadata and README explicitly declare MIT and author Matt Simpson. Distribution supplies no separate copyright/license file; publisher declaration, attribution and standard permission text are included without inventing a copyright notice."
     }
   ],
   "runtimes": [

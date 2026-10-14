@@ -1,28 +1,26 @@
 # Judging guide
 
-This candidate runs locally on macOS ARM64. A public test-build URL and free
-judge-access arrangement remain pending. BYOK is a developer setup option,
-not proof that the competition's access requirement has been met.
+Download the standalone archive for your OS from the [Quick Start](QUICKSTART.md).
+It covers macOS, Linux and Windows downloads, masked Nebius setup and startup;
+judges do not need Bun, pnpm or agent package installation. The bundled tests
+need Node.js 22+ and Git. No private package/backend is required.
+
+The protected sandbox/independent-check sequence below is qualified on macOS
+ARM64. See the Quick Start for ordinary Linux/Windows permission-based trials
+and the validation report for platform scope. A free judge-credential arrangement
+remains pending; BYOK setup alone does not prove competition-access compliance.
 
 ## Install
 
-Install Node.js 22+, Bun 1.3.12+, pnpm 10.26.0 and Git. In the extracted source:
-
-```sh
-pnpm install --frozen-lockfile --ignore-scripts
-pnpm source:check
-pnpm check
-pnpm cli --help
-```
-
-No private package/backend is required. `pnpm build` creates a local binary.
-The source launcher below isolates state automatically.
+Extract your archive, keep its notices, and open a terminal in the extracted
+folder. Follow [installation and launch](QUICKSTART.md). The executable is
+`phins` (`phins.exe` on Windows); no arguments open the TUI.
 
 ## Reproduce the original bug
 
 ```sh
-pnpm demo:prepare
-pnpm demo:test
+node scripts/demo.mjs prepare
+node scripts/demo.mjs test
 ```
 
 Preparation creates `.local/demo-ms-pr111` and refuses overwrite. The first test
@@ -34,8 +32,8 @@ Our added oracle has 27 checks. Historical Mocha tests are retained but not run 
 ## Configure and run
 
 ```sh
-pnpm demo:setup
-pnpm demo:tui
+node scripts/demo.mjs setup
+node scripts/demo.mjs tui
 ```
 
 Demo setup and TUI share a separate state directory and the same execution policy.
@@ -56,7 +54,7 @@ correction footage. Preserve failed/stopped trials and all interventions.
 ## Verify
 
 ```sh
-pnpm demo:test
+node scripts/demo.mjs test
 git diff --no-index examples/live/ms-pr111/index.js .local/demo-ms-pr111/project/index.js
 ```
 
@@ -69,8 +67,9 @@ estimated cost and failure reasons, tied to source/binary and test hashes.
 See [evaluation](BENCHMARK.md).
 
 `pnpm test` and `pnpm test:coding` use local/scripted providers to exercise tools
-and wiring, not real model decisions. Two current-build real-model trials reached
+and wiring, not real model decisions. Recorded real-model trials reached
 27/27 final checks; one corrected a 25/27 intermediate result. Inspect
 [the recorded evidence](evidence/live-20261014.json) and
 [evaluation limits](BENCHMARK.md). A local English video draft is prepared;
-public links, other platforms and free judge access remain unresolved.
+video publication and free judge access remain unresolved. The downloadable
+platform startup checks are separate from hardened coding-workflow qualification.

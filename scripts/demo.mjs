@@ -72,16 +72,31 @@ export async function checkOracle(destination) {
   if (hash(oracle) !== expected) throw new Error("Demo oracle changed; prepare a new clean demo")
 }
 
+/** Release bundles run their adjacent executable; source checkouts use Bun. */
+export async function demoLauncher(root, action, project) {
+  const args = action === "setup" ? ["setup", "--project", project] : [project]
+  const executable = path.join(root, process.platform === "win32" ? "phins.exe" : "phins")
+  const binary = await lstat(executable).catch(error => {
+    if (error.code === "ENOENT") return undefined
+    throw error
+  })
+  if (binary) {
+    if (!binary.isFile() || binary.isSymbolicLink()) throw new Error("Demo executable must be a regular file")
+    return [executable, ...args]
+  }
+  return ["bun", path.join(root, "scripts/local-agent.ts"), ...args]
+}
+
 async function main() {
   const root = await realpath(fileURLToPath(new URL("..", import.meta.url)))
   const directory = path.join(root, ".local/demo-ms-pr111")
   const action = process.argv[2]
   if (!["prepare", "test", "setup", "tui"].includes(action) || process.argv.length !== 3)
-    throw new Error("Usage: pnpm demo:prepare | pnpm demo:test | pnpm demo:setup | pnpm demo:tui")
+    throw new Error("Usage: node scripts/demo.mjs prepare|test|setup|tui")
   if (action === "prepare") {
     await mkdir(path.join(root, ".local"), { recursive: true, mode: 0o700 })
     console.log(JSON.stringify(await prepareDemo(root, directory), null, 2))
-    console.log("Run pnpm demo:test to reproduce the bug, then pnpm demo:setup and pnpm demo:tui. Paste .local/demo-ms-pr111/task.txt when ready for paid inference.")
+    console.log("Run the demo test, setup and TUI commands in docs/QUICKSTART.md. Paste .local/demo-ms-pr111/task.txt when ready for paid inference.")
     return
   }
   await checkOracle(directory)
@@ -97,10 +112,10 @@ async function main() {
   }
   if (action !== "test" && process.platform !== "darwin")
     throw new Error("This independent-check demo profile is currently qualified on macOS only")
+  const launch = action === "test" ? [] : await demoLauncher(root, action, project)
   const child = action === "test"
     ? spawn(process.execPath, ["--test", "--test-reporter=tap", "test/regression.test.mjs"], { cwd: project, env, stdio: "inherit", timeout: 30000 })
-    : spawn("bun", [path.join(root, "scripts/local-agent.ts"),
-      ...(action === "setup" ? ["setup", "--project", project] : [project])], { cwd: root, env, stdio: "inherit" })
+    : spawn(launch[0], launch.slice(1), { cwd: root, env, stdio: "inherit" })
   for (const signal of ["SIGINT", "SIGTERM"]) process.on(signal, () => child.kill(signal))
   child.on("error", error => { console.error(error.message); process.exitCode = 1 })
   child.on("close", code => { process.exitCode = code ?? 1 })

@@ -48,7 +48,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "62850698b02e4361e5731eb2e41da074dd835a9e440ed609e05dbdc111174b2a"
+      "sha256": "7905f1aa0b5eed84694d78f1c82eba69c8cc06f803718d8f48e7194f62b26b58"
     },
     {
       "path": "THIRD_PARTY.md",
@@ -76,7 +76,7 @@
     },
     {
       "path": "docs/BINARY_DISTRIBUTION.md",
-      "sha256": "748b63a56b1e57996c210f98b9780ce575445f5fc3b245a4ea4f2a14f0c0ff3b"
+      "sha256": "dbeb6abd58181629d944175bea8c179e60c33a78fd7d7895847a481f6318a551"
     },
     {
       "path": "docs/DEMO_SCRIPT.md",
@@ -84,11 +84,23 @@
     },
     {
       "path": "docs/JUDGING_GUIDE.md",
-      "sha256": "491a6a30e81fe85857957e803efc39645f3c522da5dd72208a702a8f1944b58b"
+      "sha256": "d7b078134e88b294b9674bc829195e198384716f18856e3871dbd2018b2334b9"
     },
     {
       "path": "docs/LOCAL_OPERATION.md",
       "sha256": "748b8fd48452809a53a64b4b7516be4edcb0b3171f8949e31e3a188b28e68e2e"
+    },
+    {
+      "path": "docs/QUICKSTART.md",
+      "sha256": "f8312984df2fe9a4fbf09cd7c16b2544f3d7a4cd03c2c85f9e41d52217d019b5"
+    },
+    {
+      "path": "docs/QUICKSTART_VALIDATION.md",
+      "sha256": "44e80d128ecb46e5c0c9b34153e88889f152bef075634e5c3fa1ba343ba93656"
+    },
+    {
+      "path": "docs/RUNTIME_SOURCE.md",
+      "sha256": "31bc66791966f715a44bbbeebf1d716e1dedb3b7d6e78c78df88334c06297f66"
     },
     {
       "path": "docs/SUBMISSION.md",
@@ -215,6 +227,10 @@
       "sha256": "f63ff0e4e239244aa79280da2dd4811a0469e5e201caf5cbc0d97c3a1dff8e82"
     },
     {
+      "path": "notices/opentui-spinner-MIT.txt",
+      "sha256": "482100cb134e1e7a4f94337e3fe8135b067b366b6c8a8ed2a5da1edaa1bd0572"
+    },
+    {
       "path": "notices/packages__http-recorder__LICENSE",
       "sha256": "6a55fa85c49c8d0a35ed3ae9ceb2e44828c3076c8ea1fdefb1105fa1e9ee3773"
     },
@@ -223,12 +239,16 @@
       "sha256": "acf30083045d768ce20640237313ee31a45d548d66ef76df5bb5fb0745479535"
     },
     {
+      "path": "notices/runtime-sources.json",
+      "sha256": "4b2c5742d0538290f6e29e609e54d8f5adfd2d6a8735ea7d57d5a8d52e56ab02"
+    },
+    {
       "path": "notices/seq-queue-LICENSE",
       "sha256": "dcba4e24de35d4e5f0d9e14804f925babe6d670afc2989eb650eb1aec4e43dd1"
     },
     {
       "path": "notices/supplemental-notices.json",
-      "sha256": "3c3cd00dfc5e486a520b12d6bd5ca3b5557ecf572aed746f7d2eb93ab28827a2"
+      "sha256": "00f21c70f6b9c010f9505cc061ac64ddf01229f860667bff5d16eefc5639443f"
     },
     {
       "path": "notices/third-party-source-LICENSE",
@@ -3252,7 +3272,7 @@
     },
     {
       "path": "packages/terminal/src/tui/composer/input.tsx",
-      "sha256": "730f3c091314309afa7871712e6181c45615594ca0eb6badf97ce25334e850a2"
+      "sha256": "d54972ff970eda4fcec176db7a20d171519115c1dbec3bcfb1ffb6ddac7625ef"
     },
     {
       "path": "packages/terminal/src/tui/composer/local-attachment.ts",
@@ -3268,7 +3288,7 @@
     },
     {
       "path": "packages/terminal/src/tui/composer/running-status.tsx",
-      "sha256": "d7ad1a864b5f4c04365c45dcd7e3d6d3aea343c8ca4622848b677e1aae12f397"
+      "sha256": "be8c5aacd9faba26f035166b2f17a881ec12644cf4d046911cfc6ac5b3c6ea0f"
     },
     {
       "path": "packages/terminal/src/tui/composer/stash.tsx",
@@ -4012,10 +4032,7 @@
     },
     {
       "path": "packages/terminal/test/ui/prompt/running-status.test.tsx",
-      "sha256": "46abf165d8445fa1770c350aa8c3d7d813fa26a1276c4caf0669d433f1c4c788",
-      "origin": {
-        "kind": "hackathon-authored"
-      }
+      "sha256": "46abf165d8445fa1770c350aa8c3d7d813fa26a1276c4caf0669d433f1c4c788"
     },
     {
       "path": "packages/terminal/test/ui/prompt/traits.test.ts",
@@ -4095,11 +4112,11 @@
     },
     {
       "path": "scripts/demo.mjs",
-      "sha256": "bcaaadab45b3b090aa2cdaa82bb12010372d78d5540184c468f10451703566cf"
+      "sha256": "a04523d6b4e501afc7d9b50035f1db69ff27e5d0573e0681ddc1d252a3f7f23d"
     },
     {
       "path": "scripts/demo.test.mjs",
-      "sha256": "f421bb8fddd876f833db0a82b312225fc3b0dffceb6a5ca0cc35f229d914a2f7"
+      "sha256": "d2c8aa5754e0ba3fb9072595857a3a120a5e665eec01a50587e47f9038d4cc0d"
     },
     {
       "path": "scripts/local-agent.ts",
@@ -4107,7 +4124,7 @@
     },
     {
       "path": "scripts/package-binaries.py",
-      "sha256": "05f0c26f57e3270f31b3df5131e193cbf015ab0721d236c5a06834523f5f30da"
+      "sha256": "8fc3b1becb25a4301e772dc555b5e04f7302ec2c18f97a43d4b927c5ecaecaaa"
     },
     {
       "path": "scripts/smoke-binary.py",
@@ -4138,12 +4155,5 @@
       "sha256": "8a7061d528cc7e508c86b404f2e37fded17fb5a9f877ea53085d1d0014a9c255"
     }
   ],
-  "adaptations": {
-    "packages/terminal/src/tui/composer/input.tsx": {
-      "sha256": "d54972ff970eda4fcec176db7a20d171519115c1dbec3bcfb1ffb6ddac7625ef"
-    },
-    "packages/terminal/src/tui/composer/running-status.tsx": {
-      "sha256": "be8c5aacd9faba26f035166b2f17a881ec12644cf4d046911cfc6ac5b3c6ea0f"
-    }
-  }
+  "adaptations": {}
 }

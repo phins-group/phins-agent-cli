@@ -1,81 +1,81 @@
 # PHINs Agent — standalone builds
 
-> FROM IDEAS to IMPACT
-
-The executable is **`phins`** (`phins.exe` on Windows). Running it without
-arguments opens the existing TUI in the current project. Bun, Node.js and pnpm
-are not needed to start the executable. Your project's tests still need their
-own language runtime, dependencies and tools such as Git.
-
-These are local review builds. Public distribution still requires completion of
-the native/runtime license review. A compiled target does not imply that all
-features have been qualified on that operating system.
+Download an archive from the [0.1.0 hackathon preview](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.0),
+extract it, and run **`phins`** (`phins.exe` on Windows). No arguments open the
+TUI. Bun, pnpm and agent package installation are unnecessary. Follow the
+[Quick Start](QUICKSTART.md) for masked Nebius setup and the bundled demo.
 
 ## Choose a build
 
-| Build | Intended system | Format |
+| Operating system | Direct download | Minimum system |
 | --- | --- | --- |
-| `darwin-arm64` | Apple Silicon, macOS 13+ | `.tar.gz` |
-| `darwin-x64` | Intel, macOS 13+ | `.tar.gz` |
-| `linux-arm64` | ARM64 Linux with glibc 2.30+ | `.tar.gz` |
-| `linux-x64` | x64 Linux with glibc 2.30+ | `.tar.gz` |
-| `windows-x64` | Windows 10 1809+ / Windows 11, Windows Terminal | `.zip` |
+| **macOS** | [Apple Silicon / ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-arm64.tar.gz) · [Intel / x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-x64.tar.gz) | macOS 13+ |
+| **Linux** | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz) | glibc 2.30+, libstdc++ and libgcc |
+| **Windows** | [Windows x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip) | Windows 10 1809+ / Windows 11, Windows Terminal |
 
-Linux builds require system `libstdc++` and `libgcc`; they do not target Alpine/
-musl. The glibc floor comes from the bundled FFF library's versioned symbols.
-macOS minimums are recorded in the executable/native libraries. The Windows
-runtime minimum follows [Bun's platform requirements](https://bun.sh/docs/installation),
-checked 2026-10-14; native Windows execution remains to be verified. The FFF DLL
-also imports `VCRUNTIME140.dll`; FFF remains disabled by default on Windows.
-Windows ARM64 is not in this build matrix.
+Alpine/musl and Windows ARM64 are unsupported. The executable reports
+`0.1.0-local`. macOS binaries are ad-hoc signed, not notarized; Windows binaries
+are unsigned. The optional Windows FFF binding imports `VCRUNTIME140.dll` and
+remains disabled by default.
 
 ## Run
 
-Extract the archive and open a terminal. On macOS/Linux:
+Open a terminal in the extracted folder. **macOS / Linux:**
 
 ```sh
+./phins setup
 ./phins
 ```
 
-On Windows, open PowerShell in Windows Terminal:
+**Windows PowerShell:**
 
 ```powershell
+.\phins.exe setup
 .\phins.exe
 ```
 
-Once its directory is on your `PATH`, the command on all platforms is:
+Setup masks the key and recommends NVIDIA Nemotron on Nebius Token Factory.
+Use `/setup` or `/models` in the TUI to change settings. Open a project by
+passing its path to the executable. Piped input receives an explicit error
+with the `phins ask` alternative. Use a real terminal; do not double-click
+the executable to choose a project.
+
+State defaults to `~/.phins-agent-cli` (`%USERPROFILE%\.phins-agent-cli` on
+Windows). `PHINS_LOCAL_HOME` selects another profile. Keys are stored locally,
+not in an encrypted OS keychain. No API key or model weights are supplied;
+submitting a task can incur provider charges. A project's tests need their
+own runtime/tools. The bundled demo needs Node.js 22+ and Git only.
+
+## Verify and qualification scope
+
+Compare the archive with the release's `SHA256SUMS`. Each archive also includes
+an executable checksum and build metadata. Maintainers can run the included
+offline smoke helper with Python 3.11+:
 
 ```sh
-phins
+python3 scripts/smoke-binary.py /absolute/path/to/phins
 ```
 
-Inside the TUI, use `/setup` to enter a masked API key and choose a model.
-Nebius setup recommends NVIDIA Nemotron. `/models` changes the selection.
-The CLI uses the same configuration:
+It checks version/help, the isolated default profile, rejection of a
+non-terminal TUI launch, and no-argument TUI startup/clean exit. Windows uses
+native ConPTY. This makes no inference request. A ConPTY check does not replace
+human visual review in Windows Terminal.
 
-```sh
-phins setup
-phins /path/to/reviewed/project
-phins ask "Inspect this repository and explain its test command" --project /path/to/project
-phins --help
-```
+The [validation report](QUICKSTART_VALIDATION.md) distinguishes native macOS,
+Rosetta, Linux containers/emulation and Windows checks. The reviewed macOS
+sandbox and independent verification remain the qualified coding-demo path.
+Other startup checks do not qualify every tool, terminal, hardened workflow or
+provider inference on that platform. A requested unavailable sandbox fails closed.
 
-Use a real terminal; piped input gets an explicit error with the `phins ask`
-alternative. Do not double-click the binary to select a project. macOS artifacts
-are ad-hoc signed, not notarized; Windows artifacts are not Authenticode signed.
-Do not disable operating-system security globally to run a review build.
+## Source and licenses
 
-The standalone profile is `~/.phins-agent-cli` (`%USERPROFILE%\.phins-agent-cli`
-on Windows). Override it with `PHINS_LOCAL_HOME`. Settings and the local key
-database are beneath its `.phins` directory. Source launches continue to use
-`.local/home` unless overridden. Existing explicit configuration and test-profile
-overrides take precedence. No API key or model weights are shipped; submitting
-a task can incur provider charges. Keys are stored locally, not in an encrypted
-OS keychain.
+Keep all accompanying project, dependency and runtime notices. Optional
+corresponding-source and notice-only assets are supplied with the release;
+see [runtime source and rebuilding](RUNTIME_SOURCE.md). PHINs licensing does
+not replace third-party terms.
 
-## Build from source
-
-Use the pinned workspace dependencies and Bun 1.3.12 for comparable artifacts:
+Developers can build from the approved source with Node.js 22+, Bun 1.3.12,
+pnpm 10.26.0 and Git:
 
 ```sh
 pnpm install --frozen-lockfile --ignore-scripts
@@ -85,37 +85,12 @@ pnpm build --target windows-x64
 pnpm build:package my-local-binary-candidate
 ```
 
-`pnpm build` creates `dist/phins` or `dist/phins.exe` for the build host.
-`build:all` creates one directory per target under `dist/`. Cross-compilation
-can download the matching public Bun runtime. Native dependencies are installed
-for all supported architectures; model metadata is not fetched during the build.
-Each directory has `build.json`, a SHA-256 checksum and the build input graph.
+The native build writes `dist/phins` (Windows: `dist/phins.exe`); `build:all`
+writes five target directories. Cross-compilation may download a matching Bun
+runtime. No model catalog or inference is requested during a build.
 
-Packaging needs Python 3.11+ on the build machine. It writes a new directory under
-`artifacts/`, refuses replacement of an existing candidate, and includes project
-notices plus installed and pinned upstream license texts, a smoke-test helper
-and the unresolved notice inventory. Supplemental text hashes and Bun runtime
-version must match before packaging.
-It never commits, uploads, signs with an owner identity, or publishes anything.
-Keep the archive's notices with the executable when redistributing an approved
-release; the current notice collection is not yet a complete clearance.
-
-## Verify
-
-Compare archive and executable hashes with their `SHA256SUMS`. Run the included
-source validation script against an extracted binary:
-
-```sh
-python3 scripts/smoke-binary.py /absolute/path/to/phins
-```
-
-The offline smoke test uses a fresh profile. It checks version/help, rejects a
-non-terminal TUI launch, and on macOS/Linux opens the TUI with **no arguments**,
-waits for its input composer and exits with Ctrl+D. It makes no inference call.
-On Windows it checks the CLI/profile only; manually open the TUI in Windows
-Terminal and verify `/setup`, `/models`, input focus, resize and normal exit.
-
-The macOS engine's reviewed sandbox and independent verification workflow remain
-the qualified competition demo path. Linux/Windows startup checks do not qualify
-that workflow, provider inference, all native tools or every terminal emulator.
-The runtime must keep failing closed when a requested sandbox is unavailable.
+Packaging additionally needs Python 3.11+. The default creates **review-only**
+archives and refuses to overwrite an existing candidate. The packager's
+`--release-review` option requires a completed local record binding all target
+hashes, retained runtime notices and source assets; it does not upload or
+publish. Owner publication authorization remains a separate requirement.

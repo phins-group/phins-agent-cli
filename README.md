@@ -12,13 +12,22 @@ The hackathon integration uses **NVIDIA Nemotron on Nebius Token Factory**.
 This source builds independently with two workspace packages and no private
 backend. It includes modified third-party code; see [NOTICE](NOTICE).
 
-## Quick start
+## Quick Start — Try PHINs Agent
 
-Standalone executable: run **`phins`** (Windows: `phins.exe`) to open the TUI,
-then use `/setup` for the key/model. See [builds for macOS, Windows and Linux](docs/BINARY_DISTRIBUTION.md)
-for local review archives, installation and platform qualification limits.
+Download and extract a standalone binary. No Bun/pnpm or agent package
+installation is needed.
 
-For running from source:
+| Operating system | Download |
+| --- | --- |
+| **macOS** | [Apple Silicon / ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-arm64.tar.gz) · [Intel / x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-x64.tar.gz) |
+| **Linux** | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz) |
+| **Windows** | [Windows x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip) |
+
+Follow the [Quick Start guide](docs/QUICKSTART.md) for installation, Nebius
+configuration and a reproducible coding-agent demo. It includes platform
+requirements and qualification limits. The demo's tests need Node.js 22+ and Git.
+
+## Run from source (developers)
 
 Qualified platform: **macOS ARM64**. Install Node.js 22+, Bun 1.3.12+,
 pnpm 10.26.0 and Git. Use a real terminal for the TUI.
@@ -110,7 +119,7 @@ providers; they do not prove real model decisions.
 
 ## Limits
 
-The reviewed profile is qualified on macOS. Two current-build Nebius/NVIDIA
+The reviewed profile is qualified on macOS. Recorded Nebius/NVIDIA
 trials passed the fixed historical oracle; one required a test-driven correction.
 See [measured evidence](docs/BENCHMARK.md). Linux/Windows hardened workflows,
 CPU/memory quotas and broad task success remain unqualified.

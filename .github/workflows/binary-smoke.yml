@@ -49,6 +49,7 @@ jobs:
           python scripts/smoke-binary.py "$binary"
           if ($LASTEXITCODE -ne 0) { throw "Windows startup smoke failed" }
       - name: Reproduce bundled demo without installing packages
+        if: ${{ !cancelled() }}
         shell: pwsh
         run: |
           $bundle = Join-Path $env:RUNNER_TEMP "phins-release/phins-0.1.0-local-windows-x64"

@@ -138,11 +138,14 @@ def check_tui(binary, directory, environment):
         reader = threading.Thread(target=drain, daemon=True)
         reader.start()
         sent_exit = False
+        ready_since = None
         deadline = time.monotonic() + 45
         while time.monotonic() < deadline:
             with lock:
-                ready = b"Ask Phins" in output
-            if ready and not sent_exit:
+                ready = b"Ask Phins" in output and b"Ready" in output
+            if ready and ready_since is None:
+                ready_since = time.monotonic()
+            if ready_since is not None and time.monotonic() - ready_since >= 1 and not sent_exit:
                 count = w.DWORD()
                 require(k.WriteFile(input_write, ctypes.create_string_buffer(b"\x04"), 1, ctypes.byref(count), None))
                 sent_exit = True
@@ -152,8 +155,11 @@ def check_tui(binary, directory, environment):
         assert k.WaitForSingleObject(process.process, 10000) == 0, "ConPTY exit timed out"
         exit_code = w.DWORD()
         require(k.GetExitCodeProcess(process.process, ctypes.byref(exit_code)))
-        detail = output[-5000:].decode(errors="replace")
+        # Drain final error output before inspecting an already-exited process.
+        time.sleep(0.25)
+        detail = output.decode(errors="replace")
         detail = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", detail)
+        detail = "\n".join(line.strip() for line in detail.splitlines() if line.strip())[-10000:]
         detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
         assert exit_code.value == 0, f"ConPTY exit code {exit_code.value}: {detail}"
     finally:

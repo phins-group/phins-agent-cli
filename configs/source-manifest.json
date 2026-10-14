@@ -3048,7 +3048,7 @@
     },
     {
       "path": "packages/terminal/src/agent/runtime-privacy.ts",
-      "sha256": "8b861b62cfea8a4be3f17e3521308685de5f91daaef4fdf10a24c184d16d5364"
+      "sha256": "1d3581c53d46cdd0b46bbcc43793b8b0e3448169e1cd299c499e5291393d2339"
     },
     {
       "path": "packages/terminal/src/agent/session-target.ts",

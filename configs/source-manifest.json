@@ -3048,7 +3048,7 @@
     },
     {
       "path": "packages/terminal/src/agent/runtime-privacy.ts",
-      "sha256": "a0349a5e6b9d91219975e46776d69e7301a4516368dd986e41bb0d136f94e0e2"
+      "sha256": "f21cfbf478d01d42d1a96ab45df1fc443fa374679f3ce672f17d98970d284919"
     },
     {
       "path": "packages/terminal/src/agent/session-target.ts",
@@ -3800,7 +3800,7 @@
     },
     {
       "path": "packages/terminal/test/agent/runtime-privacy.test.ts",
-      "sha256": "6c6c8b6d1942292ceeacb7fda6f3279f6787257ef09b03c38fcc6eb692ec1fcb"
+      "sha256": "3be3a1878b1944ae19788bb5f633b2d10e652df92af6b3d391518bf57be1ce71"
     },
     {
       "path": "packages/terminal/test/integration/coding.test.ts",

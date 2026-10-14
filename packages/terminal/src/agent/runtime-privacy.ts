@@ -31,16 +31,18 @@ $ErrorActionPreference = 'Stop'
 $kind = [System.Security.Principal.SecurityIdentifier]
 $user = [System.Security.Principal.WindowsIdentity]::GetCurrent().User
 $allowed = @($user.Value, 'S-1-5-18', 'S-1-5-32-544')
-$item = Get-Item -LiteralPath $env:PHINS_RUNTIME_PATH -Force
-$acl = Get-Acl -LiteralPath $item.FullName
+$file = [System.IO.Path]::GetFullPath($env:PHINS_RUNTIME_PATH)
+$isDirectory = [System.IO.Directory]::Exists($file)
+if ($isDirectory) { $acl = [System.IO.Directory]::GetAccessControl($file) }
+else { $acl = [System.IO.File]::GetAccessControl($file) }
 if ($env:PHINS_RUNTIME_PROTECT -eq '1') {
-  if (-not $item.PSIsContainer -or $allowed -notcontains $acl.GetOwner($kind).Value) {
+  if (-not $isDirectory -or $allowed -notcontains $acl.GetOwner($kind).Value) {
     throw 'Runtime directory is not owned by a trusted principal'
   }
   $private = [System.Security.AccessControl.DirectorySecurity]::new()
   $private.SetOwner($user)
   $private.SetAccessRuleProtection($true, $false)
-  foreach ($sid in $allowed | Select-Object -Unique) {
+  foreach ($sid in $allowed) {
     $rule = [System.Security.AccessControl.FileSystemAccessRule]::new(
       [System.Security.Principal.SecurityIdentifier]::new($sid),
       [System.Security.AccessControl.FileSystemRights]::FullControl,
@@ -49,17 +51,20 @@ if ($env:PHINS_RUNTIME_PROTECT -eq '1') {
       [System.Security.AccessControl.AccessControlType]0)
     $private.AddAccessRule($rule)
   }
-  Set-Acl -LiteralPath $item.FullName -AclObject $private
-  $acl = Get-Acl -LiteralPath $item.FullName
+  [System.IO.Directory]::SetAccessControl($file, $private)
+  $acl = [System.IO.Directory]::GetAccessControl($file)
 }
-$rules = @($acl.GetAccessRules($true, $true, $kind) | ForEach-Object {
-  @{ sid = $_.IdentityReference.Value; type = [int]$_.AccessControlType;
-     rights = [int]$_.FileSystemRights }
-})
-@{ user = $user.Value; owner = $acl.GetOwner($kind).Value; rules = $rules } |
-  ConvertTo-Json -Depth 4 -Compress
+$rules = [System.Collections.Generic.List[string]]::new()
+foreach ($rule in $acl.GetAccessRules($true, $true, $kind)) {
+  $sid = $rule.IdentityReference.Value
+  $type = [int]$rule.AccessControlType
+  $rights = [int]$rule.FileSystemRights
+  $rules.Add('{"sid":"' + $sid + '","type":' + $type + ',"rights":' + $rights + '}')
+}
+# SIDs are canonical numeric identifiers; rights/type are integers.
+[System.Console]::WriteLine('{"user":"' + $user.Value + '","owner":"' +
+  $acl.GetOwner($kind).Value + '","rules":[' + [string]::Join(',', $rules) + ']}')
 `
-
 export async function windowsRuntimePrivacy(file: string, protect = false) {
   if (process.platform !== "win32") throw new Error("Windows ACL check requires Windows")
   const systemRoot = process.env.SystemRoot

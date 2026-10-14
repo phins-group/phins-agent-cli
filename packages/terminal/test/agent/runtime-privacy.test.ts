@@ -47,13 +47,13 @@ test.skipIf(process.platform !== "win32")("native Windows ACL protects inherited
     expect(await windowsRuntimePrivacy(file)).toBe(true)
     const script = `
 $ErrorActionPreference = 'Stop'
-$acl = Get-Acl -LiteralPath $env:PHINS_TEST_ACL_PATH
+$acl = [System.IO.File]::GetAccessControl($env:PHINS_TEST_ACL_PATH)
 $rule = [System.Security.AccessControl.FileSystemAccessRule]::new(
   [System.Security.Principal.SecurityIdentifier]::new('S-1-1-0'),
   [System.Security.AccessControl.FileSystemRights]::Read,
   [System.Security.AccessControl.AccessControlType]::Allow)
 $acl.AddAccessRule($rule)
-Set-Acl -LiteralPath $env:PHINS_TEST_ACL_PATH -AclObject $acl
+[System.IO.File]::SetAccessControl($env:PHINS_TEST_ACL_PATH, $acl)
 `
     const env: NodeJS.ProcessEnv = { PHINS_TEST_ACL_PATH: file }
     for (const name of ["SystemRoot", "WINDIR", "COMSPEC", "TEMP", "TMP", "USERPROFILE",

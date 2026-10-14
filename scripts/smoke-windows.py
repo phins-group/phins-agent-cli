@@ -5,6 +5,7 @@ API contract: https://learn.microsoft.com/windows/console/creating-a-pseudoconso
 import ctypes
 from ctypes import wintypes as w
 import subprocess
+import re
 import sys
 import threading
 import time
@@ -151,7 +152,10 @@ def check_tui(binary, directory, environment):
         assert k.WaitForSingleObject(process.process, 10000) == 0, "ConPTY exit timed out"
         exit_code = w.DWORD()
         require(k.GetExitCodeProcess(process.process, ctypes.byref(exit_code)))
-        assert exit_code.value == 0, f"ConPTY exit code {exit_code.value}"
+        detail = output[-5000:].decode(errors="replace")
+        detail = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", detail)
+        detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
+        assert exit_code.value == 0, f"ConPTY exit code {exit_code.value}: {detail}"
     finally:
         if process.process and k.WaitForSingleObject(process.process, 0) != 0:
             k.TerminateProcess(process.process, 1)

@@ -4115,7 +4115,7 @@
     },
     {
       "path": "scripts/smoke-windows.py",
-      "sha256": "f6ff2793ee51a14cba073f96e40f54ad17d9191e2bbb7b03480a1eec3fe4b7ac"
+      "sha256": "cdb9a07f9c55db9933b5671b8b7f70c3e7949101f57c27cc66999881fb607bd3"
     },
     {
       "path": "scripts/spending.ts",

@@ -4103,7 +4103,7 @@
     },
     {
       "path": "scripts/smoke-binary.py",
-      "sha256": "7bace057b5d6437b2c665f04b18936b6b63bd85202e9ad0cb5ca25bac435f840"
+      "sha256": "d23092d1ceb90e27cc3040ef89708dc53755948cae3abf0e1ed118515d63f470"
     },
     {
       "path": "scripts/smoke-windows.py",

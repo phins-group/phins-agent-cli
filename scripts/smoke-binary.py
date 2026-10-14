@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import signal
 import subprocess
 import sys
@@ -56,6 +57,18 @@ def main():
             else:
                 check_tui(binary, home, env)
                 result["checks"]["default_tui"] = "pass"
+        except Exception:
+            if os.name == "nt":
+                # This profile is created without credentials. Retain bounded,
+                # redacted host errors when startup fails before registration.
+                for file in (state / ".phins/log").glob("*.log"):
+                    if file.is_symlink() or not file.is_file():
+                        continue
+                    detail = file.read_text(errors="replace")[-4000:]
+                    detail = re.sub(r"(?i)(Basic|Bearer)\s+[A-Za-z0-9+/=_-]+", r"\1 [redacted]", detail)
+                    detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
+                    print("Isolated host diagnostic:", detail, file=sys.stderr)
+            raise
         finally:
             # The authenticated local host is detached. Only stop hosts registered
             # inside this freshly created profile, never the installed application.

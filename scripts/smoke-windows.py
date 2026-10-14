@@ -150,13 +150,17 @@ def check_tui(binary, directory, environment):
                 ready_since = time.monotonic()
             if ready_since is not None and time.monotonic() - ready_since >= 1 and not sent_exit:
                 count = w.DWORD()
-                request = b"/exit\r"
-                require(k.WriteFile(input_write, ctypes.create_string_buffer(request), len(request), ctypes.byref(count), None))
+                # Separate key events from paste input and let autocomplete settle.
+                for key in b"/exit":
+                    require(k.WriteFile(input_write, ctypes.create_string_buffer(bytes([key])), 1, ctypes.byref(count), None))
+                    time.sleep(0.1)
+                time.sleep(0.3)
+                require(k.WriteFile(input_write, ctypes.create_string_buffer(b"\r"), 1, ctypes.byref(count), None))
                 sent_exit = True
             if k.WaitForSingleObject(process.process, 100) == 0:
                 break
         assert sent_exit, "ConPTY composer did not appear: " + output[-2000:].decode(errors="replace")
-        assert k.WaitForSingleObject(process.process, 10000) == 0, "ConPTY exit timed out"
+        stopped = k.WaitForSingleObject(process.process, 10000) == 0
         exit_code = w.DWORD()
         require(k.GetExitCodeProcess(process.process, ctypes.byref(exit_code)))
         # Drain final error output before inspecting an already-exited process.
@@ -168,6 +172,7 @@ def check_tui(binary, directory, environment):
         if errors.exists():
             detail += "\n" + errors.read_text(errors="replace")[-4000:]
         detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
+        assert stopped, f"ConPTY exit timed out: {detail}"
         assert exit_code.value == 0, f"ConPTY exit code {exit_code.value}: {detail}"
     finally:
         if process.process and k.WaitForSingleObject(process.process, 0) != 0:

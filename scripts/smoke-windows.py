@@ -83,9 +83,19 @@ def check_tui(binary, directory, environment):
         # CI's Python process has redirected standard handles. Open the actual
         # pseudoconsole devices in its child shell instead of propagating them.
         shell = Path(environment["SystemRoot"]) / "System32/cmd.exe"
+        diagnostic = directory / "tty-diagnostic.js"
+        diagnostic.write_text(
+            'import { isatty } from "node:tty";\n'
+            'console.log("TTY_DIAGNOSTIC", JSON.stringify({ '
+            'stdin: process.stdin.isTTY, stdout: process.stdout.isTTY, '
+            'fd0: isatty(0), fd1: isatty(1), fd2: isatty(2) }));\n')
+        launcher = directory / "console-smoke.cmd"
+        launcher.write_text('@echo off\nset BUN_BE_BUN=1\n"' + str(binary) +
+                            '" "' + str(diagnostic) + '"\nset BUN_BE_BUN=\n"' +
+                            str(binary) + '"\nexit /b %errorlevel%\n')
         command = ctypes.create_unicode_buffer(
             subprocess.list2cmdline([str(shell)]) +
-            ' /d /s /c ""' + str(binary) + '" < CONIN$ > CONOUT$ 2>&1"')
+            ' /d /s /c ""' + str(launcher) + '" < CONIN$ > CONOUT$ 2>&1"')
         block = ctypes.create_unicode_buffer("\0".join(f"{key}={value}" for key, value in
             sorted(environment.items(), key=lambda item: item[0].upper())) + "\0\0")
         require(k.CreateProcessW(str(shell), command, None, None, False, 0x00080000 | 0x00000400,

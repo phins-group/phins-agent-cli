@@ -1,0 +1,216 @@
+{
+  "verifiedDate": "2026-10-14",
+  "scope": "Two fresh trials of one attributed historical task; not a general success rate",
+  "task": "vercel/ms PR 111 negative-decimal parsing and malformed-sign rejection",
+  "upstream": "https://github.com/vercel/ms/pull/111",
+  "inputRecord": "../../examples/live/UPSTREAM.json",
+  "oracleSha256": "1008ac3a601347b937ded20becaff67d0c508d159bc6e3363ebd9529ec1f3fb4",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "provider": "Nebius Token Factory",
+  "endpoint": "https://api.tokenfactory.nebius.com/v1/chat/completions",
+  "transport": "Owner-controlled loopback QA proxy; real model decisions and actual native tools. Actual provider key stays in proxy memory.",
+  "priceVerifiedAt": "2026-10-14T06:34:25.236070+00:00",
+  "pricingSource": "https://tokenfactory.nebius.com/api/public/models_info",
+  "inputUsdPerMillion": 0.3,
+  "outputUsdPerMillion": 0.9,
+  "trials": [
+    {
+      "id": "qualification",
+      "recordedAt": "2026-10-14T06:30:26.971Z",
+      "runtime": "compiled phins CLI/TUI on native macOS ARM64",
+      "binarySha256": "f7488840272c6549d69e2535f8add1c390cc5d2066c602587c2bc665ea8b1ba9",
+      "baseline": {
+        "exit": 1,
+        "pass": 22,
+        "fail": 5,
+        "sha256": "682fb5eb17ae13ea1cffe522ec281fad8e1e09be1d1fa0250d283483b922a504"
+      },
+      "finalExternalOracle": {
+        "exit": 0,
+        "pass": 27,
+        "fail": 0,
+        "sha256": "55a1ebb0a02a195dae7451bddade9fd99321cbbffea03e0e48003ee73ddd81be"
+      },
+      "agentTestSequence": [
+        {
+          "command": "node --test --test-reporter=tap test/regression.test.mjs",
+          "passed": 22,
+          "failed": 5,
+          "exitCode": 1
+        },
+        {
+          "command": "node --test --test-reporter=tap test/regression.test.mjs",
+          "passed": 27,
+          "failed": 0,
+          "exitCode": 0
+        }
+      ],
+      "testsUnchanged": true,
+      "changedFiles": [
+        "index.js"
+      ],
+      "completedEdits": 1,
+      "correctionAttempts": 0,
+      "prematureEditsBlocked": 1,
+      "fullTrialDurationMs": 52472,
+      "taskToIdleMs": 44865,
+      "requests": 10,
+      "httpStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "inputTokens": 89501,
+      "completionTokensIncludingReasoning": 3591,
+      "visibleOutputTokens": 1286,
+      "reasoningTokens": 2305,
+      "requestLatencySumMs": 40125,
+      "requestLatencyMedianMs": 2880.5,
+      "estimatedInferenceUsd": 0.0300822,
+      "cumulativeEstimatedUsd": 0.24863999999999997,
+      "independentCheck": {
+        "verdict": "passed",
+        "mode": "shadow",
+        "freshness": "unverified",
+        "subjectSnapshot": "451b7c9622249feb6e5b94b4748340bce2135daa",
+        "mutationEpoch": 1,
+        "checks": [
+          {
+            "id": "reviewed-local-checks",
+            "command": [
+              "<trusted-verifier>",
+              "reviewed-local-checks"
+            ],
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 532,
+            "summary": "Verifier check passed",
+            "outputTruncated": true
+          }
+        ],
+        "signedAttestation": false
+      },
+      "manualCodeEdits": 0,
+      "status": "passed"
+    },
+    {
+      "id": "recorded-demo",
+      "recordedAt": "2026-10-14T06:35:51.590Z",
+      "runtime": "compiled phins CLI/TUI on native macOS ARM64",
+      "binarySha256": "f7488840272c6549d69e2535f8add1c390cc5d2066c602587c2bc665ea8b1ba9",
+      "baseline": {
+        "exit": 1,
+        "pass": 22,
+        "fail": 5,
+        "sha256": "d5e197f07d4e49e68f5ebb0e0e60164433cdeeb1eb69309fef888063eb621b9d"
+      },
+      "finalExternalOracle": {
+        "exit": 0,
+        "pass": 27,
+        "fail": 0,
+        "sha256": "df97afdf93999b8aaff20197a66df7c71bc82a79d05fff33a32445ec5f3c4424"
+      },
+      "agentTestSequence": [
+        {
+          "command": "node --test --test-reporter=tap test/regression.test.mjs",
+          "passed": 22,
+          "failed": 5,
+          "exitCode": 1
+        },
+        {
+          "command": "node --test --test-reporter=tap test/regression.test.mjs",
+          "passed": 25,
+          "failed": 2,
+          "exitCode": 1
+        },
+        {
+          "command": "node --test --test-reporter=tap test/regression.test.mjs",
+          "passed": 27,
+          "failed": 0,
+          "exitCode": 0
+        }
+      ],
+      "testsUnchanged": true,
+      "changedFiles": [
+        "index.js"
+      ],
+      "completedEdits": 2,
+      "correctionAttempts": 1,
+      "prematureEditsBlocked": 1,
+      "fullTrialDurationMs": 86175,
+      "taskToIdleMs": 76666,
+      "requests": 12,
+      "httpStatuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "inputTokens": 116949,
+      "completionTokensIncludingReasoning": 5073,
+      "visibleOutputTokens": 2982,
+      "reasoningTokens": 2091,
+      "requestLatencySumMs": 69883,
+      "requestLatencyMedianMs": 3950.5,
+      "estimatedInferenceUsd": 0.039650399999999995,
+      "cumulativeEstimatedUsd": 0.2882904,
+      "independentCheck": {
+        "verdict": "passed",
+        "mode": "shadow",
+        "freshness": "unverified",
+        "subjectSnapshot": "14e676966ba42b3c828649b444a6047c23c5737c",
+        "mutationEpoch": 1,
+        "checks": [
+          {
+            "id": "reviewed-local-checks",
+            "command": [
+              "<trusted-verifier>",
+              "reviewed-local-checks"
+            ],
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 535,
+            "summary": "Verifier check passed",
+            "outputTruncated": true
+          }
+        ],
+        "signedAttestation": false
+      },
+      "manualCodeEdits": 0,
+      "status": "passed"
+    }
+  ],
+  "noInferenceAttempts": [
+    {
+      "status": "harness-startup-failure",
+      "reason": "Task copy was inside the source tree denied by the test sandbox; moved to a disposable external workspace.",
+      "providerRequests": 0,
+      "estimatedInferenceUsd": 0
+    }
+  ],
+  "cumulativeEstimatedUsd": 0.2882904,
+  "cumulativeCapUsd": 0.5,
+  "billingInvoiceVerified": false,
+  "limitations": [
+    "One task repeated twice, no paired baseline or broad benchmark",
+    "Receipt checks a snapshot; shadow mode and current filesystem freshness unverified",
+    "Source paths sanitized in shared TAP logs; original hashes and raw private evidence retained",
+    "The local QA proxy has no UI price estimate; reported cost is calculated from actual provider usage",
+    "No commercial repository source was supplied to model inference"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@phins/terminal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0 AND MIT",
+  "scripts": {
+    "typecheck": "tsgo --noEmit",
+    "test": "bun test test --timeout 60000 --max-concurrency=1 --only-failures"
+  },
+  "exports": {
+    "./main": "./src/cli/entry.ts"
+  },
+  "dependencies": {
+    "@effect/platform-node": "catalog:",
+    "@opentui/core": "catalog:",
+    "@opentui/keymap": "catalog:",
+    "@opentui/solid": "catalog:",
+    "clipboardy": "4.0.0",
+    "diff": "catalog:",
+    "effect": "catalog:",
+    "fuzzysort": "catalog:",
+    "opentui-spinner": "catalog:",
+    "remeda": "catalog:",
+    "solid-js": "catalog:",
+    "strip-ansi": "7.1.2",
+    "@phins/engine": "workspace:*"
+  },
+  "devDependencies": {
+    "@tsconfig/bun": "catalog:",
+    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "typescript": "catalog:",
+    "@types/babel__core": "7.20.5"
+  }
+}

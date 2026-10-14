@@ -1,0 +1,23 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`history renders bounded historical results without claiming current success 1`] = `
+"Verification history · shadow             
+Current code: unverified                  
+2023-11-14 22:13 UTC · passed             
+2023-11-14 22:13 UTC · failed             
+2023-11-14 22:13 UTC · pending            
+Showing latest 3 checks                   
+                                          
+                                          
+                                          
+                                          
+                                          
+                                          
+                                          
+                                          
+                                          
+                                          
+                                          
+                                          
+"
+`;

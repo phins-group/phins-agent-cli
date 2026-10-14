@@ -1,0 +1,216 @@
+# Recorded agent test output; local path prefix sanitized.
+TAP version 13
+# Subtest: parse -10.5h
+ok 1 - parse -10.5h
+  ---
+  duration_ms: 7.6835
+  type: 'test'
+  ...
+# Subtest: parse -100.25s
+ok 2 - parse -100.25s
+  ---
+  duration_ms: 0.860875
+  type: 'test'
+  ...
+# Subtest: parse -42.75m
+ok 3 - parse -42.75m
+  ---
+  duration_ms: 0.137541
+  type: 'test'
+  ...
+# Subtest: parse -1234.5ms
+ok 4 - parse -1234.5ms
+  ---
+  duration_ms: 0.056458
+  type: 'test'
+  ...
+# Subtest: parse -.5h
+ok 5 - parse -.5h
+  ---
+  duration_ms: 0.128208
+  type: 'test'
+  ...
+# Subtest: parse -1.5h
+ok 6 - parse -1.5h
+  ---
+  duration_ms: 0.304041
+  type: 'test'
+  ...
+# Subtest: parse -100h
+ok 7 - parse -100h
+  ---
+  duration_ms: 0.0595
+  type: 'test'
+  ...
+# Subtest: parse 10.5h
+ok 8 - parse 10.5h
+  ---
+  duration_ms: 0.4925
+  type: 'test'
+  ...
+# Subtest: parse 100
+ok 9 - parse 100
+  ---
+  duration_ms: 0.107959
+  type: 'test'
+  ...
+# Subtest: parse 2w
+ok 10 - parse 2w
+  ---
+  duration_ms: 0.58825
+  type: 'test'
+  ...
+# Subtest: parse 3 hours
+ok 11 - parse 3 hours
+  ---
+  duration_ms: 0.109666
+  type: 'test'
+  ...
+# Subtest: parse -20 days
+ok 12 - parse -20 days
+  ---
+  duration_ms: 0.173375
+  type: 'test'
+  ...
+# Subtest: parse 0
+ok 13 - parse 0
+  ---
+  duration_ms: 0.03925
+  type: 'test'
+  ...
+# Subtest: parse .5ms
+ok 14 - parse .5ms
+  ---
+  duration_ms: 0.04775
+  type: 'test'
+  ...
+# Subtest: reject malformed 1-2h
+ok 15 - reject malformed 1-2h
+  ---
+  duration_ms: 3.219458
+  type: 'test'
+  ...
+# Subtest: reject malformed --10.5h
+ok 16 - reject malformed --10.5h
+  ---
+  duration_ms: 3.138625
+  type: 'test'
+  ...
+# Subtest: reject malformed 10..5h
+ok 17 - reject malformed 10..5h
+  ---
+  duration_ms: 1.538834
+  type: 'test'
+  ...
+# Subtest: reject malformed ten hours
+ok 18 - reject malformed ten hours
+  ---
+  duration_ms: 0.094917
+  type: 'test'
+  ...
+# Subtest: reject malformed h
+ok 19 - reject malformed h
+  ---
+  duration_ms: 0.029417
+  type: 'test'
+  ...
+# Subtest: reject malformed xxxxxxxxxxxxxxxxxxxx
+ok 20 - reject malformed xxxxxxxxxxxxxxxxxxxx
+  ---
+  duration_ms: 1.355
+  type: 'test'
+  ...
+# Subtest: short and long numeric formatting stay unchanged
+ok 21 - short and long numeric formatting stay unchanged
+  ---
+  duration_ms: 0.254375
+  type: 'test'
+  ...
+# Subtest: invalid value types throw
+ok 22 - invalid value types throw
+  ---
+  duration_ms: 1.572042
+  type: 'test'
+  ...
+# Subtest: preserve prior rejection of "+1h"
+ok 23 - preserve prior rejection of "+1h"
+  ---
+  duration_ms: 0.050583
+  type: 'test'
+  ...
+# Subtest: preserve prior rejection of "1.h"
+not ok 24 - preserve prior rejection of "1.h"
+  ---
+  duration_ms: 2.123291
+  type: 'test'
+  location: '<demo-repository>/test/regression.test.mjs:25:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 3600000
+    - undefined
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual: 3600000
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<demo-repository>/test/regression.test.mjs:25:77)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1106:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+    Test.postRun (node:internal/test_runner/test:1235:19)
+    Test.run (node:internal/test_runner/test:1163:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+  ...
+# Subtest: preserve prior rejection of "1\\nh"
+ok 25 - preserve prior rejection of "1\\nh"
+  ---
+  duration_ms: 0.031292
+  type: 'test'
+  ...
+# Subtest: preserve prior rejection of "1\\th"
+ok 26 - preserve prior rejection of "1\\th"
+  ---
+  duration_ms: 0.0225
+  type: 'test'
+  ...
+# Subtest: preserve prior rejection of "1. h"
+not ok 27 - preserve prior rejection of "1. h"
+  ---
+  duration_ms: 0.104917
+  type: 'test'
+  location: '<demo-repository>/test/regression.test.mjs:25:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 3600000
+    - undefined
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual: 3600000
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<demo-repository>/test/regression.test.mjs:25:77)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1106:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+    Test.postRun (node:internal/test_runner/test:1235:19)
+    Test.run (node:internal/test_runner/test:1163:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 25
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 255.207666
+

@@ -1,0 +1,29 @@
+PHINs Agent
+FROM IDEAS to IMPACT
+
+PHINs additions and modifications: Copyright 2026 Duy Huynh.
+These contributions are licensed under the Apache License, Version 2.0.
+See LICENSE for its terms.
+
+This edition includes modified MIT-licensed source from OpenCode:
+Copyright (c) 2025 opencode.
+The retained engine and terminal contain inherited portions and subsequent PHINs
+modifications. The original permission and copyright notice are reproduced in
+notices/third-party-source-LICENSE. Apache-2.0 does not replace those MIT terms
+or attribute the original work to PHINs.
+
+License-text reference (not the original code-import revision):
+https://raw.githubusercontent.com/anomalyco/opencode/ef3fd5900fd33289576ea7853afacb3c2b06bf33/LICENSE
+
+The historical vercel/ms example retains its own MIT notice:
+Copyright (c) 2016 Zeit, Inc.
+See examples/live/ms-pr111/license.md and examples/live/UPSTREAM.json.
+
+Other retained license notices are in notices/ and THIRD_PARTY.md. Dependencies
+remain under their respective licenses; their code is not licensed by this file.
+Dependency metadata is recorded in notices/dependency-licenses.json.
+
+The Apache-2.0 AND MIT package metadata describes the combined distribution and
+its applicable notices. It does not offer a choice to relicense all contributions
+under either license. No rights to PHINs or third-party trademarks are granted
+beyond the applicable license terms.

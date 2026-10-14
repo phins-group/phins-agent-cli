@@ -1,0 +1,36 @@
+{
+  "model": "nebius/nvidia/nemotron-3-super-120b-a12b",
+  "autoupdate": false,
+  "share": "disabled",
+  "run_budget": {
+    "max_turns": 24,
+    "max_tokens": 160000,
+    "max_duration_ms": 300000
+  },
+  "permissions": [
+    { "action": "*", "resource": "*", "effect": "ask" },
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "glob", "resource": "*", "effect": "allow" },
+    { "action": "grep", "resource": "*", "effect": "allow" },
+    { "action": "external_directory", "resource": "*", "effect": "deny" }
+  ],
+  "providers": {
+    "nebius": {
+      "name": "Nebius Token Factory",
+      "env": ["NEBIUS_API_KEY"],
+      "api": {
+        "type": "aisdk",
+        "package": "@ai-sdk/openai-compatible",
+        "url": "https://api.tokenfactory.nebius.com/v1"
+      },
+      "request": { "body": { "temperature": 1, "top_p": 0.95 } },
+      "models": {
+        "nvidia/nemotron-3-super-120b-a12b": {
+          "name": "NVIDIA Nemotron 3 Super",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 65536, "output": 8192 }
+        }
+      }
+    }
+  }
+}

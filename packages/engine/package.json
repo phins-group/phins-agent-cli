@@ -1,0 +1,51 @@
+{
+  "name": "@phins/engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0 AND MIT",
+  "scripts": {
+    "typecheck": "tsgo --noEmit",
+    "test": "bun ../../scripts/test-engine.ts"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sandbox-runtime": "0.0.76",
+    "@effect/platform-node": "catalog:",
+    "@ff-labs/fff-bun": "0.9.4",
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "@parcel/watcher": "2.5.1",
+    "@silvia-odwyer/photon-node": "0.3.4",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "bun-pty": "0.4.8",
+    "cross-spawn": "catalog:",
+    "drizzle-orm": "catalog:",
+    "effect": "catalog:",
+    "fuzzysort": "catalog:",
+    "glob": "13.0.5",
+    "gray-matter": "4.0.3",
+    "htmlparser2": "8.0.2",
+    "immer": "11.1.4",
+    "jsonc-parser": "3.3.1",
+    "mime-types": "3.0.2",
+    "minimatch": "10.2.5",
+    "turndown": "7.2.0",
+    "which": "6.0.1",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@effect/sql-sqlite-bun": "catalog:",
+    "@tsconfig/bun": "catalog:",
+    "@types/bun": "catalog:",
+    "@types/cross-spawn": "catalog:",
+    "@types/mime-types": "3.0.1",
+    "@types/node": "catalog:",
+    "@types/turndown": "5.0.5",
+    "@types/which": "3.0.4",
+    "@typescript/native-preview": "catalog:",
+    "typescript": "catalog:"
+  }
+}

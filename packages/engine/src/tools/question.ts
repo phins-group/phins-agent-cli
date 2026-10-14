@@ -1,0 +1,107 @@
+export * as QuestionTool from "./question"
+
+import { ToolFailure } from "../inference/api"
+import { Effect, Layer, Schema } from "effect"
+import { PermissionPolicy } from "../security/permissions/service"
+import { UserQuestions } from "../agents/questions"
+import { Tool } from "./definition"
+import { Tools } from "./registration"
+
+export const name = "question"
+
+export const description = `Use this tool when you need to ask the user questions during execution. This allows you to:
+1. Gather user preferences or requirements
+2. Clarify ambiguous instructions
+3. Get decisions on implementation choices as you work
+4. Offer choices to the user about what direction to take.
+
+Usage notes:
+- When \`custom\` is enabled (default), a "Type your own answer" option is added automatically; don't include "Other" or catch-all options
+- Answers are returned as arrays of labels; set \`multiple: true\` to allow selecting more than one
+- If you recommend a specific option, make that the first option in the list and add "(Recommended)" at the end of the label`
+
+export const Input = Schema.Struct({
+  questions: Schema.Array(UserQuestions.Prompt).annotate({
+    description: "Questions to ask",
+  }),
+})
+
+export const Output = Schema.Struct({
+  answers: Schema.Array(UserQuestions.Answer),
+})
+export type Output = typeof Output.Type
+
+export const toModelOutput = (
+  questions: ReadonlyArray<UserQuestions.Prompt>,
+  answers: ReadonlyArray<UserQuestions.Answer>,
+) => {
+  const formatted = questions
+    .map(
+      (question, index) =>
+        `"${question.question}"="${answers[index]?.length ? answers[index].join(", ") : "Unanswered"}"`,
+    )
+    .join(", ")
+  return `User has answered your questions: ${formatted}. You can now continue with the user's answers in mind.`
+}
+
+export const layer = Layer.effectDiscard(
+  Effect.gen(function* () {
+    const tools = yield* Tools.Service
+    const question = yield* UserQuestions.Service
+    const permission = yield* PermissionPolicy.Service
+
+    yield* tools
+      .register({
+        [name]: Tool.withOriginPermission(
+          Tool.make({
+            description,
+            input: Input,
+            output: Output,
+            toModelOutput: ({ input, output }) => [
+              {
+                type: "text",
+                text: toModelOutput(input.questions, output.answers),
+              },
+            ],
+            execute: (input, context) =>
+              permission
+                .assert({
+                  action: "question",
+                  resources: ["*"],
+                  sessionID: context.sessionID,
+                  agent: context.agent,
+                  source: {
+                    type: "tool",
+                    messageID: context.assistantMessageID,
+                    callID: context.toolCallID,
+                  },
+                })
+                .pipe(
+                  Effect.mapError(
+                    () =>
+                      new ToolFailure({
+                        message: "Permission denied: question",
+                      }),
+                  ),
+                  Effect.andThen(
+                    question
+                      .ask({
+                        sessionID: context.sessionID,
+                        questions: input.questions,
+                        tool: {
+                          messageID: context.assistantMessageID,
+                          callID: context.toolCallID,
+                        },
+                      })
+                      // Dismissal must stop continuation, not become input
+                      // that the model can treat as a successful tool reply.
+                      .pipe(Effect.orDie),
+                  ),
+                  Effect.map((answers) => ({ answers })),
+                ),
+          }),
+        ),
+      })
+      .pipe(Effect.orDie)
+  }),
+)

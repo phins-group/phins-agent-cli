@@ -1,0 +1,38 @@
+{
+  "name": "phins-agent-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0 AND MIT",
+  "packageManager": "pnpm@10.26.0",
+  "engines": {
+    "node": ">=22",
+    "bun": ">=1.3.12"
+  },
+  "scripts": {
+    "start": "bun scripts/local-agent.ts",
+    "cli": "bun scripts/local-agent.ts",
+    "tui": "bun scripts/local-agent.ts",
+    "dev": "bun scripts/local-agent.ts",
+    "demo:prepare": "node scripts/demo.mjs prepare",
+    "demo:test": "node scripts/demo.mjs test",
+    "demo:setup": "node scripts/demo.mjs setup",
+    "demo:tui": "node scripts/demo.mjs tui",
+    "build": "bun scripts/build-local.ts",
+    "build:all": "bun scripts/build-local.ts --all",
+    "build:package": "python3 scripts/package-binaries.py",
+    "check": "pnpm -r --if-present typecheck",
+    "test": "bun scripts/test-local.ts",
+    "test:cli": "pnpm --filter @phins/terminal test",
+    "test:core": "pnpm --filter @phins/engine test",
+    "source:check": "node scripts/check-source.mjs",
+    "test:source": "node --test scripts/check-source.test.mjs",
+    "test:coding": "pnpm --filter @phins/terminal exec bun test test/integration/coding.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@tsconfig/bun": "catalog:",
+    "typescript": "catalog:"
+  },
+  "description": "Local coding agent: native engine, CLI and terminal UI"
+}

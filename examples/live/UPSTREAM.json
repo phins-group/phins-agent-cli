@@ -1,0 +1,45 @@
+{
+  "upstream": "https://github.com/vercel/ms",
+  "baseCommit": "fe0bae301a6c41f68a01595658a4f4f0dcba0e84",
+  "issue": "https://github.com/vercel/ms/pull/111",
+  "license": "MIT; Copyright (c) 2016 Zeit, Inc.",
+  "archiveSha256": "fd43e5048673236daf1255389a75afc6832fb9549a1c4deb0564da61af796e9b",
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "96d0eca1b540b2b84172fbf49459ec77b5811474f1b442de23bf79af43a8f2b1"
+    },
+    {
+      "path": ".npmrc",
+      "sha256": "39f3d65ba4a285aeb253ed7ddfec07025b53c01d4a5ac43f04279b8381e3c111"
+    },
+    {
+      "path": ".travis.yml",
+      "sha256": "3a7ac66b0dd2db3e065d699e8c6ca95689ea5dbd101b62866e6ad0d8bd031b6f"
+    },
+    {
+      "path": "index.js",
+      "sha256": "7c9083207b648e648c4d076e7bd7d85af73daae58738199eb8c20a465dfdcd19"
+    },
+    {
+      "path": "license.md",
+      "sha256": "6652830c2607c722b66f1b57de15877ab8fc5dca406cc5b335afeb365d0f32c1"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "af3dd58ba059d3f277cd291e13e53f4bc90c6873559a7e2f40f4cc0ac9fddcf3"
+    },
+    {
+      "path": "package.json",
+      "sha256": "16b6fd77de2da61c3391a1f4cbda7e01c3dc1a64da18b7ff0a6014effa427f9f"
+    },
+    {
+      "path": "readme.md",
+      "sha256": "28268cd98a8ca41f6053e325b1c45efe82671f6242513306420618b935cbb8c3"
+    },
+    {
+      "path": "tests.js",
+      "sha256": "20116cba47006bd0ebe02f307aa2ab6b307b65336a2283c1936e25de5ac7e8b4"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "verifiedDate": "2026-10-14",
+  "scope": "Supplemental license texts with pinned sources; not redistribution clearance",
+  "packages": [
+    {
+      "names": [
+        "@ff-labs/fff-bun",
+        "@ff-labs/fff-bin-darwin-arm64",
+        "@ff-labs/fff-bin-darwin-x64",
+        "@ff-labs/fff-bin-linux-arm64-gnu",
+        "@ff-labs/fff-bin-linux-x64-gnu",
+        "@ff-labs/fff-bin-win32-x64"
+      ],
+      "version": "0.9.4",
+      "path": "notices/fff-LICENSE",
+      "sha256": "f8264de82db188834a5711d7e348dc08c33db14f79bb587ccb42616fd694ee81",
+      "source": "https://raw.githubusercontent.com/dmtrKovalenko/fff/7d7910b6ba78ea8406671eaac8cdb5eb9850d9d1/LICENSE",
+      "basis": "Pinned source commit from published 0.9.4 wrapper and darwin-arm64 metadata; platform binaries share the release. Native transitive obligations remain under review."
+    },
+    {
+      "names": [
+        "remeda"
+      ],
+      "version": "2.26.0",
+      "path": "notices/remeda-LICENSE",
+      "sha256": "acf30083045d768ce20640237313ee31a45d548d66ef76df5bb5fb0745479535",
+      "source": "https://raw.githubusercontent.com/remeda/remeda/0fde627fc4ca8a19ab93f000fe931f22d4472338/LICENSE",
+      "basis": "Published package gitHead identifies this source commit."
+    },
+    {
+      "names": [
+        "drizzle-orm"
+      ],
+      "version": "1.0.0-rc.2",
+      "path": "notices/drizzle-LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "source": "https://raw.githubusercontent.com/drizzle-team/drizzle-orm/48e5406027103a9fca6eb66417187c4a8b5c6aa3/LICENSE",
+      "basis": "Matching v1.0.0-rc.2 release tag; npm has no gitHead. Exact source correlation remains under review."
+    }
+  ],
+  "runtimes": [
+    {
+      "name": "Bun",
+      "version": "1.3.12",
+      "path": "notices/bun-LICENSE.md",
+      "sha256": "7068a9711ef8196d654e143447ed7976b3678ce21145b9da16e1f786528f15bb",
+      "source": "https://raw.githubusercontent.com/oven-sh/bun/bun-v1.3.12/LICENSE.md",
+      "basis": "Runtime release tag. This notice is not the complete corresponding-source, relinking or transitive-notice review."
+    }
+  ]
+}

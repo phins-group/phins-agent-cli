@@ -42,6 +42,27 @@ jobs:
           $expected = ($line -split "\s+")[0]
           if ((Get-FileHash -Algorithm SHA256 $archive).Hash.ToLower() -ne $expected) { throw "Archive checksum mismatch" }
           Expand-Archive -LiteralPath $archive -DestinationPath $stage
+      - name: Diagnose Windows ACL process environment
+        shell: pwsh
+        run: |
+          @'
+          from pathlib import Path
+          import base64,json,os,subprocess,tempfile,time
+          source=Path('packages/terminal/src/agent/runtime-privacy.ts').read_text()
+          body=source.split('const inspectAcl = `',1)[1].split('`',1)[0]
+          shell=str(Path(os.environ['SystemRoot'])/'System32/WindowsPowerShell/v1.0/powershell.exe')
+          with tempfile.TemporaryDirectory(prefix='phins-acl-env-') as folder:
+            for label in ['full','filtered']:
+              directory=Path(folder)/label;directory.mkdir()
+              env=dict(os.environ) if label=='full' else {k:os.environ[k] for k in ['SystemRoot','WINDIR','COMSPEC','TEMP','TMP','USERPROFILE'] if k in os.environ}
+              env.update(PHINS_RUNTIME_PATH=str(directory),PHINS_RUNTIME_PROTECT='1')
+              start=time.monotonic()
+              try:
+                r=subprocess.run([shell,'-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',base64.b64encode(body.encode('utf-16le')).decode()],env=env,stdin=subprocess.DEVNULL,capture_output=True,timeout=15)
+                print(json.dumps({'environment':label,'exit':r.returncode,'seconds':round(time.monotonic()-start,2),'stdoutBytes':len(r.stdout),'stderrBytes':len(r.stderr)}))
+              except subprocess.TimeoutExpired:
+                print(json.dumps({'environment':label,'timeout':True,'seconds':round(time.monotonic()-start,2)}))
+          '@ | python
       - name: Verify native Windows runtime ACL policy
         shell: pwsh
         env:

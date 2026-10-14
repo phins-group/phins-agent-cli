@@ -48,7 +48,11 @@ jobs:
           BUN_BE_BUN: "1"
         run: |
           $binary = Join-Path $env:RUNNER_TEMP "phins-release/phins-0.1.0-local-windows-x64/phins.exe"
-          Push-Location packages/terminal
+          $probe = Join-Path $env:RUNNER_TEMP "phins-acl-tests"
+          New-Item -ItemType Directory -Path "$probe/src/agent", "$probe/test/agent" -Force | Out-Null
+          Copy-Item packages/terminal/src/agent/runtime-privacy.ts "$probe/src/agent/runtime-privacy.ts"
+          Copy-Item packages/terminal/test/agent/runtime-privacy.test.ts "$probe/test/agent/runtime-privacy.test.ts"
+          Push-Location $probe
           & $binary test test/agent/runtime-privacy.test.ts
           $code = $LASTEXITCODE
           Pop-Location

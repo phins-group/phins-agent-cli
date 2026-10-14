@@ -28,7 +28,7 @@
     },
     {
       "path": ".github/workflows/binary-smoke.yml",
-      "sha256": "70538b1ac38adbd36df7f311af04155481bc8fdad2bad500b71624a10c427e7f"
+      "sha256": "bf601d4264c0ebd7db908a2822f90e7a6e5358431a2d340128539d1827fa0cc2"
     },
     {
       "path": ".gitignore",

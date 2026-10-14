@@ -15,6 +15,10 @@ jobs:
   windows:
     runs-on: windows-latest
     timeout-minutes: 10
+    # GitHub restricts draft-release visibility to write-capable credentials.
+    # The token is passed only to the download step, never to the executable.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:

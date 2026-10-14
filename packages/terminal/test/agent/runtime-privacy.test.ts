@@ -57,9 +57,10 @@ Set-Acl -LiteralPath $env:PHINS_TEST_ACL_PATH -AclObject $acl
 `
     const env: NodeJS.ProcessEnv = { PHINS_TEST_ACL_PATH: file }
     for (const name of ["SystemRoot", "WINDIR", "COMSPEC", "TEMP", "TMP", "USERPROFILE",
-    "PATH", "PSModulePath", "APPDATA", "LOCALAPPDATA", "ProgramFiles", "ProgramFiles(x86)",
+    "PATH", "APPDATA", "LOCALAPPDATA", "ProgramFiles", "ProgramFiles(x86)",
     "ProgramData", "SystemDrive"])
       if (process.env[name] !== undefined) env[name] = process.env[name]
+    env.PSModulePath = path.join(process.env.SystemRoot!, "System32/WindowsPowerShell/v1.0/Modules")
     execFileSync(path.join(process.env.SystemRoot!,
       "System32/WindowsPowerShell/v1.0/powershell.exe"),
     ["-NoLogo", "-NoProfile", "-NonInteractive", "-EncodedCommand",

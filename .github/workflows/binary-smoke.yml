@@ -55,6 +55,7 @@ jobs:
             for label in ['full','filtered']:
               directory=Path(folder)/label;directory.mkdir()
               env=dict(os.environ) if label=='full' else {k:os.environ[k] for k in ['SystemRoot','WINDIR','COMSPEC','TEMP','TMP','USERPROFILE','PATH','PSModulePath','APPDATA','LOCALAPPDATA','ProgramFiles','ProgramFiles(x86)','ProgramData','SystemDrive'] if k in os.environ}
+              if label=='filtered':env['PSModulePath']=str(Path(os.environ['SystemRoot'])/'System32/WindowsPowerShell/v1.0/Modules')
               env.update(PHINS_RUNTIME_PATH=str(directory),PHINS_RUNTIME_PROTECT='1')
               start=time.monotonic()
               try:

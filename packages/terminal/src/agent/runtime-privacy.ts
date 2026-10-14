@@ -67,9 +67,10 @@ export async function windowsRuntimePrivacy(file: string, protect = false) {
     throw new Error("Local Windows runtime path is required")
   const env: NodeJS.ProcessEnv = {}
   for (const name of ["SystemRoot", "WINDIR", "COMSPEC", "TEMP", "TMP", "USERPROFILE",
-    "PATH", "PSModulePath", "APPDATA", "LOCALAPPDATA", "ProgramFiles", "ProgramFiles(x86)",
+    "PATH", "APPDATA", "LOCALAPPDATA", "ProgramFiles", "ProgramFiles(x86)",
     "ProgramData", "SystemDrive"])
     if (process.env[name] !== undefined) env[name] = process.env[name]
+  env.PSModulePath = path.join(systemRoot, "System32/WindowsPowerShell/v1.0/Modules")
   env.PHINS_RUNTIME_PATH = file
   env.PHINS_RUNTIME_PROTECT = protect ? "1" : "0"
   try {

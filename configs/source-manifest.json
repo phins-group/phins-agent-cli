@@ -4111,11 +4111,11 @@
     },
     {
       "path": "scripts/smoke-binary.py",
-      "sha256": "d23092d1ceb90e27cc3040ef89708dc53755948cae3abf0e1ed118515d63f470"
+      "sha256": "f23bbd91e17d7aab1e6399eb33e0261ff330c9d7e7d2d084b344c569916d856a"
     },
     {
       "path": "scripts/smoke-windows.py",
-      "sha256": "e37dbedb4321b668e1f72f81bbd62deafee7b6159636cc17e1bb3109b6bfa11c"
+      "sha256": "f6ff2793ee51a14cba073f96e40f54ad17d9191e2bbb7b03480a1eec3fe4b7ac"
     },
     {
       "path": "scripts/spending.ts",

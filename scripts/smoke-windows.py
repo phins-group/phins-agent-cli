@@ -10,6 +10,29 @@ import threading
 import time
 
 
+def stop_runtime(pid):
+    """Wait for this test profile's host to release loaded native libraries."""
+    k = ctypes.WinDLL("kernel32", use_last_error=True)
+    k.OpenProcess.argtypes = [w.DWORD, w.BOOL, w.DWORD]
+    k.OpenProcess.restype = w.HANDLE
+    k.TerminateProcess.argtypes = [w.HANDLE, w.UINT]
+    k.WaitForSingleObject.argtypes = [w.HANDLE, w.DWORD]
+    k.CloseHandle.argtypes = [w.HANDLE]
+    handle = k.OpenProcess(0x00100001, False, pid)  # SYNCHRONIZE | TERMINATE
+    if not handle:
+        if ctypes.get_last_error() == 87:  # Already stopped.
+            return
+        raise ctypes.WinError(ctypes.get_last_error())
+    try:
+        if k.WaitForSingleObject(handle, 0) != 0:
+            if not k.TerminateProcess(handle, 0):
+                raise ctypes.WinError(ctypes.get_last_error())
+            if k.WaitForSingleObject(handle, 10000) != 0:
+                raise RuntimeError("Isolated runtime cleanup timed out")
+    finally:
+        k.CloseHandle(handle)
+
+
 def check_tui(binary, directory, environment):
     k = ctypes.WinDLL("kernel32", use_last_error=True)
     pointer = ctypes.c_void_p

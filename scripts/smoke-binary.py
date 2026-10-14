@@ -77,7 +77,10 @@ def main():
                 pid = data.get("pid")
                 if isinstance(pid, int) and pid > 1:
                     try:
-                        os.kill(pid, signal.SIGTERM)
+                        if os.name == "nt":
+                            windows.stop_runtime(pid)
+                        else:
+                            os.kill(pid, signal.SIGTERM)
                     except ProcessLookupError:
                         pass
     print(json.dumps(result, indent=2))

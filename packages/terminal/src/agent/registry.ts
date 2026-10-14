@@ -16,6 +16,7 @@ import {
 import path from "node:path"
 import { AppPaths } from "@phins/engine/runtime/paths"
 import { InstallationVersion } from "@phins/engine/runtime/version"
+import { windowsRuntimePrivacy } from "./runtime-privacy"
 import {
   connectLocalService,
   createLocalServiceFetch,
@@ -68,7 +69,9 @@ async function privateDirectory(create = false) {
   if (
     !info.isDirectory() ||
     info.isSymbolicLink() ||
-    info.mode & 0o077 ||
+    (process.platform === "win32"
+      ? !(await windowsRuntimePrivacy(registryDirectory(), create))
+      : info.mode & 0o077) ||
     (process.getuid && info.uid !== process.getuid())
   )
     throw new Error("Kho runtime local không có quyền riêng tư hợp lệ.")
@@ -101,7 +104,9 @@ async function readPrivateRegistration(file: string) {
     if (
       !info.isFile() ||
       info.size > 16_384 ||
-      info.mode & 0o077 ||
+      (process.platform === "win32"
+        ? !(await windowsRuntimePrivacy(file))
+        : info.mode & 0o077) ||
       (process.getuid && info.uid !== process.getuid())
     )
       throw new Error("Đăng ký Agent local không có quyền riêng tư hợp lệ.")

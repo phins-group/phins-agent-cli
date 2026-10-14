@@ -44,3 +44,17 @@ jobs:
           $binary = Join-Path $env:RUNNER_TEMP "phins-release/phins-0.1.0-local-windows-x64/phins.exe"
           python scripts/smoke-binary.py "$binary"
           if ($LASTEXITCODE -ne 0) { throw "Windows startup smoke failed" }
+      - name: Reproduce bundled demo without installing packages
+        shell: pwsh
+        run: |
+          $bundle = Join-Path $env:RUNNER_TEMP "phins-release/phins-0.1.0-local-windows-x64"
+          Set-Location $bundle
+          node --version
+          git --version
+          node scripts/demo.mjs prepare
+          if ($LASTEXITCODE -ne 0) { throw "Demo preparation failed" }
+          $tests = node scripts/demo.mjs test 2>&1 | Out-String
+          $code = $LASTEXITCODE
+          Write-Output $tests
+          if ($code -ne 1 -or $tests -notmatch "# tests 27" -or $tests -notmatch "# pass 22" -or $tests -notmatch "# fail 5") { throw "Expected historical baseline was not reproduced" }
+          $global:LASTEXITCODE = 0

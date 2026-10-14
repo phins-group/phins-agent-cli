@@ -4,6 +4,7 @@ API contract: https://learn.microsoft.com/windows/console/creating-a-pseudoconso
 """
 import ctypes
 from ctypes import wintypes as w
+from pathlib import Path
 import subprocess
 import threading
 import time
@@ -79,10 +80,15 @@ def check_tui(binary, directory, environment):
         startup = ExtendedStartup()
         startup.startup.cb = ctypes.sizeof(ExtendedStartup)
         startup.attributes = ctypes.cast(attributes, pointer)
-        command = ctypes.create_unicode_buffer(subprocess.list2cmdline([str(binary)]))
+        # CI's Python process has redirected standard handles. Open the actual
+        # pseudoconsole devices in its child shell instead of propagating them.
+        shell = Path(environment["SystemRoot"]) / "System32/cmd.exe"
+        command = ctypes.create_unicode_buffer(
+            subprocess.list2cmdline([str(shell)]) +
+            ' /d /s /c ""' + str(binary) + '" < CONIN$ > CONOUT$ 2>&1"')
         block = ctypes.create_unicode_buffer("\0".join(f"{key}={value}" for key, value in
             sorted(environment.items(), key=lambda item: item[0].upper())) + "\0\0")
-        require(k.CreateProcessW(str(binary), command, None, None, False, 0x00080000 | 0x00000400,
+        require(k.CreateProcessW(str(shell), command, None, None, False, 0x00080000 | 0x00000400,
                                  ctypes.cast(block, pointer), str(directory),
                                  ctypes.byref(startup.startup), ctypes.byref(process)))
         for handle in (input_read, output_write):

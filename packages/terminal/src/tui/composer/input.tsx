@@ -58,7 +58,6 @@ import {
   renderRunningStatus,
   runningStatusTheme,
   terminalNoColor,
-  terminalReducedMotion,
   terminalTrueColor,
 } from "./running-status"
 
@@ -1160,23 +1159,19 @@ export function Prompt(props: PromptProps) {
   })
 
   const noColor = terminalNoColor()
-  const reducedMotion = noColor || terminalReducedMotion() || !kv.get("animations_enabled", true)
   const trueColor = terminalTrueColor()
-  const [runningFrame, setRunningFrame] = createSignal(0)
   const [runningStartedAt, setRunningStartedAt] = createSignal(Date.now())
   const [runningNow, setRunningNow] = createSignal(Date.now())
   createEffect(() => {
     if (status().type === "idle") return
 
-    setRunningFrame(0)
     setRunningStartedAt(Date.now())
     setRunningNow(Date.now())
     const timer = setInterval(
       () => {
         setRunningNow(Date.now())
-        setRunningFrame((frame) => frame + 1)
       },
-      reducedMotion ? 1000 : 120,
+      1000,
     )
 
     onCleanup(() => clearInterval(timer))
@@ -1307,9 +1302,7 @@ export function Prompt(props: PromptProps) {
                     <text wrapMode="none">
                       {renderRunningStatus({
                         elapsedMs: runningElapsed(),
-                        frameIndex: runningFrame(),
                         theme: runningStatusTheme,
-                        reducedMotion,
                         noColor,
                         trueColor,
                       })}

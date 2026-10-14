@@ -3999,6 +3999,13 @@
       "sha256": "a67cd99d0afcec0944d66ee0eb0169672a56681b30fd0ebea1d80fcc689068a4"
     },
     {
+      "path": "packages/terminal/test/ui/prompt/running-status.test.tsx",
+      "sha256": "46abf165d8445fa1770c350aa8c3d7d813fa26a1276c4caf0669d433f1c4c788",
+      "origin": {
+        "kind": "hackathon-authored"
+      }
+    },
+    {
       "path": "packages/terminal/test/ui/prompt/traits.test.ts",
       "sha256": "6ea10021517f55e313b1da742129dd305240aca4e89291fe5ce8c630a4685903"
     },
@@ -4115,5 +4122,12 @@
       "sha256": "8a7061d528cc7e508c86b404f2e37fded17fb5a9f877ea53085d1d0014a9c255"
     }
   ],
-  "adaptations": {}
+  "adaptations": {
+    "packages/terminal/src/tui/composer/input.tsx": {
+      "sha256": "d54972ff970eda4fcec176db7a20d171519115c1dbec3bcfb1ffb6ddac7625ef"
+    },
+    "packages/terminal/src/tui/composer/running-status.tsx": {
+      "sha256": "be8c5aacd9faba26f035166b2f17a881ec12644cf4d046911cfc6ac5b3c6ea0f"
+    }
+  }
 }

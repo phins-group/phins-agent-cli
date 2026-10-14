@@ -1,5 +1,5 @@
 /** Windows ACL checks for private local-runtime metadata. */
-import { execFile } from "node:child_process"
+import { execFileSync } from "node:child_process"
 import path from "node:path"
 const fullControl = 0x1f01ff
 const system = "S-1-5-18"
@@ -71,16 +71,12 @@ export async function windowsRuntimePrivacy(file: string, protect = false) {
   env.PHINS_RUNTIME_PATH = file
   env.PHINS_RUNTIME_PROTECT = protect ? "1" : "0"
   try {
-    const stdout = await new Promise<string>((resolve, reject) => {
-      const child = execFile(path.join(systemRoot,
-        "System32/WindowsPowerShell/v1.0/powershell.exe"),
-      ["-NoLogo", "-NoProfile", "-NonInteractive", "-EncodedCommand",
-        Buffer.from(inspectAcl, "utf16le").toString("base64")],
-      { env, windowsHide: true, timeout: 10_000, maxBuffer: 16_384 },
-      (error, stdout) => error ? reject(error) : resolve(stdout))
-      // PowerShell must not wait for input from a parent's open pipe.
-      child.stdin?.end()
-    })
+    const stdout = execFileSync(path.join(systemRoot,
+      "System32/WindowsPowerShell/v1.0/powershell.exe"),
+    ["-NoLogo", "-NoProfile", "-NonInteractive", "-EncodedCommand",
+      Buffer.from(inspectAcl, "utf16le").toString("base64")],
+    { env, windowsHide: true, timeout: 10_000, maxBuffer: 16_384,
+      encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] })
     return privateRuntimeAcl(JSON.parse(stdout.trim()))
   } catch {
     throw new Error("Unable to verify private Windows runtime permissions")

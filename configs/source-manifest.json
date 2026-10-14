@@ -28,7 +28,7 @@
     },
     {
       "path": ".github/workflows/binary-smoke.yml",
-      "sha256": "3c673271c39fb4388130c38c37da34e9ade1c2d48db8d7f81049c62564b5cd49"
+      "sha256": "1d0cddc940e007a73bd13a2eae43f7b41ae313affd6c5a6b60d166117787f7c6"
     },
     {
       "path": ".gitignore",
@@ -3048,7 +3048,7 @@
     },
     {
       "path": "packages/terminal/src/agent/runtime-privacy.ts",
-      "sha256": "e2fcadb87743216dd48f9909d21da981273734bd6eb27679380100724e6eee96"
+      "sha256": "3421d1e480b4db3ee7bc256a86e2258aac109e5158820cca849893677f6dd21f"
     },
     {
       "path": "packages/terminal/src/agent/session-target.ts",
@@ -3800,7 +3800,7 @@
     },
     {
       "path": "packages/terminal/test/agent/runtime-privacy.test.ts",
-      "sha256": "d40c89d68c94b513ce3fedd9601815a7d7cbe3c31b6290aa26482aacb5250837"
+      "sha256": "77ce8e933ab167f453770121c6e345347f2a6afa763c3a24a866d2882811d0c5"
     },
     {
       "path": "packages/terminal/test/integration/coding.test.ts",

@@ -54,12 +54,13 @@ jobs:
           with tempfile.TemporaryDirectory(prefix='phins-acl-env-') as folder:
             for label in ['full','filtered']:
               directory=Path(folder)/label;directory.mkdir()
-              env=dict(os.environ) if label=='full' else {k:os.environ[k] for k in ['SystemRoot','WINDIR','COMSPEC','TEMP','TMP','USERPROFILE'] if k in os.environ}
+              env=dict(os.environ) if label=='full' else {k:os.environ[k] for k in ['SystemRoot','WINDIR','COMSPEC','TEMP','TMP','USERPROFILE','PATH','PSModulePath','APPDATA','LOCALAPPDATA','ProgramFiles','ProgramFiles(x86)','ProgramData','SystemDrive'] if k in os.environ}
               env.update(PHINS_RUNTIME_PATH=str(directory),PHINS_RUNTIME_PROTECT='1')
               start=time.monotonic()
               try:
                 r=subprocess.run([shell,'-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',base64.b64encode(body.encode('utf-16le')).decode()],env=env,stdin=subprocess.DEVNULL,capture_output=True,timeout=15)
                 print(json.dumps({'environment':label,'exit':r.returncode,'seconds':round(time.monotonic()-start,2),'stdoutBytes':len(r.stdout),'stderrBytes':len(r.stderr)}))
+                if label=='full' and r.returncode:print(r.stderr.decode(errors='replace')[:1600])
               except subprocess.TimeoutExpired:
                 print(json.dumps({'environment':label,'timeout':True,'seconds':round(time.monotonic()-start,2)}))
           '@ | python

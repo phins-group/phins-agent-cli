@@ -92,11 +92,11 @@
     },
     {
       "path": "docs/QUICKSTART.md",
-      "sha256": "f8312984df2fe9a4fbf09cd7c16b2544f3d7a4cd03c2c85f9e41d52217d019b5"
+      "sha256": "05217380e889e368a1c8c06a0779d19f4ca5d46a1f7fddad16ef76eb34e152f1"
     },
     {
       "path": "docs/QUICKSTART_VALIDATION.md",
-      "sha256": "44e80d128ecb46e5c0c9b34153e88889f152bef075634e5c3fa1ba343ba93656"
+      "sha256": "62fd85c3eb926f6afc001572da8515cdea86969ac7ca438354fdc177d8b3df91"
     },
     {
       "path": "docs/RUNTIME_SOURCE.md",

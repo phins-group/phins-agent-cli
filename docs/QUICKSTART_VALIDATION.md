@@ -66,6 +66,16 @@ the later external tests pass. The guide does not promise unattended success.
 
 ## Installation and documentation checks
 
+The copy/paste installation block for macOS ARM64 was executed unchanged in a
+fresh directory: public GitHub download, matching archive checksum, extraction,
+real TUI Ready state and exit 0, in about **37 seconds**. It used an isolated
+profile and made no inference request. Repeating the block from the original
+parent refused the existing directory before overwriting files. All four Unix
+installation blocks passed `sh -n`; their archive/folder names and the Windows
+ZIP name match the published release assets. The new PowerShell download block
+was reviewed but not executed in this macOS check; the native Windows binary
+qualification above remains separate.
+
 The bundled helper prefers the adjacent executable over the source launcher;
 regression tests cover that selection, symlink refusal, pinned source integrity,
 refusal to overwrite trials and modified-oracle detection. Extraction/startup

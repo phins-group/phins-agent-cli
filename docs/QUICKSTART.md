@@ -14,6 +14,8 @@ GPU is needed to launch the binary.**
 - A **Nebius Token Factory API key**, access to NVIDIA Nemotron 3 Super, and
   available inference credits.
 - Internet access to download the archive and contact Nebius.
+- `curl` and `tar` for the macOS/Linux commands below, or use the download
+  links and your archive manager. Windows commands use built-in PowerShell tools.
 - **For the coding demo only:** Node.js **22+** and Git on your PATH. These run
   the sample repository's tests; they are not agent installation dependencies.
 
@@ -27,23 +29,77 @@ Download the archive for your operating system and processor:
 | **Linux** | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz) | glibc 2.30+, libstdc++ and libgcc; Alpine/musl unsupported |
 | **Windows** | [Windows x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip) | Windows 10 1809+ / Windows 11, Windows Terminal; no Windows ARM64 build |
 
-Extract the archive, keep its accompanying notices, and open a terminal in the
-extracted folder. Optionally compare the archive against
+### Copy, paste and run
+
+Open a terminal and copy **one** block for your system. It creates a new
+`phins-agent-preview` folder, downloads and extracts the binary, and opens the
+TUI. No administrator access or package installation is needed. If that folder
+already exists, use another parent folder or reopen the existing binary.
+
+**macOS — Apple Silicon / ARM64:**
+
+```sh
+mkdir phins-agent-preview &&
+cd phins-agent-preview &&
+curl -fL --retry 2 -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-arm64.tar.gz &&
+tar -xzf phins-0.1.0-local-darwin-arm64.tar.gz &&
+cd phins-0.1.0-local-darwin-arm64 &&
+./phins
+```
+
+**macOS — Intel / x64:**
+
+```sh
+mkdir phins-agent-preview &&
+cd phins-agent-preview &&
+curl -fL --retry 2 -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-x64.tar.gz &&
+tar -xzf phins-0.1.0-local-darwin-x64.tar.gz &&
+cd phins-0.1.0-local-darwin-x64 &&
+./phins
+```
+
+**Linux — x64:**
+
+```sh
+mkdir phins-agent-preview &&
+cd phins-agent-preview &&
+curl -fL --retry 2 -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz &&
+tar -xzf phins-0.1.0-local-linux-x64.tar.gz &&
+cd phins-0.1.0-local-linux-x64 &&
+./phins
+```
+
+**Linux — ARM64:**
+
+```sh
+mkdir phins-agent-preview &&
+cd phins-agent-preview &&
+curl -fL --retry 2 -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz &&
+tar -xzf phins-0.1.0-local-linux-arm64.tar.gz &&
+cd phins-0.1.0-local-linux-arm64 &&
+./phins
+```
+
+**Windows — x64, PowerShell in Windows Terminal:**
+
+```powershell
+& {
+  $ErrorActionPreference = "Stop"
+  New-Item -ItemType Directory -Path phins-agent-preview | Out-Null
+  Set-Location phins-agent-preview
+  Invoke-WebRequest -Uri https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip -OutFile phins.zip
+  Expand-Archive -LiteralPath phins.zip -DestinationPath .
+  Set-Location phins-0.1.0-local-windows-x64
+  .\phins.exe
+}
+```
+
+In the TUI, type `/setup` to configure your private Nebius key. Use `/exit`
+to return to the shell; your terminal remains in the extracted folder.
+Keep the accompanying notices. Optionally compare the downloaded archive against
 [SHA256SUMS](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/SHA256SUMS).
 This is the **0.1.0 hackathon preview**, whose executable reports `0.1.0-local`.
 Platform qualification and limitations are in [the validation report](QUICKSTART_VALIDATION.md).
-
-**macOS / Linux:**
-
-```sh
-./phins --version
-```
-
-**Windows PowerShell:**
-
-```powershell
-.\phins.exe --version
-```
 
 ## Configure Nebius Token Factory
 
@@ -51,7 +107,8 @@ Platform qualification and limitations are in [the validation report](QUICKSTART
    **API keys → Create API key**, and save the key privately. See the
    [official instructions](https://docs.tokenfactory.nebius.com/api-reference/introduction#authentication).
    Never publish a test key or paste it into source, screenshots or issues.
-2. Run masked setup from the extracted folder.
+2. In the running TUI, type `/setup` and press **Enter** to open masked setup.
+   Alternatively, exit the TUI first with `/exit`, then run setup from the shell:
 
    **macOS / Linux:**
 

@@ -47,7 +47,12 @@ def main():
             result["checks"]["non_terminal_error"] = "pass"
             result["checks"]["isolated_default_profile"] = "pass"
             if os.name == "nt":
-                result["checks"]["default_tui"] = "manual Windows Terminal check required"
+                import importlib.util
+                spec = importlib.util.spec_from_file_location("windows_smoke", Path(__file__).with_name("smoke-windows.py"))
+                windows = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(windows)
+                windows.check_tui(binary, home, env)
+                result["checks"]["default_tui"] = "pass (native ConPTY; visual Windows Terminal review separate)"
             else:
                 check_tui(binary, home, env)
                 result["checks"]["default_tui"] = "pass"

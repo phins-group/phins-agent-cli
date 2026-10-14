@@ -1,0 +1,46 @@
+name: Verify release binary on Windows
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag containing the candidate assets
+        required: true
+        default: v0.1.0
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Download the exact candidate
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          $stage = Join-Path $env:RUNNER_TEMP "phins-release"
+          New-Item -ItemType Directory -Path $stage | Out-Null
+          gh release download "$env:RELEASE_TAG" --pattern "phins-0.1.0-local-windows-x64.zip" --dir "$stage"
+          if ($LASTEXITCODE -ne 0) { throw "Binary download failed" }
+          gh release download "$env:RELEASE_TAG" --pattern "SHA256SUMS" --dir "$stage"
+          if ($LASTEXITCODE -ne 0) { throw "Checksum download failed" }
+          $archive = Join-Path $stage "phins-0.1.0-local-windows-x64.zip"
+          $line = Get-Content (Join-Path $stage "SHA256SUMS") | Where-Object { $_ -match "  phins-0.1.0-local-windows-x64.zip$" }
+          if (-not $line) { throw "Archive checksum missing" }
+          $expected = ($line -split "\s+")[0]
+          if ((Get-FileHash -Algorithm SHA256 $archive).Hash.ToLower() -ne $expected) { throw "Archive checksum mismatch" }
+          Expand-Archive -LiteralPath $archive -DestinationPath $stage
+      - name: Check standalone startup without installing agent packages
+        shell: pwsh
+        run: |
+          $binary = Join-Path $env:RUNNER_TEMP "phins-release/phins-0.1.0-local-windows-x64/phins.exe"
+          python scripts/smoke-binary.py "$binary"
+          if ($LASTEXITCODE -ne 0) { throw "Windows startup smoke failed" }

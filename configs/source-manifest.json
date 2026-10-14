@@ -27,6 +27,10 @@
       "sha256": "6838b50fb657676d2f9916083cc14967828b207b4137b464910cfa9a5f0a93b8"
     },
     {
+      "path": ".github/workflows/binary-smoke.yml",
+      "sha256": "9d585cc5a11aeb9920a56ae0941babc6796c1873739cb5d0bb9d6477309362a2"
+    },
+    {
       "path": ".gitignore",
       "sha256": "2c72764777cf99bd53f447168c26291a2ef2a20bfb7f7b1c5275a72258a5a27b"
     },
@@ -4099,7 +4103,11 @@
     },
     {
       "path": "scripts/smoke-binary.py",
-      "sha256": "a69a6a6f1387f60500fd35ad2cad538031bc9d5a0f260e3b14b17e77ea7f2936"
+      "sha256": "7bace057b5d6437b2c665f04b18936b6b63bd85202e9ad0cb5ca25bac435f840"
+    },
+    {
+      "path": "scripts/smoke-windows.py",
+      "sha256": "8f2afb0a0bb6143cf941fab7e50a0848b46bcb688b90c074236f3b02d43de316"
     },
     {
       "path": "scripts/spending.ts",

@@ -28,7 +28,7 @@
     },
     {
       "path": ".github/workflows/binary-smoke.yml",
-      "sha256": "86e1e72ac78d46bf4afa75b67dc1b339a7daf6680220e1e5ab3d9b24c14bc3e1"
+      "sha256": "7df08f90266938347fad25b7013678b34b9dd15423bc5a1505fe67295e7f7150"
     },
     {
       "path": ".gitignore",
@@ -4111,7 +4111,7 @@
     },
     {
       "path": "scripts/smoke-binary.py",
-      "sha256": "8f0c20e1e5db784eddc9f1433bd26302830515684262e259eab428518c5d78cd"
+      "sha256": "d23092d1ceb90e27cc3040ef89708dc53755948cae3abf0e1ed118515d63f470"
     },
     {
       "path": "scripts/smoke-windows.py",

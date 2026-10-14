@@ -68,23 +68,6 @@ def main():
                     detail = re.sub(r"(?i)(Basic|Bearer)\s+[A-Za-z0-9+/=_-]+", r"\1 [redacted]", detail)
                     detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
                     print("Isolated host diagnostic:", detail, file=sys.stderr)
-                # Distinguish a host bootstrap failure from ConPTY rendering.
-                import uuid
-                host = subprocess.Popen([str(binary), "agent-host", "--directory", str(home),
-                    "--nonce", str(uuid.uuid4()), "--mode", "personal"], cwd=home, env=env,
-                    stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                try:
-                    stdout, stderr = host.communicate(timeout=15)
-                except subprocess.TimeoutExpired:
-                    host.kill()
-                    stdout, stderr = host.communicate(timeout=10)
-                # Effect's default logger can write host errors to stdout.
-                diagnostic_output = stderr + (b"" if b"phins-agent-ready" in stdout else stdout)
-                detail = diagnostic_output.decode(errors="replace")[-4000:]
-                detail = re.sub(r"(?i)(Basic|Bearer)\s+[A-Za-z0-9+/=_-]+", r"\1 [redacted]", detail)
-                detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
-                print("Direct host diagnostic:", {"exit": host.returncode,
-                    "handshake": b"phins-agent-ready" in stdout, "stderr": detail}, file=sys.stderr)
             raise
         finally:
             # The authenticated local host is detached. Only stop hosts registered

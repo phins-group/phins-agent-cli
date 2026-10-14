@@ -4,8 +4,8 @@ API contract: https://learn.microsoft.com/windows/console/creating-a-pseudoconso
 """
 import ctypes
 from ctypes import wintypes as w
-from pathlib import Path
 import subprocess
+import sys
 import threading
 import time
 
@@ -80,25 +80,21 @@ def check_tui(binary, directory, environment):
         startup = ExtendedStartup()
         startup.startup.cb = ctypes.sizeof(ExtendedStartup)
         startup.attributes = ctypes.cast(attributes, pointer)
-        # CI's Python process has redirected standard handles. Open the actual
-        # pseudoconsole devices in its child shell instead of propagating them.
-        shell = Path(environment["SystemRoot"]) / "System32/cmd.exe"
-        diagnostic = directory / "tty-diagnostic.js"
-        diagnostic.write_text(
-            'import { isatty } from "node:tty";\n'
-            'console.log("TTY_DIAGNOSTIC", JSON.stringify({ '
-            'stdin: process.stdin.isTTY, stdout: process.stdout.isTTY, '
-            'fd0: isatty(0), fd1: isatty(1), fd2: isatty(2) }));\n')
-        launcher = directory / "console-smoke.cmd"
-        launcher.write_text('@echo off\nset BUN_BE_BUN=1\n"' + str(binary) +
-                            '" "' + str(diagnostic) + '"\nset BUN_BE_BUN=\n"' +
-                            str(binary) + '"\nexit /b %errorlevel%\n')
+        # CI has redirected stdio. Open real console devices inside ConPTY,
+        # with read/write access so GetConsoleMode can identify both handles.
+        # No isTTY override is applied to the application.
+        launcher = directory / "console-smoke.py"
+        launcher.write_text(
+            'import subprocess, sys\n'
+            'with open("CONIN$", "r+b", buffering=0) as inp, '
+            'open("CONOUT$", "r+b", buffering=0) as out:\n'
+            '    result = subprocess.run([sys.argv[1]], stdin=inp, stdout=out, stderr=out)\n'
+            'sys.exit(result.returncode)\n')
         command = ctypes.create_unicode_buffer(
-            subprocess.list2cmdline([str(shell)]) +
-            ' /d /s /c ""' + str(launcher) + '" < CONIN$ > CONOUT$ 2>&1"')
+            subprocess.list2cmdline([sys.executable, str(launcher), str(binary)]))
         block = ctypes.create_unicode_buffer("\0".join(f"{key}={value}" for key, value in
             sorted(environment.items(), key=lambda item: item[0].upper())) + "\0\0")
-        require(k.CreateProcessW(str(shell), command, None, None, False, 0x00080000 | 0x00000400,
+        require(k.CreateProcessW(sys.executable, command, None, None, False, 0x00080000 | 0x00000400,
                                  ctypes.cast(block, pointer), str(directory),
                                  ctypes.byref(startup.startup), ctypes.byref(process)))
         for handle in (input_read, output_write):

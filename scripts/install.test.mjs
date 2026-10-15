@@ -150,7 +150,8 @@ async function windowsPreflight(t, architecture, nativeArchitecture, systemDirec
       `$env:PROCESSOR_ARCHITEW6432 = ${quotePowerShell(nativeArchitecture)}`,
     ]),
     "$env:LOCALAPPDATA = 'relative-path'",
-    `try { & ${quotePowerShell(installer)}; throw 'Installer unexpectedly proceeded' }`,
+    `$script = [scriptblock]::Create([IO.File]::ReadAllText(${quotePowerShell(installer)}))`,
+    "try { & $script; throw 'Installer unexpectedly proceeded' }",
     "catch { [Console]::Out.WriteLine($_.Exception.Message) }",
   ].join("\n")
   const result = spawnSync(path.join(process.env.SystemRoot, systemDirectory,
@@ -167,8 +168,8 @@ for (const [name, architecture, nativeArchitecture] of [
   ["WOW64 x86 on x64", "x86", "AMD64"],
   ["native ARM64", "ARM64", ""],
   ["x64 emulation on ARM64", "AMD64", "ARM64"],
-  ["incomplete x86 metadata", "x86", ""],
-  ["missing CPU metadata", "", ""],
+  ["incomplete x86", "x86", ""],
+  ["missing CPU", "", ""],
 ])
   test(`64-bit Windows preflight accepts ${name} metadata`, windowsOptions, async t => {
     const message = await windowsPreflight(t, architecture, nativeArchitecture)

@@ -4152,7 +4152,7 @@
     },
     {
       "path": "scripts/install.test.mjs",
-      "sha256": "4d0ae922290ffd35a342689c155a8a63b2a5cf04cbb73a33abbb49027511d2b0"
+      "sha256": "1cbd7c8d366de20b7eb4e8dae0e48a2e1f63db7d8785c841fc47dcc0d2587f0e"
     },
     {
       "path": "scripts/local-agent.ts",

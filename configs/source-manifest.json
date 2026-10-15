@@ -36,7 +36,7 @@
     },
     {
       "path": ".github/workflows/install.yml",
-      "sha256": "19ad6a74444cd4addd532567168fa91a898a581d4355c95daea3fd851afd3a17"
+      "sha256": "0e2aebd32d6b6969f36b9ac9418b795be030bb7f35f09ca2f2830ed094be528e"
     },
     {
       "path": ".gitignore",
@@ -216,7 +216,7 @@
     },
     {
       "path": "install.ps1",
-      "sha256": "763560a73cc40ee89407f98d45ed06eec77111bf1e55d40064fef4d7b3f422e4"
+      "sha256": "161cf8762a8cbf2fd0e0d2cc203eddd462a46eb789f5a3ef8a72da8fe6d5034e"
     },
     {
       "path": "install.sh",

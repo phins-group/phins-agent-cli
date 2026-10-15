@@ -57,7 +57,8 @@ jobs:
         run: |
           if ($PSVersionTable.PSVersion.Major -ne 5) { throw 'Expected Windows PowerShell 5.1' }
           Write-Host "Fresh install with Windows PowerShell $($PSVersionTable.PSVersion)"
-          $env:LOCALAPPDATA = Join-Path $env:RUNNER_TEMP 'PHINs install à/AppData/Local'
+          $installDirectory = 'PHINs install ' + [char]0x00e0 + '/AppData/Local'
+          $env:LOCALAPPDATA = Join-Path $env:RUNNER_TEMP $installDirectory
           $url = "https://raw.githubusercontent.com/$env:GITHUB_REPOSITORY/$env:GITHUB_SHA/install.ps1"
           $script = [scriptblock]::Create((Invoke-RestMethod $url))
           & $script
@@ -74,6 +75,18 @@ jobs:
           Invoke-RestMethod $url | Invoke-Expression
           & "$env:LOCALAPPDATA/PHINsAgent/bin/phins.cmd" --version
           if ($LASTEXITCODE -ne 0) { throw 'Windows launcher failed' }
+      - name: Verify every installed release file
+        shell: python
+        run: |
+          import hashlib, json, os, pathlib
+          bundle = pathlib.Path(os.environ['INSTALLED_BINARY']).resolve().parent
+          manifest = json.loads((bundle / 'INSTALL_MANIFEST.json').read_text())
+          for entry in manifest['files']:
+              file = bundle / entry['path']
+              assert file.resolve().is_relative_to(bundle) and file.is_file(), entry['path']
+              with file.open('rb') as stream:
+                  assert hashlib.file_digest(stream, 'sha256').hexdigest() == entry['sha256'], entry['path']
+          print(f"Verified {len(manifest['files'])} release files, including all bundled notices.")
       - name: Verify the actual installed binary
         shell: bash
         run: python scripts/smoke-binary.py "$INSTALLED_BINARY"

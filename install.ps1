@@ -1,6 +1,7 @@
 # Install the reviewed Windows x64 release for this user, without elevation.
 & {
   $ErrorActionPreference = 'Stop'
+  $ProgressPreference = 'SilentlyContinue'
 
   if ($PSVersionTable.PSVersion.Major -lt 5 -or
       ($PSVersionTable.PSVersion.Major -eq 5 -and $PSVersionTable.PSVersion.Minor -lt 1)) {
@@ -16,6 +17,11 @@
   if ([Environment]::OSVersion.Version.Build -lt 17763) { throw 'Windows 10 1809 or newer is required.' }
   if (-not $env:LOCALAPPDATA -or -not [IO.Path]::IsPathRooted($env:LOCALAPPDATA)) {
     throw 'LOCALAPPDATA must be an absolute path.'
+  }
+  $systemDirectory = if ([Environment]::Is64BitProcess) { 'System32' } else { 'Sysnative' }
+  $tar = Join-Path $env:SystemRoot "$systemDirectory\tar.exe"
+  if (-not (Test-Path -LiteralPath $tar -PathType Leaf)) {
+    throw 'Windows tar.exe is required. Use a complete manual download if it is unavailable.'
   }
 
   $label = 'phins-0.1.2-local-windows-x64'
@@ -64,7 +70,9 @@
       if ((Get-FileHash -Algorithm SHA256 -LiteralPath $archive).Hash.ToLowerInvariant() -ne $archiveSha256) {
         throw 'Archive checksum mismatch; nothing installed.'
       }
-      Expand-Archive -LiteralPath $archive -DestinationPath $stage
+      # The release includes retained notice paths beyond legacy MAX_PATH.
+      & $tar -xf $archive -C $stage
+      if ($LASTEXITCODE -ne 0) { throw 'Release extraction failed; nothing installed.' }
       $extracted = Join-Path $stage $label
       $candidate = Join-Path $extracted 'phins.exe'
       if ((Get-FileHash -Algorithm SHA256 -LiteralPath $candidate).Hash.ToLowerInvariant() -ne $binarySha256) {
@@ -75,9 +83,13 @@
       }
       [IO.File]::WriteAllText((Join-Path $extracted '.phins-install'), $archiveSha256)
       if (Test-Path -LiteralPath $bundle) { throw 'Another installation appeared; preserved.' }
-      Move-Item -LiteralPath $extracted -Destination $bundle
+      [IO.Directory]::Move($extracted, $bundle)
     } finally {
-      Remove-Item -LiteralPath $stage -Recurse -Force
+      try {
+        if (Test-Path -LiteralPath $stage) { Remove-Item -LiteralPath $stage -Recurse -Force }
+      } catch {
+        Write-Warning "Could not clean temporary download directory '$stage': $($_.Exception.Message)" -WarningAction Continue
+      }
     }
   }
   if ((Get-FileHash -Algorithm SHA256 -LiteralPath $rootLauncher).Hash.ToLowerInvariant() -ne $launcherSha256) {

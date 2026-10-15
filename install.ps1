@@ -66,8 +66,6 @@
       if ((Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $extracted 'phins.cmd')).Hash.ToLowerInvariant() -ne $launcherSha256) {
         throw 'Windows launcher checksum mismatch.'
       }
-      & $candidate --version
-      if ($LASTEXITCODE -ne 0) { throw 'The executable cannot run on this Windows installation.' }
       [IO.File]::WriteAllText((Join-Path $extracted '.phins-install'), $archiveSha256)
       if (Test-Path -LiteralPath $bundle) { throw 'Another installation appeared; preserved.' }
       Move-Item -LiteralPath $extracted -Destination $bundle
@@ -78,6 +76,9 @@
   if ((Get-FileHash -Algorithm SHA256 -LiteralPath $rootLauncher).Hash.ToLowerInvariant() -ne $launcherSha256) {
     throw 'Installed Windows launcher changed; preserved.'
   }
+  # Probe at the final location: Windows can retain a lock after executing an image.
+  & $binary --version
+  if ($LASTEXITCODE -ne 0) { throw 'The executable cannot run on this Windows installation.' }
   $launcherText = [IO.File]::ReadAllText($rootLauncher).Replace('%~dp0phins.exe', "%~dp0..\$label\phins.exe")
   if (-not (Test-Path -LiteralPath $launcher)) {
     $bytes = [Text.Encoding]::ASCII.GetBytes($launcherText)

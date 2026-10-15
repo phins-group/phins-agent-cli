@@ -216,7 +216,7 @@
     },
     {
       "path": "install.ps1",
-      "sha256": "0a93aa86c3fb0d8b78bd319f76b7216fbecaa6a5fd9cb5bb3af5307ca91d77fd"
+      "sha256": "4cea8e3d4224e1189e7e015b4cea1e0bf2b0d8078e69fca1817d78fc67c4e379"
     },
     {
       "path": "install.sh",

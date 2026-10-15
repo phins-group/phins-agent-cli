@@ -26,6 +26,10 @@ export const Commands = CommandTree.defineCommand(
         description: "Set an API key and choose a model locally; no inference",
         params: { project: Flag.string("project").pipe(Flag.optional) },
       }),
+      CommandTree.defineCommand("uninstall", {
+        description: "Remove this release; --all also deletes the default profile after confirmation",
+        params: { all: Flag.boolean("all").pipe(Flag.withDefault(false)) },
+      }),
       CommandTree.defineCommand("agent-host", {
         description: "Private project execution host of this Agent CLI",
         hidden: true,

@@ -34,7 +34,8 @@ def stop_runtime(pid):
         k.CloseHandle(handle)
 
 
-def check_tui(binary, directory, environment, arguments=(), expect_epilogue=False, on_ready=None):
+def check_tui(binary, directory, environment, arguments=(), expect_epilogue=False, on_ready=None,
+              prompt=None, keys=b"/exit", expected_exit=0):
     k = ctypes.WinDLL("kernel32", use_last_error=True)
     pointer = ctypes.c_void_p
 
@@ -145,7 +146,7 @@ def check_tui(binary, directory, environment, arguments=(), expect_epilogue=Fals
         deadline = time.monotonic() + 45
         while time.monotonic() < deadline:
             with lock:
-                ready = b"Ask Phins" in output and b"Ready" in output \
+                ready = prompt in output if prompt else b"Ask Phins" in output and b"Ready" in output \
                     and (not expect_epilogue or b"Console exit fixture" in output)
             if ready and ready_since is None:
                 ready_since = time.monotonic()
@@ -154,7 +155,7 @@ def check_tui(binary, directory, environment, arguments=(), expect_epilogue=Fals
                     on_ready()
                 count = w.DWORD()
                 # Separate key events from paste input and let autocomplete settle.
-                for key in b"/exit":
+                for key in keys:
                     require(k.WriteFile(input_write, ctypes.create_string_buffer(bytes([key])), 1, ctypes.byref(count), None))
                     time.sleep(0.1)
                 time.sleep(0.3)
@@ -162,7 +163,10 @@ def check_tui(binary, directory, environment, arguments=(), expect_epilogue=Fals
                 sent_exit = True
             if k.WaitForSingleObject(process.process, 100) == 0:
                 break
-        assert sent_exit, "ConPTY composer did not appear: " + output[-2000:].decode(errors="replace")
+        if prompt is not None:
+            assert sent_exit, "ConPTY confirmation did not appear: " + output[-2000:].decode(errors="replace")
+        elif prompt is None:
+            assert sent_exit, "ConPTY composer did not appear: " + output[-2000:].decode(errors="replace")
         stopped = k.WaitForSingleObject(process.process, 10000) == 0
         exit_code = w.DWORD()
         require(k.GetExitCodeProcess(process.process, ctypes.byref(exit_code)))
@@ -176,9 +180,10 @@ def check_tui(binary, directory, environment, arguments=(), expect_epilogue=Fals
             detail += "\n" + errors.read_text(encoding="utf-8", errors="replace")[-4000:]
         detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
         assert stopped, f"ConPTY exit timed out: {detail}"
-        assert exit_code.value == 0, f"ConPTY exit code {exit_code.value}: {detail}"
+        assert exit_code.value == expected_exit, f"ConPTY exit code {exit_code.value}: {detail}"
         if expect_epilogue:
             assert "Goodbye!" in detail, "Session exit epilogue was not rendered"
+        return detail
     finally:
         if process.process and k.WaitForSingleObject(process.process, 0) != 0:
             k.TerminateProcess(process.process, 1)

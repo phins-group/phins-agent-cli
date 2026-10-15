@@ -22,12 +22,13 @@ const Handlers = CommandDispatcher.bindHandlers(Commands, {
   "agent-host": () => import("./actions/host"),
   ask: () => import("./actions/ask"),
   setup: () => import("./actions/setup"),
+  uninstall: () => import("./actions/uninstall"),
   resume: () => import("./actions/resume"),
 })
 
 export function runCli(argv?: ReadonlyArray<string>, options?: { tuiHost?: TuiHostLoader }) {
   const args = argv ?? process.argv.slice(2)
-  const profile = args.includes("--help") || args.includes("--version")
+  const profile = args[0] === "uninstall" || args.includes("--help") || args.includes("--version")
     ? Effect.void
     : Effect.tryPromise(() => ensureProviderConfig(AppPaths.resolvePaths().config, Flag.PHINS_CONFIG))
   return profile.pipe(Effect.andThen(CommandDispatcher.runCommands(Commands, Handlers, {

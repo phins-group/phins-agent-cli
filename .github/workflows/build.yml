@@ -80,10 +80,13 @@ jobs:
         run: |
           pnpm check
           pnpm --filter @phins/terminal exec bun test test/agent/runtime-privacy.test.ts
+          pnpm --filter @phins/terminal exec bun test test/integration/uninstall.test.ts
       - name: Compile on the target operating system
         run: bun scripts/build-local.ts --target '${{ matrix.target }}'
       - name: Verify the compiled binary in a real terminal
         run: python scripts/smoke-binary.py 'dist/${{ matrix.target }}/${{ matrix.binary }}'
+      - name: Verify uninstall confirmation and filesystem boundaries
+        run: python scripts/smoke-uninstall.py 'dist/${{ matrix.target }}/${{ matrix.binary }}'
       - name: Record build checksum
         if: ${{ always() }}
         run: |

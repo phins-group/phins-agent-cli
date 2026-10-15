@@ -108,6 +108,16 @@ def archive_directory(directory, destination, windows):
                     archive.addfile(info, io.BytesIO(content))
 
 
+def write_install_inventory(bundle, version, target):
+    files = sorted(bundle.rglob("*"))
+    if any(file.is_symlink() for file in files):
+        raise ValueError("Release inventory must not contain symbolic links")
+    inventory = {"formatVersion": 1, "version": version, "target": target,
+                 "files": [{"path": file.relative_to(bundle).as_posix(), "sha256": digest(file)}
+                           for file in files if file.is_file() and file != bundle / "INSTALL_MANIFEST.json"]}
+    (bundle / "INSTALL_MANIFEST.json").write_text(json.dumps(inventory, indent=2) + "\n")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("name", nargs="?", default="binary-candidate")
@@ -180,7 +190,7 @@ def main():
                      "docs/SUBMISSION.md", "docs/ARCHITECTURE.md", "docs/BENCHMARK.md",
                      "docs/JUDGING_GUIDE.md", "docs/LOCAL_OPERATION.md",
                      "docs/DEMO_SCRIPT.md", "docs/BINARY_DISTRIBUTION.md",
-                     "scripts/smoke-binary.py", "scripts/smoke-windows.py", "docs/evidence/live-20261014.json",
+                     "scripts/smoke-binary.py", "scripts/smoke-windows.py", "scripts/smoke-uninstall.py", "scripts/package-binaries.py", "docs/evidence/live-20261014.json",
                      "docs/evidence/ms-pr111.patch", "docs/evidence/ms-pr111-before.tap",
                      "docs/evidence/ms-pr111-after.tap", "docs/evidence/ms-pr111-correction.tap"):
             target_file = bundle / file
@@ -212,6 +222,8 @@ def main():
                 "A completed build is not proof of runtime qualification on this OS.\n"
                 "See README.md and DEPENDENCIES.json for limitations and outstanding notices.\n"
                 "No API key, provider balance, hosted access or model weights are included.\n")
+        # Uninstall removes only unchanged release files; user-created files stay.
+        write_install_inventory(bundle, build["version"], target)
         windows = target.startswith("windows")
         archive = destination / (label + (".zip" if windows else ".tar.gz"))
         archive_directory(bundle, archive, windows)

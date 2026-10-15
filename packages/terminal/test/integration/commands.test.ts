@@ -19,7 +19,7 @@ async function until(read: () => boolean | Promise<boolean>, diagnostic: () => s
   throw new Error(`Command fixture timed out: ${stripAnsi(diagnostic()).slice(-9000)}`)
 }
 
-test("CLI help exposes setup, ask and resume but keeps its execution host internal", async () => {
+test("CLI help exposes setup, uninstall, ask and resume but keeps its execution host internal", async () => {
   const home = await mkdtemp(path.join(os.tmpdir(), "phins-command-help-"))
   try {
     const child = Bun.spawn(command(["--help"]), {
@@ -27,7 +27,7 @@ test("CLI help exposes setup, ask and resume but keeps its execution host intern
       stdin: "ignore", stdout: "pipe", stderr: "pipe" })
     const [out, err] = await Promise.all([new Response(child.stdout).text(), new Response(child.stderr).text()])
     expect(await child.exited).toBe(0)
-    for (const name of ["setup", "ask", "resume"]) expect(out).toContain(name)
+    for (const name of ["setup", "uninstall", "ask", "resume"]) expect(out).toContain(name)
     expect(out + err).not.toContain("agent-host")
     expect(out + err).not.toContain("session watch")
   } finally {

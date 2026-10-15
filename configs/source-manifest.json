@@ -32,7 +32,7 @@
     },
     {
       "path": ".github/workflows/build.yml",
-      "sha256": "657eae27fcc52d6b3d9b3aaa6174879c4a4f763a2d48c014b1e62021da42093f"
+      "sha256": "ed2393a1e005dd599c0788e1b2d7d199aa0f0b4b6758644f66687ec789acb6c0"
     },
     {
       "path": ".github/workflows/install.yml",
@@ -272,7 +272,7 @@
     },
     {
       "path": "package.json",
-      "sha256": "838b42bd8d53967324ff481c851ac4deaa7224dbc2383a234af840d81758bc80"
+      "sha256": "2e6613f0e83edc52accf9569c9e8097ca9aa4aa31ca98960b7f7dc3dfe37e838"
     },
     {
       "path": "packages/engine/bunfig.toml",
@@ -280,7 +280,7 @@
     },
     {
       "path": "packages/engine/package.json",
-      "sha256": "89a93f3895611cc30ac1367e5578965cdbbe9ec7824ddf2a0c2fbbaecb5b23a9"
+      "sha256": "52217107b9239917406bb20232a96d15074e13a79698e0580dd7016a5e8bfdd1"
     },
     {
       "path": "packages/engine/src/agents/commands.ts",
@@ -3060,7 +3060,7 @@
     },
     {
       "path": "packages/terminal/package.json",
-      "sha256": "24f9d98cf9714475908e483d1077636512d902a0575aeb1b6a8caa43c90de12e"
+      "sha256": "676065e0b018f33fc7d70337b4504e09cac31f54530c86a4be81927a56c66cb4"
     },
     {
       "path": "packages/terminal/src/agent/client-leases.ts",
@@ -3115,12 +3115,16 @@
       "sha256": "d9b8f9a44c72eb03219fa4da5a8f276fca23309afd16c6474ebf9299186c2c2e"
     },
     {
+      "path": "packages/terminal/src/cli/actions/uninstall.ts",
+      "sha256": "0335487fbd07b45a6bb756b91677bcc20ab9640218085cbe1b03cd72a19d863c"
+    },
+    {
       "path": "packages/terminal/src/cli/command-tree.ts",
       "sha256": "a7ba1f6560817b5d53a068d2a5b54e41a95a2130bb66b4b0621351507791c5ff"
     },
     {
       "path": "packages/terminal/src/cli/commands.ts",
-      "sha256": "8e5a2ddd959a6e4ba8c68fe9b3b5cda5adaa76b42e3fdabda6d5c541758d8581"
+      "sha256": "241be1169a5f36750b5ca0ab73008405e8db5edb78ab33024c837521bb43c666"
     },
     {
       "path": "packages/terminal/src/cli/dispatcher.ts",
@@ -3128,11 +3132,15 @@
     },
     {
       "path": "packages/terminal/src/cli/entry.ts",
-      "sha256": "a83c4ff929e4474b5acc01e53a7926a0b02d3daaa6e3bc899721562cfa614452"
+      "sha256": "e72ab8ba85e9d1fe99b983cd4abb926e5c0f91e46c40d1ea4579d07670ce5e2a"
     },
     {
       "path": "packages/terminal/src/cli/errors.ts",
       "sha256": "41cecbd8d773633e53dd8459a66e2ad525125b50bf34f8563bdf30835be61c8c"
+    },
+    {
+      "path": "packages/terminal/src/cli/uninstall.ts",
+      "sha256": "0d1fcd2c6d6fae6eba859a74dfa9d411f4c489e5c675b73fd5ad51edeb196146"
     },
     {
       "path": "packages/terminal/src/index.ts",
@@ -3848,7 +3856,7 @@
     },
     {
       "path": "packages/terminal/test/integration/commands.test.ts",
-      "sha256": "5f4ebcd4aaf3c549521b7f0ffc86537c28efa7e18717a746f09d72f90fc3d53a"
+      "sha256": "2d29e9adf2b60df21d13538597120a7eca19f47f4d4e37d0a96336c4235efec6"
     },
     {
       "path": "packages/terminal/test/integration/compaction.test.ts",
@@ -3869,6 +3877,10 @@
     {
       "path": "packages/terminal/test/integration/setup.test.ts",
       "sha256": "90c5ed44a4f669595dc56af1ee2f074474744568fe74aa3e887b4d8af3e0f133"
+    },
+    {
+      "path": "packages/terminal/test/integration/uninstall.test.ts",
+      "sha256": "5d57e53506861921cc4b0dd20a1c23fc81bae9ccfaf6648ae1347ce085431353"
     },
     {
       "path": "packages/terminal/test/preload.ts",
@@ -4148,15 +4160,19 @@
     },
     {
       "path": "scripts/package-binaries.py",
-      "sha256": "8fc3b1becb25a4301e772dc555b5e04f7302ec2c18f97a43d4b927c5ecaecaaa"
+      "sha256": "242e3208cfafb162b69da4bb7f8ec63aa4fae8470cd478d1ca93ee99a91f5deb"
     },
     {
       "path": "scripts/smoke-binary.py",
       "sha256": "83702b580282a5f2cb5c39cd0e63268eb799ac54915791c54a75d78146680071"
     },
     {
+      "path": "scripts/smoke-uninstall.py",
+      "sha256": "f315d070d9a2c4e528c01d3e12cb5bf7081155d18f3df77a8271890834a8a787"
+    },
+    {
       "path": "scripts/smoke-windows.py",
-      "sha256": "f39248b62790cd83bc4dcfcebf2bbeaff13e24974da64edfd6971e27de12105b"
+      "sha256": "cbb1f2c30b31fee358d3c1d0a4c96300e80157b77763cad81719ba064a92f5c2"
     },
     {
       "path": "scripts/spending.ts",

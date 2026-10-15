@@ -32,7 +32,7 @@
     },
     {
       "path": ".github/workflows/build.yml",
-      "sha256": "5e8d4293f57cc1750b26a3d86d46553f46971c24ae65e99ca1d8f80003df2178"
+      "sha256": "529336fa85fb017f6a3e8a658ce783ed74f95f4c8dec92b94e60da9a527828bb"
     },
     {
       "path": ".gitignore",

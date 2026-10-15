@@ -2,8 +2,15 @@
 & {
   $ErrorActionPreference = 'Stop'
 
+  if ($PSVersionTable.PSVersion.Major -lt 5 -or
+      ($PSVersionTable.PSVersion.Major -eq 5 -and $PSVersionTable.PSVersion.Minor -lt 1)) {
+    throw 'PowerShell 5.1 or newer is required. Use Windows PowerShell 5.1 or PowerShell 7.'
+  }
   if ($env:OS -ne 'Windows_NT') { throw 'Use install.sh on macOS or Linux.' }
-  if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString() -ne 'X64') {
+  # WOW64 exposes the native CPU separately from a 32-bit PowerShell process.
+  $architecture = $env:PROCESSOR_ARCHITEW6432
+  if (-not $architecture) { $architecture = $env:PROCESSOR_ARCHITECTURE }
+  if (-not [Environment]::Is64BitOperatingSystem -or $architecture -ne 'AMD64') {
     throw 'This release supports Windows x64; Windows ARM64 and x86 are unsupported.'
   }
   if ([Environment]::OSVersion.Version.Build -lt 17763) { throw 'Windows 10 1809 or newer is required.' }

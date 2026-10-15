@@ -28,7 +28,8 @@ curl -fsSL https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/in
 
 ### Windows — x64
 
-Windows 10 (1809+) or Windows 11. Run in **PowerShell / Windows Terminal**:
+Windows 10 (1809+) or Windows 11. Use **Windows PowerShell 5.1** (included with
+Windows) or **PowerShell 7** in Windows Terminal:
 
 ```powershell
 irm https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.ps1 | iex; if ($?) { & "$env:LOCALAPPDATA\PHINsAgent\bin\phins.cmd" }

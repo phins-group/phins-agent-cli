@@ -131,3 +131,58 @@ test("Windows shell detection delegates to the native PowerShell installer", opt
   assert.ok(args.some(arg => arg.includes("/main/install.ps1")))
   assert.deepEqual(await f.downloads(), [])
 })
+
+// Exercise the actual Windows PowerShell 5.1 installer before any download or
+// installation writes. A supported CPU reaches the invalid-path guard.
+const windowsOptions = { skip: process.platform !== "win32" }
+
+async function windowsPreflight(t, architecture, nativeArchitecture, systemDirectory = "System32", reportedVersion) {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "phins-windows-preflight-"))
+  t.after(() => rm(directory, { recursive: true, force: true }))
+  const installer = fileURLToPath(new URL("../install.ps1", import.meta.url))
+  const quotePowerShell = value => "'" + value.replaceAll("'", "''") + "'"
+  const command = [
+    "$ErrorActionPreference = 'Stop'",
+    "if ($PSVersionTable.PSVersion.Major -ne 5) { throw 'Expected Windows PowerShell 5.1' }",
+    ...(reportedVersion ? [`$PSVersionTable.PSVersion = [version]${quotePowerShell(reportedVersion)}`] : []),
+    ...(architecture === undefined ? [] : [
+      `$env:PROCESSOR_ARCHITECTURE = ${quotePowerShell(architecture)}`,
+      `$env:PROCESSOR_ARCHITEW6432 = ${quotePowerShell(nativeArchitecture)}`,
+    ]),
+    "$env:LOCALAPPDATA = 'relative-path'",
+    `try { & ${quotePowerShell(installer)}; throw 'Installer unexpectedly proceeded' }`,
+    "catch { [Console]::Out.WriteLine($_.Exception.Message) }",
+  ].join("\n")
+  const result = spawnSync(path.join(process.env.SystemRoot, systemDirectory,
+    "WindowsPowerShell", "v1.0", "powershell.exe"),
+  ["-NoProfile", "-NonInteractive", "-Command", command],
+  { cwd: directory, encoding: "utf8", timeout: 15000 })
+  assert.equal(result.status, 0, result.stderr || result.error?.message)
+  assert.deepEqual(await readdir(directory), [], "Preflight must not install files")
+  return result.stdout.trim()
+}
+
+for (const [name, architecture, nativeArchitecture, supported] of [
+  ["native x64", "AMD64", "", true],
+  ["WOW64 x86 on x64", "x86", "AMD64", true],
+  ["native ARM64", "ARM64", "", false],
+  ["x64 emulation on ARM64", "AMD64", "ARM64", false],
+  ["x86 without a native x64 architecture", "x86", "", false],
+  ["unknown CPU", "", "", false],
+])
+  test(`Windows PowerShell preflight handles ${name}`, windowsOptions, async t => {
+    const message = await windowsPreflight(t, architecture, nativeArchitecture)
+    assert.equal(message, supported ? "LOCALAPPDATA must be an absolute path."
+      : "This release supports Windows x64; Windows ARM64 and x86 are unsupported.")
+  })
+
+test("32-bit Windows PowerShell recognizes the native x64 OS", windowsOptions, async t => {
+  assert.equal(await windowsPreflight(t, undefined, undefined, "SysWOW64"),
+    "LOCALAPPDATA must be an absolute path.")
+})
+
+for (const version of ["4.0", "5.0"])
+  test(`Windows installer refuses reported PowerShell ${version} before installing`, windowsOptions, async t => {
+    assert.equal(await windowsPreflight(t, "AMD64", "", "System32", version),
+      "PowerShell 5.1 or newer is required. Use Windows PowerShell 5.1 or PowerShell 7.")
+  })

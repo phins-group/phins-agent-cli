@@ -209,7 +209,7 @@ try {
   const powershell = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32/WindowsPowerShell/v1.0/powershell.exe")
   const errors = await open(path.join(directory, "startup-error.txt"), "wx", 0o600)
   const child = spawn(powershell, ["-NoProfile", "-NonInteractive", "-EncodedCommand", Buffer.from(script, "utf16le").toString("base64")], {
-    detached: true, windowsHide: true, stdio: ["ignore", "ignore", errors.fd],
+    detached: true, windowsHide: true, stdio: ["ignore", errors.fd, errors.fd],
   })
   let startupError: Error | undefined
   child.once("error", error => { startupError = error })
@@ -219,9 +219,10 @@ try {
     while (true) {
       if (startupError) throw startupError
       if (await stat(ready)) break
-      if (child.exitCode !== null) {
+      if (typeof child.exitCode === "number") {
         const detail = await readFile(path.join(directory, "startup-error.txt"), "utf8")
-        throw new Error(`Windows uninstall helper could not start: ${detail.slice(-2000)}`)
+        const failure = await readFile(diagnostic, "utf8").catch(() => "")
+        throw new Error(`Windows uninstall helper could not start (exit ${child.exitCode}): ${(failure + detail).slice(-2000)}`)
       }
       if (Date.now() >= deadline) throw new Error("Windows uninstall helper startup timed out.")
       await new Promise(resolve => setTimeout(resolve, 100))

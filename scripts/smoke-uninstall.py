@@ -70,10 +70,18 @@ def main():
         with tempfile.TemporaryDirectory(prefix="phins-uninstall-smoke-") as temporary:
             home = Path(temporary).resolve()
             env = {key: os.environ[key] for key in
-                   ("PATH", "SystemRoot", "WINDIR", "PATHEXT", "COMSPEC") if key in os.environ}
+                   ("PATH", "SystemRoot", "WINDIR", "PATHEXT", "COMSPEC", "SystemDrive",
+                    "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432", "ProgramData", "ALLUSERSPROFILE") if key in os.environ}
             env.update(HOME=str(home), USERPROFILE=str(home), TMPDIR=str(home),
                        TEMP=str(home), TMP=str(home), TERM="xterm-256color",
                        LOCALAPPDATA=str(home / "AppData/Local"))
+            if os.name == "nt":
+                powershell = Path(env['SystemRoot']) / 'System32/WindowsPowerShell/v1.0/powershell.exe'
+                probe = subprocess.run([str(powershell), '-NoProfile', '-NonInteractive', '-Command',
+                                        "[Console]::Out.WriteLine('PHINS_POWERSHELL_READY')"],
+                                       env=env, capture_output=True, timeout=20)
+                assert probe.returncode == 0 and b'PHINS_POWERSHELL_READY' in probe.stdout, \
+                    'Windows PowerShell prerequisite failed: ' + (probe.stdout + probe.stderr).decode(errors='replace')
             build = json.loads(binary.with_name("build.json").read_text())
             version = build["version"]
             shown_version = subprocess.check_output([str(binary), "--version"], cwd=home, env=env, timeout=30).decode().strip()
@@ -132,6 +140,11 @@ def main():
                 time.sleep(.1)
             diagnostics = [file.read_text() for file in home.glob("phins-uninstall-*/error.txt")]
             assert not executable.exists(), completed[-3000:] + "\n" + "\n".join(diagnostics)
+            if os.name == "nt":
+                deadline = time.monotonic() + 5
+                while list(home.glob("phins-uninstall-*")) and time.monotonic() < deadline:
+                    time.sleep(.1)
+                assert not list(home.glob("phins-uninstall-*")), 'Windows helper did not finish its cleanup'
             assert not launcher.exists()
             assert not (docs / "guide.md").exists()
             assert not (bundle / "INSTALL_MANIFEST.json").exists()

@@ -34,7 +34,7 @@ def stop_runtime(pid):
         k.CloseHandle(handle)
 
 
-def check_tui(binary, directory, environment, arguments=()):
+def check_tui(binary, directory, environment, arguments=(), expect_epilogue=False):
     k = ctypes.WinDLL("kernel32", use_last_error=True)
     pointer = ctypes.c_void_p
 
@@ -145,7 +145,8 @@ def check_tui(binary, directory, environment, arguments=()):
         deadline = time.monotonic() + 45
         while time.monotonic() < deadline:
             with lock:
-                ready = b"Ask Phins" in output and b"Ready" in output
+                ready = b"Ask Phins" in output and b"Ready" in output \
+                    and (not expect_epilogue or b"Console exit fixture" in output)
             if ready and ready_since is None:
                 ready_since = time.monotonic()
             if ready_since is not None and time.monotonic() - ready_since >= 1 and not sent_exit:
@@ -174,7 +175,8 @@ def check_tui(binary, directory, environment, arguments=()):
         detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
         assert stopped, f"ConPTY exit timed out: {detail}"
         assert exit_code.value == 0, f"ConPTY exit code {exit_code.value}: {detail}"
-        assert "Goodbye!" in detail, "Exit epilogue was not rendered"
+        if expect_epilogue:
+            assert "Goodbye!" in detail, "Session exit epilogue was not rendered"
     finally:
         if process.process and k.WaitForSingleObject(process.process, 0) != 0:
             k.TerminateProcess(process.process, 1)

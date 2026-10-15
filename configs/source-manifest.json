@@ -3152,7 +3152,7 @@
     },
     {
       "path": "packages/terminal/src/tui/app.tsx",
-      "sha256": "89a5bb9073d4c7ee0a18b89e224f03b2bebec12cc11213ee3e7af7d57c1c6817"
+      "sha256": "f10a800b4d941280258f929b637325ec542a2f210cccea14d6396ef46071d420"
     },
     {
       "path": "packages/terminal/src/tui/assets.d.ts",
@@ -3468,7 +3468,7 @@
     },
     {
       "path": "packages/terminal/src/tui/platform/renderer.ts",
-      "sha256": "e28d64bd6fa333e48be8b410e1414ab15ed7e6c01ed2ca72b17e2701265f1a68"
+      "sha256": "2080bf6f575227363969fe1d240fbd4a98282ba742c92143bc734620c24f27be"
     },
     {
       "path": "packages/terminal/src/tui/platform/scroll.ts",
@@ -4076,7 +4076,7 @@
     },
     {
       "path": "packages/terminal/test/ui/util/renderer.test.ts",
-      "sha256": "674053e3c009ae77000fd87fceda367fc7d087be9d69bd5ce6eb554b126c98ec"
+      "sha256": "f2d1ebfecb1f34271004243ed87427cbe16870c4ea10bdd65813b82cdded344d"
     },
     {
       "path": "packages/terminal/test/ui/util/revert-diff.test.ts",
@@ -4136,11 +4136,11 @@
     },
     {
       "path": "scripts/smoke-binary.py",
-      "sha256": "1e708301f194bf2b9408f59f53b4da0496cd5d66b31d271d500ed2ad4a1ca0f9"
+      "sha256": "f4bfcd0d8a9d4b35cff1612d84b593688f082810afbd85a7bfdb20c5f6830fa5"
     },
     {
       "path": "scripts/smoke-windows.py",
-      "sha256": "18048fab690e7ef1a09dd44928e41416f32cc6bec621f14c54473c50b19f8818"
+      "sha256": "b5f62019ee5ba0183bb2071b5bf19e6f942114a73d9948b9a1a38558c27d0e2b"
     },
     {
       "path": "scripts/spending.ts",

@@ -1,5 +1,6 @@
 """Standalone startup test without model inference. Python is a test dependency."""
 import errno
+import base64
 import hashlib
 import json
 import os
@@ -10,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.request
 
 
 def main():
@@ -73,6 +75,11 @@ def main():
             assert any(os.path.normcase(entry["directory"]) == os.path.normcase(str(project.resolve()))
                        for entry in registrations), "Wrong project selected"
             result["checks"]["project_identity"] = "pass"
+            registration = next(entry for entry in registrations
+                                if os.path.normcase(entry["directory"]) == os.path.normcase(str(project.resolve())))
+            session = empty_session(registration, project)
+            check(binary, project, env, ["--session", session], expect_epilogue=True)
+            result["checks"]["resumed_session_exit_epilogue"] = "pass"
         except Exception:
             if os.name == "nt":
                 # This profile is created without credentials. Retain bounded,
@@ -102,7 +109,31 @@ def main():
     print(json.dumps(result, indent=2))
 
 
-def check_tui(binary, home, env, arguments=()):
+def empty_session(registration, project):
+    """Create an actual empty session in this test profile; never send a prompt."""
+    assert re.fullmatch(r"http://127\.0\.0\.1:[0-9]+", registration["url"])
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    headers = {"authorization": "Basic " + base64.b64encode(
+                   ("phins:" + registration["password"]).encode()).decode(),
+               "x-phins-service-generation": registration["id"],
+               "content-type": "application/json"}
+
+    def post(route, body):
+        request = urllib.request.Request(registration["url"] + route,
+                                         data=json.dumps(body).encode(), headers=headers, method="POST")
+        with opener.open(request, timeout=10) as response:
+            return json.loads(response.read(65536))
+
+    client = post("/api/agent/client/open", {"kind": "headless"})["clientID"]
+    headers["x-phins-agent-client"] = client
+    try:
+        return post("/api/session", {"location": {"directory": str(project.resolve())},
+                                     "title": "Console exit fixture"})["data"]["id"]
+    finally:
+        post("/api/agent/client/close", {"background": False})
+
+
+def check_tui(binary, home, env, arguments=(), expect_epilogue=False):
     import fcntl
     import pty
     import select
@@ -129,13 +160,16 @@ def check_tui(binary, home, env, arguments=()):
                 if not chunk:
                     break
                 output.extend(chunk)
-            if b"Ask Phins" in output and not sent_exit:
+            ready = b"Ask Phins" in output and (not expect_epilogue or b"Console exit fixture" in output)
+            if ready and not sent_exit:
                 os.write(master, b"\x04")
                 sent_exit = True
             if child.poll() is not None:
                 break
         assert sent_exit, "TUI composer did not appear: " + output[-2000:].decode(errors="replace")
         assert child.wait(timeout=10) == 0, "TUI did not exit cleanly"
+        if expect_epilogue:
+            assert b"Goodbye!" in output, "Session exit epilogue was not rendered"
     finally:
         if child.poll() is None:
             child.kill()

@@ -18,6 +18,9 @@ export const openTerminalRenderer = Effect.fn("Terminal.open")(function* (mouse:
     })),
     (value) => Effect.sync(() => destroyRenderer(value)),
   )
+  // Native cleanup follows this event. It is the last safe place to reset a
+  // title when the renderer's own signal handler initiates destruction.
+  renderer.once("destroy", () => renderer.setTerminalTitle(""))
   win32DisableProcessedInput()
   const onHangup = () => destroyRenderer(renderer)
   yield* Effect.acquireRelease(
@@ -29,6 +32,9 @@ export const openTerminalRenderer = Effect.fn("Terminal.open")(function* (mouse:
 
 export function destroyRenderer(renderer: Pick<CliRenderer, "isDestroyed" | "setTerminalTitle" | "destroy">) {
   if (renderer.isDestroyed) return
-  renderer.setTerminalTitle("")
-  renderer.destroy()
+  try {
+    renderer.setTerminalTitle("")
+  } finally {
+    renderer.destroy()
+  }
 }

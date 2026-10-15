@@ -178,9 +178,13 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
       )
       yield* Effect.addFinalizer(() => Effect.sync(TuiAudio.dispose))
       const shutdown = yield* Deferred.make<unknown>()
+      let finalOutput: { epilogue?: string; reason?: unknown } = {}
       // OpenTUI emits before its native cleanup finishes. Resume after that stack
       // returns so scope finalizers and the epilogue cannot touch closing handles.
-      renderer.once("destroy", () => queueMicrotask(() => Deferred.doneUnsafe(shutdown, Effect.void)))
+      renderer.once("destroy", () => {
+        finalOutput = { epilogue: exit.epilogue, reason: exit.reason }
+        queueMicrotask(() => Deferred.doneUnsafe(shutdown, Effect.void))
+      })
       const pluginRuntime = createPluginRuntime()
 
       yield* Effect.tryPromise(async () => {
@@ -296,7 +300,7 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
         }, renderer)
       })
       yield* Deferred.await(shutdown)
-      return { epilogue: exit.epilogue, reason: exit.reason }
+      return finalOutput
     }),
   )
   yield* Effect.sync(() => {
@@ -406,6 +410,7 @@ function App(props: { pluginHost: TuiPluginHost }) {
 
   // Update terminal window title based on current route and session
   createEffect(() => {
+    if (renderer.isDestroyed) return
     if (!terminalTitleEnabled() || Flag.PHINS_DISABLE_TERMINAL_TITLE) return
 
     if (route.data.type === "session") {

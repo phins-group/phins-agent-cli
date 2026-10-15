@@ -46,3 +46,13 @@ test("teardown is safe when both the exit action and scope finalizer run", () =>
   destroyRenderer(renderer)
   expect(calls).toEqual(["title", "destroy"])
 })
+
+test("a title output error cannot skip renderer cleanup", () => {
+  let destroyed = false
+  expect(() => destroyRenderer({
+    isDestroyed: false,
+    setTerminalTitle() { throw new Error("Terminal output closed") },
+    destroy() { destroyed = true },
+  })).toThrow("Terminal output closed")
+  expect(destroyed).toBe(true)
+})

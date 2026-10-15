@@ -9,11 +9,10 @@ const kernel = () =>
     GetConsoleMode: { args: ["u64", "ptr"], returns: "i32" },
     SetConsoleMode: { args: ["u64", "u32"], returns: "i32" },
     FlushConsoleInputBuffer: { args: ["u64"], returns: "i32" },
-    CreateFileW: { args: ["buffer", "u32", "u32", "ptr", "u32", "u32", "u64"], returns: "u64" },
+    DuplicateHandle: { args: ["u64", "u64", "u64", "buffer", "u32", "i32", "u32"], returns: "i32" },
     WriteConsoleW: { args: ["u64", "buffer", "u32", "buffer", "ptr"], returns: "i32" },
     CloseHandle: { args: ["u64"], returns: "i32" },
     GetLastError: { args: [], returns: "u32" },
-    AttachConsole: { args: ["u32"], returns: "i32" },
   })
 
 let k32: ReturnType<typeof kernel> | undefined
@@ -57,25 +56,18 @@ export function win32FlushInputBuffer() {
   k32!.symbols.FlushConsoleInputBuffer(handle)
 }
 
-/** Own one restored console handle until all exit output has been written. */
+/** Preserve the original output buffer before the renderer switches screens. */
 export function openWindowsConsoleOutput() {
-  if (process.platform !== "win32") return undefined
+  if (process.platform !== "win32" || !process.stdout.isTTY) return undefined
   if (!load()) throw new Error("Unable to open Windows console output")
   const api = k32!.symbols
-  // Own a fresh console handle; never close or replace the process stdio handles.
-  const open = () => api.CreateFileW(Buffer.from("CONOUT$\0", "utf16le"),
-    0x40000000, 3, null, 3, 0, 0n)
-  let handle = open()
   const fail = (): never => {
     throw new Error(`Unable to write Windows console output (Win32: ${api.GetLastError()})`)
   }
-  if (handle === 0xffffffffffffffffn) {
-    const code = api.GetLastError()
-    // Native terminal cleanup may detach the application from its console.
-    if (![2, 6].includes(code) || !api.AttachConsole(0xffffffff)) return fail()
-    handle = open()
-    if (handle === 0xffffffffffffffffn) return fail()
-  }
+  const duplicated = new BigUint64Array(1), processHandle = 0xffffffffffffffffn
+  if (!api.DuplicateHandle(processHandle, api.GetStdHandle(-11), processHandle,
+    duplicated, 0, 0, 2)) return fail()
+  const handle = duplicated[0]
   return {
     write(text: string) {
       const bytes = Buffer.from(text, "utf16le"), written = new Uint32Array(1)

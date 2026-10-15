@@ -3152,7 +3152,7 @@
     },
     {
       "path": "packages/terminal/src/tui/app.tsx",
-      "sha256": "9e2e5c6036b5404383cee4aee09244dd8bf379b3ad892a5d9970dded53d7b9cd"
+      "sha256": "50355b88764092cead462e978a588e8a1c1ae450a91e9a223c56666b24c1eb6d"
     },
     {
       "path": "packages/terminal/src/tui/assets.d.ts",
@@ -3484,7 +3484,7 @@
     },
     {
       "path": "packages/terminal/src/tui/platform/windows.ts",
-      "sha256": "09489ab2a70e57beef953fbd311e53e8a0c8945d65049e8b5169f50e5876695b"
+      "sha256": "b74262347eb8671044f8a572f342833a7e0a855973ceb970d5eeb7d70ff55c19"
     },
     {
       "path": "packages/terminal/src/tui/platform/zed.ts",

@@ -155,8 +155,13 @@ function isVersionGreater(left: string, right: string) {
 }
 
 /** Sở hữu renderer scope và trả quyền điều khiển khi terminal bị destroy. */
-export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
+export const run = Effect.fn("Tui.run")((input: TuiInput) => Effect.scoped(Effect.gen(function* () {
   const global = yield* AppPaths.Service
+  const output = yield* Effect.acquireRelease(
+    Effect.try({ try: openWindowsConsoleOutput, catch: (cause) => cause }),
+    (value) => Effect.sync(() => value?.close()),
+  )
+  const write = (text: string) => output ? output.write(text) : process.stdout.write(text)
   const exit = { epilogue: undefined as string | undefined, reason: undefined as unknown }
   const result = yield* Effect.scoped(
     Effect.gen(function* () {
@@ -304,25 +309,22 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
       return finalOutput
     }),
   )
-  yield* Effect.scoped(Effect.gen(function* () {
-    const output = yield* Effect.acquireRelease(
-      Effect.try({ try: openWindowsConsoleOutput, catch: (cause) => cause }),
-      (value) => Effect.sync(() => value?.close()),
-    )
-    const write = (text: string) => output ? output.write(text) : process.stdout.write(text)
     yield* Effect.try({ try: () => {
       write("\x1b]0;\x07")
       if (result.reason !== undefined)
         process.stderr.write((cliErrorMessage(result.reason) ?? errorFormat(result.reason)) + "\n")
-      if (result.epilogue) write("\x1b[?1049l\x1b[?25h\x1b[0m\x1b[2J\x1b[H")
+      if (result.epilogue) {
+        // The renderer already restores the Windows screen buffer.
+        if (process.platform !== "win32") write("\x1b[?1049l")
+        write("\x1b[?25h\x1b[0m\x1b[2J\x1b[H")
+      }
     }, catch: (cause) => cause })
     if (result.epilogue) {
       yield* Effect.promise(() => sleep(1_000))
       yield* Effect.try({ try: () => write(result.epilogue! + "\n"), catch: (cause) => cause })
       yield* Effect.promise(() => sleep(1_500))
     }
-  }))
-})
+})))
 
 /** Root component nối SDK/event state, command adapters, routes và plugin API. */
 function App(props: { pluginHost: TuiPluginHost }) {

@@ -100,11 +100,11 @@
     },
     {
       "path": "docs/QUICKSTART.md",
-      "sha256": "42efbb3d3a138f3b23a02606f7d423bb885b8310cdd397d51df1a4becb60c759"
+      "sha256": "7ff176ae7e448052f592a68fc3b9c7e47b9dd481aedf2e04a44edbeeb075d784"
     },
     {
       "path": "docs/QUICKSTART_VALIDATION.md",
-      "sha256": "297c1cccb05b67775a408c48e1b539fea44eabd7dacd51e878f16d19303138cf"
+      "sha256": "af0b3df077f96f4f509a4548a33aa2079d07c480e4a6253cd41c347e66f3ecbc"
     },
     {
       "path": "docs/RUNTIME_SOURCE.md",

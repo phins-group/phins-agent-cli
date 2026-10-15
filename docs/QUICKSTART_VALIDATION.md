@@ -25,6 +25,15 @@ key and perform no model inference; historical coding evidence below is unchange
 Human visual Windows Terminal review and broader Linux/Windows hardened coding
 qualification remain separate from this console/filesystem validation.
 
+The current one-command installers also pass [exact public-archive CI](https://github.com/phins-group/phins-agent-cli/actions/runs/38717977588)
+on all five targets: download/checksums, repeat installation, actual installed
+TUI/project/session/exit, the 22-pass/5-fail historical baseline, and confirmed
+uninstall/profile/project preservation. Windows additionally passes native
+Windows PowerShell onboarding and protection of an unrelated command or changed
+executable. Its installer probes at the final installation path to avoid moving
+an executable immediately after running it. This bootstrap follow-up is on main;
+the v0.1.2 tag and release assets remain unchanged. No API key or inference is used.
+
 ## v0.1.1 Windows compatibility update — 2026-10-15
 
 [Native CI](https://github.com/phins-group/phins-agent-cli/actions/runs/38679314958)

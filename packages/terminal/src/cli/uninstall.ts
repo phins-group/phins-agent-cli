@@ -2,7 +2,7 @@
 import { createHash } from "node:crypto"
 import { spawn } from "node:child_process"
 import { createReadStream } from "node:fs"
-import { lstat, mkdtemp, readFile, readdir, realpath, readlink, rm, rmdir, unlink, writeFile } from "node:fs/promises"
+import { lstat, mkdtemp, open, readFile, readdir, realpath, readlink, rm, rmdir, unlink, writeFile } from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
 
@@ -181,10 +181,12 @@ async function removeEmptyDirectories(plan: UninstallPlan) {
 async function windowsCleanup(plan: UninstallPlan, binary: InstalledFile) {
   const directory = await mkdtemp(path.join(os.tmpdir(), "phins-uninstall-"))
   const commit = path.join(directory, "commit")
+  const ready = path.join(directory, "ready")
+  const diagnostic = path.join(directory, "error.txt")
   const literal = (value: string) => "'" + value.replaceAll("'", "''") + "'"
   const script = `$ErrorActionPreference = 'Stop'
-[Console]::Out.WriteLine('PHINS_UNINSTALL_READY')
 try {
+  [IO.File]::WriteAllText(${literal(ready)}, 'ready')
   Wait-Process -Id ${process.pid} -Timeout 60 -ErrorAction SilentlyContinue
   if (Get-Process -Id ${process.pid} -ErrorAction SilentlyContinue) { throw 'Parent did not exit.' }
   if (-not (Test-Path -LiteralPath ${literal(commit)})) { return }
@@ -202,40 +204,38 @@ try {
   $root = ${literal(plan.root)}
   if (-not (Get-ChildItem -LiteralPath $root -Force | Select-Object -First 1)) { Remove-Item -LiteralPath $root }
   Remove-Item -LiteralPath ${literal(directory)} -Recurse -Force
-} catch { [IO.File]::WriteAllText(${literal(path.join(directory, "error.txt"))}, $_.Exception.Message); exit 1 }
+} catch { [IO.File]::WriteAllText(${literal(diagnostic)}, $_.Exception.Message); exit 1 }
 `
   const powershell = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32/WindowsPowerShell/v1.0/powershell.exe")
+  const errors = await open(path.join(directory, "startup-error.txt"), "wx", 0o600)
   const child = spawn(powershell, ["-NoProfile", "-NonInteractive", "-EncodedCommand", Buffer.from(script, "utf16le").toString("base64")], {
-    detached: true, windowsHide: true, stdio: ["ignore", "pipe", "pipe"],
+    detached: true, windowsHide: true, stdio: ["ignore", "ignore", errors.fd],
   })
+  let startupError: Error | undefined
+  child.once("error", error => { startupError = error })
+  await errors.close()
   try {
-    await new Promise<void>((resolve, reject) => {
-      const finish = (error?: Error) => {
-        clearTimeout(timer)
-        child.removeListener("error", failed)
-        child.removeListener("exit", exited)
-        error ? reject(error) : resolve()
+    const deadline = Date.now() + 15_000
+    while (true) {
+      if (startupError) throw startupError
+      if (await stat(ready)) break
+      if (child.exitCode !== null) {
+        const detail = await readFile(path.join(directory, "startup-error.txt"), "utf8")
+        throw new Error(`Windows uninstall helper could not start: ${detail.slice(-2000)}`)
       }
-      const failed = (error: Error) => finish(error)
-      const exited = () => finish(new Error("Windows uninstall helper exited before readiness."))
-      const timer = setTimeout(() => finish(new Error("Windows uninstall helper startup timed out.")), 15_000)
-      child.once("error", failed)
-      child.once("exit", exited)
-      child.stdout!.once("data", data => finish(data.toString().includes("PHINS_UNINSTALL_READY")
-        ? undefined : new Error("Invalid uninstall helper response.")))
-    })
+      if (Date.now() >= deadline) throw new Error("Windows uninstall helper startup timed out.")
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
   } catch (error) {
     child.kill()
-    await rm(directory, { recursive: true, force: true })
+    await rm(directory, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 })
     throw error
   }
-  child.stdout!.destroy()
-  child.stderr!.destroy()
   child.unref()
   return {
-    diagnostic: path.join(directory, "error.txt"),
+    diagnostic,
     commit: () => writeFile(commit, "confirmed\n", { mode: 0o600, flag: "wx" }),
-    async cancel() { child.kill(); await rm(directory, { recursive: true, force: true }) },
+    async cancel() { child.kill(); await rm(directory, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 }) },
   }
 }
 

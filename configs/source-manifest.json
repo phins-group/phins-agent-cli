@@ -3116,7 +3116,7 @@
     },
     {
       "path": "packages/terminal/src/cli/actions/uninstall.ts",
-      "sha256": "0335487fbd07b45a6bb756b91677bcc20ab9640218085cbe1b03cd72a19d863c"
+      "sha256": "a4104285fdc51231dc021330b2616aca20de8eb9c23cfade4d173ca8a2d955c1"
     },
     {
       "path": "packages/terminal/src/cli/command-tree.ts",
@@ -3140,7 +3140,7 @@
     },
     {
       "path": "packages/terminal/src/cli/uninstall.ts",
-      "sha256": "0d1fcd2c6d6fae6eba859a74dfa9d411f4c489e5c675b73fd5ad51edeb196146"
+      "sha256": "98f4e950d906419deb9c46b96bbdedaae2dbe66a656007e288fa35baeea1e3e7"
     },
     {
       "path": "packages/terminal/src/index.ts",
@@ -3880,7 +3880,7 @@
     },
     {
       "path": "packages/terminal/test/integration/uninstall.test.ts",
-      "sha256": "5d57e53506861921cc4b0dd20a1c23fc81bae9ccfaf6648ae1347ce085431353"
+      "sha256": "61b7f0b3fc57f05b36062c81c26a709e1226d71c69a13a7359e75f54e5c5a5b3"
     },
     {
       "path": "packages/terminal/test/preload.ts",

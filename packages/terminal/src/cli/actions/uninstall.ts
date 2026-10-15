@@ -16,7 +16,7 @@ export default CommandDispatcher.defineHandler(Commands.commands.uninstall, inpu
       profile: AppPaths.directories.home, all: input.all,
     }))
     yield* Effect.sync(() => process.stdout.write(
-      `Remove PHINs Agent: ${plan.executable}\nUnchanged release files will be removed. Added or modified files and projects will be preserved.\n`
+      `Remove PHINs Agent: ${plan.executable}\nUnchanged release files will be removed. Added or modified release files and external projects will be preserved.\n`
       + (input.all ? `Delete default profile (API keys, configuration, sessions, cache and logs): ${plan.profile}\n`
         : `Keep profile (API keys, configuration and sessions): ${plan.profile}\n`),
     ))

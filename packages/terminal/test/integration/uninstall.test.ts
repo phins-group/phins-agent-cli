@@ -81,6 +81,20 @@ test("--all refuses a custom profile", async () => {
   expect(await exists(f.executable)).toBe(true)
 })
 
+test("--all refuses external configuration overrides", async () => {
+  const f = await fixture()
+  const previous = process.env.PHINS_CONFIG_DIR
+  process.env.PHINS_CONFIG_DIR = f.project
+  try {
+    await expect(inspectUninstall({ ...f.options, all: true })).rejects.toThrow("Custom configuration paths")
+    expect(await exists(f.executable)).toBe(true)
+    expect(await exists(path.join(f.project, "source.ts"))).toBe(true)
+  } finally {
+    if (previous === undefined) delete process.env.PHINS_CONFIG_DIR
+    else process.env.PHINS_CONFIG_DIR = previous
+  }
+})
+
 test.skipIf(process.platform === "win32")("--all refuses a linked profile", async () => {
   const f = await fixture()
   await rm(f.profile, { recursive: true })

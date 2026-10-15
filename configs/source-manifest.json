@@ -36,7 +36,7 @@
     },
     {
       "path": ".github/workflows/install.yml",
-      "sha256": "55ce5735d66685a8b257d8ff0f3fd52b79418e13a8baaac7a9a55ed09a9a04b7"
+      "sha256": "0adf8d9efcfca0d75e773e3699ede1f9ef4bfaa1057b7def76713fde85057b6f"
     },
     {
       "path": ".gitignore",
@@ -56,7 +56,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "a247f32fc0f054777c7a4d3f3c6486ddec82b87599e618406e8d6f4adab71e34"
+      "sha256": "e68d08da4676c144797fe1b9b2ba8608b2bb973357a8b8f732eac77c3af178df"
     },
     {
       "path": "THIRD_PARTY.md",
@@ -84,7 +84,7 @@
     },
     {
       "path": "docs/BINARY_DISTRIBUTION.md",
-      "sha256": "f9230f5b024e99d3b9992add318d62a836b670b08f12e3d3e883756364dda50b"
+      "sha256": "d6de20184e74b90648624bf9e3d79fbacf262a570760f96e6fe772fa3bb2dea8"
     },
     {
       "path": "docs/DEMO_SCRIPT.md",
@@ -100,11 +100,11 @@
     },
     {
       "path": "docs/QUICKSTART.md",
-      "sha256": "875b4161e65bf5a07da0583eea8c8b7fe7f0a83a0a372890fbc0ca641a3daee5"
+      "sha256": "42efbb3d3a138f3b23a02606f7d423bb885b8310cdd397d51df1a4becb60c759"
     },
     {
       "path": "docs/QUICKSTART_VALIDATION.md",
-      "sha256": "ab6dcbec28af16c853c4a06cb0c284b6c85125c0d2b15d6bbc89ee0890452fec"
+      "sha256": "297c1cccb05b67775a408c48e1b539fea44eabd7dacd51e878f16d19303138cf"
     },
     {
       "path": "docs/RUNTIME_SOURCE.md",
@@ -216,11 +216,11 @@
     },
     {
       "path": "install.ps1",
-      "sha256": "54d891452382a7754ccc47ad814d9f76534762d3675aaeac0576ac8947646c84"
+      "sha256": "0a93aa86c3fb0d8b78bd319f76b7216fbecaa6a5fd9cb5bb3af5307ca91d77fd"
     },
     {
       "path": "install.sh",
-      "sha256": "db36f904bd5583443beda86a10076591ce03ee5c1474b9cb77267082d2bac449"
+      "sha256": "7a538a6bbe3f12d02b5725cbbec5092b59b1c37b30b636c5e1a226eceffaca7a"
     },
     {
       "path": "notices/bun-LICENSE.md",
@@ -4152,7 +4152,7 @@
     },
     {
       "path": "scripts/install.test.mjs",
-      "sha256": "f84ae8500475a1edb9e954d7f615d119aed2fcfc84c5457dd67b9a14d98f59e2"
+      "sha256": "50dcb616bcf78e40a609a025e63a98adbe70c749937bcdaf02fb25264ec397c2"
     },
     {
       "path": "scripts/local-agent.ts",

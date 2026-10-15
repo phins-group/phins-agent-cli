@@ -32,17 +32,17 @@ main() {
   target=$os-$cpu
   case "$target" in
     darwin-arm64)
-      archive_sha256=a4ba87237b9e9d3efbb9460ba8a4724d1037b44dd6fe69ec70d012e9ed92524d
-      binary_sha256=99ef6020208075591e09abfc51af48da6a70e93a20a104a33ff91126a95371fc ;;
+      archive_sha256=f4606728fc92d17718e500bcde68969d56b58f93e1a99a0d70e621eae3d20b9b
+      binary_sha256=bfcf369d1b987738dd16c48a646aee4f8cda91c0b911df2feae128c484154e6b ;;
     darwin-x64)
-      archive_sha256=640d04d36e1449932379bdc4db5f8f5003b8a34dc0bfe383609b48a393e3bbd8
-      binary_sha256=fe97e7edbe1a7db8a5537055d15ffd47fc67aa18afc177c6f5d7803f2a2cd032 ;;
+      archive_sha256=c7a9c37c77551be9ee258151e83123d9d8234e313fa7f2534945e5d32600cf96
+      binary_sha256=a4173ad571d326ad1fbb862729ca73420f850e550e051e92a0952a0dec799c20 ;;
     linux-arm64)
-      archive_sha256=23717f905a116ef07758a3283e2891cf17c57116e74a97cef9241dcda667b7d9
-      binary_sha256=8fa9bddf96080a0fcc60e3edef7e38da293a0a0bdcbeef899ad706d75eaad011 ;;
+      archive_sha256=929738a5daca3b696afc3a92cd67ff608322e6186c3059aa2cb4dd4e5d5b6844
+      binary_sha256=3cfdb92a190fddbeec55046c2d9da923c970f49303a1344befd5ec2451100f60 ;;
     linux-x64)
-      archive_sha256=bf492fd04257f81099b311d39f233191245f3a59a5e0f28023a04d38d37a3b9f
-      binary_sha256=172c563db4f7a3efe85adf8463a85591fcba13b10344fe15abdaf7b6f96142af ;;
+      archive_sha256=ddf42a6dddbc7812435776f01bc57998a7ee4d00c784c255667f1a42f6d4141f
+      binary_sha256=4326666a6dfdd0234e59f75cac7785f267f405708e3d681914f44f49efdcc438 ;;
   esac
   for tool in curl tar mktemp cut awk; do
     command -v "$tool" >/dev/null 2>&1 || die "Required tool missing: $tool."
@@ -57,7 +57,7 @@ main() {
   [ -n "${HOME-}" ] || die 'HOME is not set.'
   case "$HOME" in /*) ;; *) die 'HOME must be an absolute path.' ;; esac
   umask 077
-  label=phins-0.1.1-local-$target
+  label=phins-0.1.2-local-$target
   base=$HOME/.local/share/phins-agent-cli
   bin=$HOME/.local/bin
   bundle=$base/$label
@@ -76,9 +76,9 @@ main() {
     cleanup() { rm -rf "$stage"; }
     trap cleanup 0
     trap 'exit 1' HUP INT TERM
-    printf 'Downloading PHINs Agent 0.1.1 for %s…\n' "$target"
+    printf 'Downloading PHINs Agent 0.1.2 for %s…\n' "$target"
     curl -fL --retry 2 --connect-timeout 15 --max-time 300 \
-      "https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/$label.tar.gz" -o "$stage/release.tar.gz"
+      "https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.2/$label.tar.gz" -o "$stage/release.tar.gz"
     [ "$(digest "$stage/release.tar.gz")" = "$archive_sha256" ] || die 'Archive checksum mismatch; nothing installed.'
     tar -tzf "$stage/release.tar.gz" > "$stage/files"
     awk -v prefix="$label/" 'index($0, prefix) != 1 || $0 ~ /(^|\/)\.\.(\/|$)/ { exit 1 }' "$stage/files" || die 'Unsafe archive paths.'

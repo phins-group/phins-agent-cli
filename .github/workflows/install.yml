@@ -59,7 +59,7 @@ jobs:
           & $script
           & $script
           "INSTALL_LOCALAPPDATA=$env:LOCALAPPDATA" >> $env:GITHUB_ENV
-          "INSTALLED_BINARY=$env:LOCALAPPDATA/PHINsAgent/phins-0.1.1-local-windows-x64/phins.exe" >> $env:GITHUB_ENV
+          "INSTALLED_BINARY=$env:LOCALAPPDATA/PHINsAgent/phins-0.1.2-local-windows-x64/phins.exe" >> $env:GITHUB_ENV
       - name: Check native Windows PowerShell onboarding
         if: runner.os == 'Windows'
         shell: pwsh
@@ -83,6 +83,9 @@ jobs:
           print(result.stdout)
           assert result.returncode == 1
           assert all(value in result.stdout for value in ('# tests 27', '# pass 22', '# fail 5'))
+      - name: Verify confirmed uninstall with the installed executable
+        shell: bash
+        run: python scripts/smoke-uninstall.py "$INSTALLED_BINARY"
       - name: Verify Windows protects an existing command and changed binary
         if: runner.os == 'Windows'
         shell: pwsh

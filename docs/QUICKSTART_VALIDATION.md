@@ -1,5 +1,30 @@
 # Quick Start validation
 
+## v0.1.2 confirmed uninstall — 2026-10-15
+
+[Native CI](https://github.com/phins-group/phins-agent-cli/actions/runs/38712390661)
+passes actual compiled startup and uninstall on macOS ARM64/Intel, Linux ARM64/x64
+and Windows x64. Disposable profiles and real PTY/ConPTY input verify default-No
+cancellation, non-terminal refusal, profile retention, default-profile deletion,
+managed launcher/binary removal and preservation of changed/added release files
+and external projects. Windows additionally preserves the project reached by a
+profile directory junction. Paths contain spaces, an apostrophe and a non-ASCII
+character. Twenty-three focused uninstall tests pass on macOS; platform-specific
+unit skips are covered by the actual Windows launcher/compiled-binary checks.
+
+Windows uses the included `phins.cmd` launcher to finish executable removal after
+the binary exits and return a meaningful status. Direct `phins.exe uninstall`
+refuses with the launcher instructions. Loose binaries, source checkouts, Git
+repository roots and custom/linked profiles are preserved. `--all` applies only
+to the default profile; other downloaded copies and custom profiles are retained.
+
+The last broad local suite before final Windows launcher refinements recorded
+1,941 passes, 14 skips and zero failures. Current focused type checks and the
+five-target native startup/uninstall run pass afterward. These checks use no API
+key and perform no model inference; historical coding evidence below is unchanged.
+Human visual Windows Terminal review and broader Linux/Windows hardened coding
+qualification remain separate from this console/filesystem validation.
+
 ## v0.1.1 Windows compatibility update — 2026-10-15
 
 [Native CI](https://github.com/phins-group/phins-agent-cli/actions/runs/38679314958)

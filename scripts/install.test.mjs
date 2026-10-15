@@ -19,12 +19,12 @@ async function fixture(t, target = "darwin-arm64", extra = {}) {
   t.after(() => rm(root, { recursive: true, force: true }))
   const home = path.join(root, "user's home à")
   const tools = path.join(root, "tools")
-  const label = `phins-0.1.1-local-${target}`
+  const label = `phins-0.1.2-local-${target}`
   const inputs = path.join(root, "inputs", label)
   await mkdir(home)
   await mkdir(tools)
   await mkdir(inputs, { recursive: true })
-  const executable = "#!/bin/sh\nprintf '0.1.1-local fixture\\n'\n"
+  const executable = "#!/bin/sh\nprintf '0.1.2-local fixture\\n'\n"
   await writeFile(path.join(inputs, "phins"), executable, { mode: 0o755 })
   await writeFile(path.join(inputs, "NOTICE"), "Fixture attribution retained\n")
   const archive = path.join(root, "release.tar.gz")
@@ -68,7 +68,7 @@ for (const target of ["darwin-arm64", "darwin-x64", "linux-arm64", "linux-x64"])
     assert.equal(result.status, 0, result.stderr)
     assert.equal(await readlink(f.launcher), path.join(f.bundle, "phins"))
     assert.equal(await readFile(path.join(f.bundle, "NOTICE"), "utf8"), "Fixture attribution retained\n")
-    assert.ok((await f.downloads())[0].includes(`https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-${target}.tar.gz`))
+    assert.ok((await f.downloads())[0].includes(`https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.2/phins-0.1.2-local-${target}.tar.gz`))
     assert.deepEqual((await readdir(path.dirname(f.bundle))).filter(name => name.startsWith(".install.")), [])
   })
 

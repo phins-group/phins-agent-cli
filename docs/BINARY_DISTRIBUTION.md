@@ -1,6 +1,6 @@
 # PHINs Agent — standalone builds
 
-Download an archive from the [0.1.1 hackathon preview](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.1),
+Download an archive from the [0.1.2 hackathon preview](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.2),
 extract it, and run **`phins`** (`phins.exe` on Windows). No arguments open the
 TUI. Bun, pnpm and agent package installation are unnecessary. Follow the
 [Quick Start](QUICKSTART.md) for masked Nebius setup and the bundled demo.
@@ -9,12 +9,12 @@ TUI. Bun, pnpm and agent package installation are unnecessary. Follow the
 
 | Operating system | Direct download | Minimum system |
 | --- | --- | --- |
-| **macOS** | [Apple Silicon / ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-arm64.tar.gz) · [Intel / x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-x64.tar.gz) | macOS 13+ |
-| **Linux** | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-arm64.tar.gz) | glibc 2.30+, libstdc++ and libgcc |
-| **Windows** | [Windows x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-windows-x64.zip) | Windows 10 1809+ / Windows 11, Windows Terminal |
+| **macOS** | [Apple Silicon / ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.2/phins-0.1.2-local-darwin-arm64.tar.gz) · [Intel / x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.2/phins-0.1.2-local-darwin-x64.tar.gz) | macOS 13+ |
+| **Linux** | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.2/phins-0.1.2-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.2/phins-0.1.2-local-linux-arm64.tar.gz) | glibc 2.30+, libstdc++ and libgcc |
+| **Windows** | [Windows x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.2/phins-0.1.2-local-windows-x64.zip) | Windows 10 1809+ / Windows 11, Windows Terminal |
 
 Alpine/musl and Windows ARM64 are unsupported. The executable reports
-`0.1.1-local`. macOS binaries are ad-hoc signed, not notarized; Windows binaries
+`0.1.2-local`. macOS binaries are ad-hoc signed, not notarized; Windows binaries
 are unsigned. The optional Windows FFF binding imports `VCRUNTIME140.dll` and
 remains disabled by default.
 

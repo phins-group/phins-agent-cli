@@ -11,10 +11,11 @@
 ### Automatic installer — macOS and Linux
 
 Paste this **one command** into a terminal. `install.sh` detects your OS and CPU,
-selects the reviewed v0.1.1 binary, verifies SHA-256 checksums, and opens the TUI:
+selects the reviewed v0.1.1 binary, and verifies SHA-256 checksums. The command
+then opens the TUI with your terminal's keyboard input:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.sh | sh && "$HOME/.local/bin/phins"
 ```
 
 Supports macOS 13+ (Apple Silicon or Intel) and Linux ARM64/x64 with glibc 2.30+
@@ -27,17 +28,18 @@ is used. The whole release, including demo files and licenses, is retained.
 Open **PowerShell in Windows Terminal** on Windows 10 (1809+) or Windows 11:
 
 ```powershell
-irm https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.ps1 | iex; if ($?) { & "$env:LOCALAPPDATA\PHINsAgent\bin\phins.cmd" }
 ```
 
-The installer checks Windows/CPU compatibility, verifies checksums, and opens
-the TUI. Windows ARM64 and x86 are unsupported. PowerShell does not include `sh`;
+The installer checks Windows/CPU compatibility and verifies checksums. The
+command then opens the TUI. Windows ARM64 and x86 are unsupported. PowerShell does not include `sh`;
 use this native command there. `install.sh` also detects Git Bash/MSYS/Cygwin
 and delegates Windows installation to PowerShell.
 
-**Expected:** The PHINs Agent interface appears with a **Ready** status. In a
-non-interactive shell the installer prints the launch path instead of opening
-an interactive application. Repeating the installer reuses the verified build;
+**Expected:** The PHINs Agent interface appears with a **Ready** status. Use a
+real terminal for the interactive interface. Each installer only installs and
+prints paths; the final part of the copied command starts PHINs Agent after a
+successful installation. Repeating the installer reuses the verified build;
 an unrelated existing command or changed installation is preserved and reported.
 
 To reopen PHINs Agent later:

@@ -36,7 +36,7 @@
     },
     {
       "path": ".github/workflows/install.yml",
-      "sha256": "e19ba0357d499679e57f5243ee0eea349da245aea148ec7cf63443e1448437c7"
+      "sha256": "55ce5735d66685a8b257d8ff0f3fd52b79418e13a8baaac7a9a55ed09a9a04b7"
     },
     {
       "path": ".gitignore",
@@ -56,7 +56,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "426f1dac1208bc1f2a12d77b88a4d00289d86992af686a4fe0f476d189d4fbe2"
+      "sha256": "a247f32fc0f054777c7a4d3f3c6486ddec82b87599e618406e8d6f4adab71e34"
     },
     {
       "path": "THIRD_PARTY.md",
@@ -100,7 +100,7 @@
     },
     {
       "path": "docs/QUICKSTART.md",
-      "sha256": "570d4b19810e5032786a2caf535af0f44fc09b884ea2d451ef56b3a0e9ce0d7a"
+      "sha256": "875b4161e65bf5a07da0583eea8c8b7fe7f0a83a0a372890fbc0ca641a3daee5"
     },
     {
       "path": "docs/QUICKSTART_VALIDATION.md",
@@ -216,11 +216,11 @@
     },
     {
       "path": "install.ps1",
-      "sha256": "6c1709b45521d630f8f1ad7ab2435a8d87a9b17397fb31c35398ca1ef9fa4ba4"
+      "sha256": "54d891452382a7754ccc47ad814d9f76534762d3675aaeac0576ac8947646c84"
     },
     {
       "path": "install.sh",
-      "sha256": "9edf3405883eb0ef04f24b33e28b53f6099006d7586bab19fc4023fdedc562fc"
+      "sha256": "db36f904bd5583443beda86a10076591ce03ee5c1474b9cb77267082d2bac449"
     },
     {
       "path": "notices/bun-LICENSE.md",
@@ -4140,7 +4140,7 @@
     },
     {
       "path": "scripts/install.test.mjs",
-      "sha256": "9b6b3e5b47b3d9f3fad4e0dfb1d5f35f6af6eeb1249be8ea47144c9685e3d889"
+      "sha256": "f84ae8500475a1edb9e954d7f615d119aed2fcfc84c5457dd67b9a14d98f59e2"
     },
     {
       "path": "scripts/local-agent.ts",

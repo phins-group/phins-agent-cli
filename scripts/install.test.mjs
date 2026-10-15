@@ -56,7 +56,7 @@ if (tool === 'curl') {
     FIXTURE_PS: path.join(root, "powershell.json"), ...extra }
   const bundle = path.join(home, ".local/share/phins-agent-cli", label)
   const launcher = path.join(home, ".local/bin/phins")
-  const run = () => spawnSync("/bin/sh", [script, "--no-launch"], { env, encoding: "utf8", timeout: 15000 })
+  const run = () => spawnSync("/bin/sh", [script], { env, encoding: "utf8", timeout: 15000 })
   const downloads = async () => (await readFile(env.FIXTURE_DOWNLOADS, "utf8").catch(() => "")).trim().split("\n").filter(Boolean).map(JSON.parse)
   return { root, home, script, env, bundle, launcher, run, downloads, archive }
 }
@@ -128,6 +128,6 @@ test("Windows shell detection delegates to the native PowerShell installer", opt
   const f = await fixture(t, "darwin-arm64", { FIXTURE_OS: "MINGW64_NT-10.0" })
   assert.equal(f.run().status, 0)
   const args = JSON.parse(await readFile(f.env.FIXTURE_PS, "utf8"))
-  assert.ok(args.some(arg => arg.includes("/main/install.ps1") && arg.includes("-NoLaunch")))
+  assert.ok(args.some(arg => arg.includes("/main/install.ps1")))
   assert.deepEqual(await f.downloads(), [])
 })

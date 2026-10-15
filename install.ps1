@@ -1,7 +1,5 @@
 # Install the reviewed Windows x64 release for this user, without elevation.
-param([switch]$NoLaunch)
 & {
-  param([switch]$NoLaunch)
   $ErrorActionPreference = 'Stop'
 
   if ($env:OS -ne 'Windows_NT') { throw 'Use install.sh on macOS or Linux.' }
@@ -76,9 +74,4 @@ param([switch]$NoLaunch)
   Write-Host "Installed: $launcher"
   Write-Host "Demo files: $bundle"
   Write-Host "Run: & `"$launcher`""
-  if (-not $NoLaunch -and -not [Console]::IsInputRedirected -and -not [Console]::IsOutputRedirected) {
-    & $launcher
-    if ($LASTEXITCODE -ne 0) { throw "PHINs Agent exited with code $LASTEXITCODE." }
-  }
-
-} -NoLaunch:$NoLaunch
+}

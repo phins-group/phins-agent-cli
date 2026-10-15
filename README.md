@@ -14,7 +14,7 @@
 
 Download a standalone build for your platform. **No Docker, local GPU, or Bun/pnpm installation is needed to run the binary.**
 
-The [automatic installer](docs/QUICKSTART.md#1-install-and-launch) detects your OS/CPU, verifies checksums and opens the TUI. macOS/Linux use `install.sh`; Windows has a native PowerShell command. Direct downloads are also available below.
+The [one-command installation](docs/QUICKSTART.md#1-install-and-launch) detects your OS/CPU, verifies checksums and then opens the TUI. macOS/Linux use `install.sh`; Windows has a native PowerShell command. Direct downloads are also available below.
 
 | Platform | Download |
 | --- | --- |

@@ -3,12 +3,7 @@
 set -eu
 
 main() {
-  launch=true
-  case "${1-}" in
-    '') ;;
-    --no-launch) launch=false ;;
-    *) printf '%s\n' 'Usage: sh install.sh [--no-launch]' >&2; exit 1 ;;
-  esac
+  [ "$#" -eq 0 ] || { printf '%s\n' 'Usage: sh install.sh' >&2; exit 1; }
   die() { printf 'PHINs Agent: %s\n' "$*" >&2; exit 1; }
 
   os=$(uname -s)
@@ -16,9 +11,7 @@ main() {
   case "$os" in
     MINGW*|MSYS*|CYGWIN*)
       command -v powershell.exe >/dev/null 2>&1 || die 'Open Windows Terminal and use the PowerShell command in Quick Start.'
-      option=''
-      [ "$launch" = true ] || option='-NoLaunch'
-      powershell.exe -NoProfile -Command "& ([scriptblock]::Create((Invoke-RestMethod 'https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.ps1'))) $option"
+      powershell.exe -NoProfile -Command "& ([scriptblock]::Create((Invoke-RestMethod 'https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.ps1')))"
       return
       ;;
     Darwin)
@@ -103,9 +96,6 @@ main() {
   [ -L "$command_path" ] || ln -s "$bundle/phins" "$command_path"
   printf 'Installed: %s\nDemo files: %s\n' "$command_path" "$bundle"
   printf 'Run: "%s"\n' "$command_path"
-  if [ "$launch" = true ] && [ -t 1 ] && [ -r /dev/tty ]; then
-    exec "$command_path" < /dev/tty
-  fi
 }
 
 main "$@"

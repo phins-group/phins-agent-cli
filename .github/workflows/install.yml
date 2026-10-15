@@ -46,8 +46,8 @@ jobs:
           install_home="$RUNNER_TEMP/PHINs install à"
           mkdir -p "$install_home"
           url="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/$GITHUB_SHA/install.sh"
-          curl -fsSL "$url" | env HOME="$install_home" sh -s -- --no-launch
-          curl -fsSL "$url" | env HOME="$install_home" sh -s -- --no-launch
+          curl -fsSL "$url" | env HOME="$install_home" sh
+          curl -fsSL "$url" | env HOME="$install_home" sh
           echo "INSTALLED_BINARY=$install_home/.local/bin/phins" >> "$GITHUB_ENV"
       - name: Install and repeat on Windows
         if: runner.os == 'Windows'
@@ -56,8 +56,8 @@ jobs:
           $env:LOCALAPPDATA = Join-Path $env:RUNNER_TEMP 'PHINs install à/AppData/Local'
           $url = "https://raw.githubusercontent.com/$env:GITHUB_REPOSITORY/$env:GITHUB_SHA/install.ps1"
           $script = [scriptblock]::Create((Invoke-RestMethod $url))
-          & $script -NoLaunch
-          & $script -NoLaunch
+          & $script
+          & $script
           "INSTALL_LOCALAPPDATA=$env:LOCALAPPDATA" >> $env:GITHUB_ENV
           "INSTALLED_BINARY=$env:LOCALAPPDATA/PHINsAgent/phins-0.1.1-local-windows-x64/phins.exe" >> $env:GITHUB_ENV
       - name: Check native Windows PowerShell onboarding
@@ -92,7 +92,7 @@ jobs:
           $original = [IO.File]::ReadAllText($launcher)
           [IO.File]::WriteAllText($launcher, 'user-owned fixture')
           $rejected = $false
-          try { & ./install.ps1 -NoLaunch } catch {
+          try { & ./install.ps1 } catch {
             if ($_.Exception.Message -notlike '*Existing command preserved*') { throw }
             $rejected = $true
           }
@@ -101,7 +101,7 @@ jobs:
           Add-Content -LiteralPath $env:INSTALLED_BINARY -Value 'changed fixture'
           $before = (Get-FileHash -LiteralPath $env:INSTALLED_BINARY).Hash
           $rejected = $false
-          try { & ./install.ps1 -NoLaunch } catch {
+          try { & ./install.ps1 } catch {
             if ($_.Exception.Message -notlike '*Existing installation changed*') { throw }
             $rejected = $true
           }

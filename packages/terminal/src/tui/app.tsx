@@ -11,6 +11,7 @@ import { Deferred, Effect } from "effect"
 import { AppPaths } from "@phins/engine/runtime/paths"
 import { Flag } from "@phins/engine/runtime/flags"
 import { InstallationVersion } from "@phins/engine/runtime/version"
+import { writeSync } from "node:fs"
 
 import { ClipboardProvider, useClipboard } from "./state/clipboard"
 import { EpilogueProvider, ExitProvider, useExit } from "./state/lifecycle"
@@ -84,7 +85,7 @@ import {
 import type { EventSource } from "./state/agent-client"
 import { createTuiAttention } from "./platform/attention"
 import * as TuiAudio from "./platform/sound"
-import { win32FlushInputBuffer, openWindowsConsoleOutput } from "./platform/windows"
+import { win32FlushInputBuffer } from "./platform/windows"
 import { destroyRenderer, openTerminalRenderer } from "./platform/renderer"
 import { cliErrorMessage, errorFormat } from "../shared/errors"
 
@@ -155,13 +156,10 @@ function isVersionGreater(left: string, right: string) {
 }
 
 /** Sở hữu renderer scope và trả quyền điều khiển khi terminal bị destroy. */
-export const run = Effect.fn("Tui.run")((input: TuiInput) => Effect.scoped(Effect.gen(function* () {
+export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
   const global = yield* AppPaths.Service
-  const output = yield* Effect.acquireRelease(
-    Effect.try({ try: openWindowsConsoleOutput, catch: (cause) => cause }),
-    (value) => Effect.sync(() => value?.close()),
-  )
-  const write = (text: string) => output ? output.write(text) : process.stdout.write(text)
+  const write = (text: string) => process.platform === "win32"
+    ? writeSync(1, text) : process.stdout.write(text)
   const exit = { epilogue: undefined as string | undefined, reason: undefined as unknown }
   const result = yield* Effect.scoped(
     Effect.gen(function* () {
@@ -324,7 +322,7 @@ export const run = Effect.fn("Tui.run")((input: TuiInput) => Effect.scoped(Effec
       yield* Effect.try({ try: () => write(result.epilogue! + "\n"), catch: (cause) => cause })
       yield* Effect.promise(() => sleep(1_500))
     }
-})))
+})
 
 /** Root component nối SDK/event state, command adapters, routes và plugin API. */
 function App(props: { pluginHost: TuiPluginHost }) {

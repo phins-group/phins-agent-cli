@@ -1,6 +1,30 @@
 # Quick Start validation
 
-## Windows PowerShell compatibility — 2026-10-15
+## 64-bit Windows installer — 2026-10-15
+
+The installer now checks `Is64BitOperatingSystem` instead of rejecting CPU
+environment-variable values. It preserves the pinned archive/executable/launcher
+checksums and verifies the actual executable with `--version` before creating
+the managed command. The released v0.1.2 binaries are unchanged.
+
+[The qualification run](https://github.com/phins-group/phins-agent-cli/actions/runs/38751298017)
+passes all six supported-platform jobs: macOS ARM64/Intel, Linux ARM64/x64,
+and Windows x64 on Server 2022/2025. Windows fresh/repeat installation,
+PowerShell 5.1/7, nine preflight regressions, full file inventory, actual TUI,
+the historical 22-pass/5-fail baseline, and confirmed uninstall pass.
+
+The additional Windows 11 ARM64 probe **fails**: fresh/repeat installation,
+PowerShell 5.1/7, the version check and all 1,332 bundled file hashes pass, but
+ConPTY TUI startup exits with `3221225477` (`0xC0000005`). This is not a qualified
+ARM64 TUI release. The failed probe is retained as evidence; maintainers can
+reproduce it through the manual binary workflow's `windows-11-arm` runner option.
+The required installer matrix covers the declared supported targets.
+
+No credentials or inference requests were used. Owner-reported manual Windows
+startup is separate from this CI evidence; the owner machine still needs a retry
+of the updated installer.
+
+## Earlier Windows PowerShell compatibility qualification — 2026-10-15
 
 [Native installer CI](https://github.com/phins-group/phins-agent-cli/actions/runs/38739475934)
 passes six jobs: macOS ARM64/Intel, Linux ARM64/x64, and Windows x64 on both
@@ -10,7 +34,7 @@ preflight regressions cover architecture metadata, an actual 32-bit PowerShell
 process on x64 Windows, and clear rejection of reported versions below 5.1.
 The ARM64/x86 cases are input fixtures, not physical-machine qualification.
 
-The installer uses native Windows architecture variables, avoiding the null
+The earlier installer used native Windows architecture variables, avoiding the null
 RuntimeInformation property reported on an owner's PowerShell 5.1 machine.
 Windows tar extracts the pinned archive, including notice paths beyond 260
 characters. Every installed file is independently checked against the bundled

@@ -13,7 +13,10 @@ TUI. Bun, pnpm and agent package installation are unnecessary. Follow the
 | **Linux** | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.2/phins-0.1.2-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.2/phins-0.1.2-local-linux-arm64.tar.gz) | glibc 2.30+, libstdc++ and libgcc |
 | **Windows** | [Windows x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.2/phins-0.1.2-local-windows-x64.zip) | Windows 10 1809+ / Windows 11, Windows Terminal |
 
-Alpine/musl and Windows ARM64 are unsupported. The executable reports
+Alpine/musl and 32-bit Windows are unsupported. Windows ARM64 TUI emulation
+is not qualified: the x64 executable passes the version check but crashes during
+TUI startup on the ARM64 CI runner; see the [validation notes](QUICKSTART_VALIDATION.md).
+No native Windows ARM64 build is provided. The executable reports
 `0.1.2-local`. macOS binaries are ad-hoc signed, not notarized; Windows binaries
 are unsigned. The optional Windows FFF binding imports `VCRUNTIME140.dll` and
 remains disabled by default.

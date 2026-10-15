@@ -32,8 +32,6 @@ jobs:
             runner: windows-2025
           - target: windows-x64
             runner: windows-2022
-          - target: windows-x64-emulated
-            runner: windows-11-arm
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:

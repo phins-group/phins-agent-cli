@@ -48,7 +48,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "7905f1aa0b5eed84694d78f1c82eba69c8cc06f803718d8f48e7194f62b26b58"
+      "sha256": "6009e1bf80bcf82e82b9d08331ead1b9fed8fc96de6cc135766b04a714b3311d"
     },
     {
       "path": "THIRD_PARTY.md",
@@ -92,7 +92,7 @@
     },
     {
       "path": "docs/QUICKSTART.md",
-      "sha256": "ae29cc4c52c37d826bc4fc6061c1c45ec04995c739644efab2c40ac2c89938b0"
+      "sha256": "2a4814a599e5db32da9febe08beb3acb4a1f72f26b2e6ca0f4c6bab9b3a90bb6"
     },
     {
       "path": "docs/QUICKSTART_VALIDATION.md",
@@ -3152,7 +3152,7 @@
     },
     {
       "path": "packages/terminal/src/tui/assets/phins-logo.png",
-      "sha256": "d1cf60345a2ab961d5f3a0df3c34d330400f4c087cae12675bcb085b51a3439d"
+      "sha256": "60b1b1f809579944aa83f52dca37b3a646e3506f38b9eb61c1afd729b66426fd"
     },
     {
       "path": "packages/terminal/src/tui/audio/bip-bop-01.mp3",

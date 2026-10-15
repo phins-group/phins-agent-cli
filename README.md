@@ -2,35 +2,85 @@
 
 <img src="packages/terminal/src/tui/assets/phins-logo.png" alt="PHINs Agent logo" width="480">
 
-> FROM IDEAS to IMPACT
+> **From Ideas to Impact**
 
-A local coding agent that turns a bug report into an inspectable patch and real
-test results. CLI and TUI share one engine for inspection, planning, tools,
-correction, verification and resumable sessions.
+**PHINs Agent** is a terminal-native AI coding agent that investigates repositories, plans changes, executes approved tools, edits code, and tests the results. Its CLI and TUI share an engine with resumable sessions and inspectable actions.
 
-The hackathon integration uses **NVIDIA Nemotron on Nebius Token Factory**.
-This source builds independently with two workspace packages and no private
-backend. It includes modified third-party code; see [NOTICE](NOTICE).
+**Nebius × NVIDIA Global AI Hackathon 2026** · **Coding and Agentic Engineering**
 
-## Quick Start — Try PHINs Agent
+**[Watch the demo](https://www.youtube.com/watch?v=zNPvf9Mw8LQ)** · **[Try PHINs Agent — Quick Start](docs/QUICKSTART.md)** · **[Download v0.1.0](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.0)** · **[Review test evidence](docs/BENCHMARK.md)**
 
-Download and extract a standalone binary. No Bun/pnpm or agent package
-installation is needed.
+## Try it in your terminal
 
-| Operating system | Download |
+Download a standalone build for your platform. **No Docker, local GPU, or Bun/pnpm installation is needed to run the binary.**
+
+| Platform | Download |
 | --- | --- |
-| **macOS** | [Apple Silicon / ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-arm64.tar.gz) · [Intel / x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-x64.tar.gz) |
-| **Linux** | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz) |
-| **Windows** | [Windows x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip) |
+| macOS — Apple Silicon (M1/M2/M3/M4) | [ARM64 build](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-arm64.tar.gz) |
+| macOS — Intel | [x64 build](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-x64.tar.gz) |
+| Linux | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz) |
+| Windows | [x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip) |
 
-Follow the [Quick Start guide](docs/QUICKSTART.md) for installation, Nebius
-configuration and a reproducible coding-agent demo. It includes platform
-requirements and qualification limits. The demo's tests need Node.js 22+ and Git.
+**Requirements:** a terminal, internet access, and a [Nebius Token Factory](https://tokenfactory.nebius.com/) API key with access to the NVIDIA model and available inference credits. The reproducible coding demo additionally needs **Node.js 22+ and Git**. Supported OS versions and limitations are documented in the [Quick Start](docs/QUICKSTART.md).
+
+**For judges:** Open **[the 5-minute Quick Start](docs/QUICKSTART.md)**, choose your OS, download and launch the build, enter `/setup`, and select Nebius Token Factory and NVIDIA Nemotron 3 Super. Then follow the included coding demo. Setup takes approximately five minutes with prerequisites ready; the agent task itself may take longer and consume credits.
+
+From the extracted build folder, launch PHINs Agent against a project you trust:
+
+```sh
+./phins "/path/to/your/reviewed/project"  # macOS / Linux
+```
+
+```powershell
+.\phins.exe "C:\path\to\your\reviewed\project" # Windows PowerShell
+```
+
+Run `./phins` (or `.\phins.exe`) without a path to open normally. For download, extract, and demo commands, use the [platform-specific Quick Start](docs/QUICKSTART.md).
+
+## Working demo: fix a real bug, verify the tests
+
+The test build includes a reproducible coding task derived from an attributed historical [`vercel/ms` bug](https://github.com/vercel/ms/pull/111). A pinned input and **27 PHINs regression checks** are included in the demo archive; these are *not* the upstream full test suite.
+
+1. **Reproduce:** Prepare the project and run its tests. The expected baseline is **22 passing, 5 failing**.
+2. **Investigate and fix:** Ask PHINs Agent to inspect the repository, find the root cause, update the source, and execute permitted tests using an NVIDIA model on Nebius.
+3. **Verify independently:** Re-run the tests outside the agent. The success condition is **27 passing, 0 failing**, with a reviewable patch. Actual model outcomes may vary.
+
+Use the exact commands in **[Quick Start → Try the coding demo](docs/QUICKSTART.md)**. Technical review details and observed run evidence are in the [Judging Guide](docs/JUDGING_GUIDE.md) and [Benchmark](docs/BENCHMARK.md). The presence of passing scripted tests alone does not establish model success.
+
+## NVIDIA + Nebius integration
+
+For the hackathon workflow, PHINs Agent uses:
+
+| Component | Role |
+| --- | --- |
+| **NVIDIA Nemotron 3 Super** | Reasoning and tool-use model; model ID: `nvidia/nemotron-3-super-120b-a12b` |
+| **Nebius Token Factory** | Hosted inference API: `https://api.tokenfactory.nebius.com/v1` |
+| **PHINs Agent** | Local agent runtime that prepares context, requests model decisions, executes permitted repository tools, and checks results |
+
+The agent **makes runtime inference requests to Nebius Token Factory**. The model does not run locally, and the application does not require a local GPU. Local code inspection, editing and testing remain in the developer's environment. Nebius is an optional provider for general usage but is selected for this hackathon demo.
+
+This integration enables access to a hosted NVIDIA model while retaining a local terminal-first coding workflow. It does **not** mean NVIDIA or Nebius endorses the product. No model weights are bundled.
+
+## What makes PHINs Agent useful
+
+- **Repository-aware workflow:** Select context and inspect code before acting.
+- **Actionable agent:** Plan, read/search/edit files, and request tool execution subject to permissions.
+- **Test-driven correction:** Use failing test results for bounded follow-up changes.
+- **Reviewable output:** Inspect tool results, patches, sessions, usage, and estimated costs.
+- **CLI + TUI:** Work in a developer's terminal rather than switching to a hosted web interface.
+- **Isolated reviewed demo (macOS):** Constrain writable files and run independent verification on a read-only snapshot.
+
+```text
+CLI / TUI → agent engine → selected context → NVIDIA Nemotron
+     ↑                                            ↓
+verification ← tests ← approved edits/tools ← Nebius API
+```
+
+`packages/engine` manages agent workflows, providers, storage, and authenticated local transport. `packages/terminal` provides the CLI and Solid/OpenTUI interface. Primary technologies include TypeScript, Bun, Effect, and SQLite. See [Architecture](docs/ARCHITECTURE.md).
 
 ## Run from source (developers)
 
-Qualified platform: **macOS ARM64**. Install Node.js 22+, Bun 1.3.12+,
-pnpm 10.26.0 and Git. Use a real terminal for the TUI.
+Source workflow qualified on **macOS ARM64**. Install Node.js 22+, Bun 1.3.12+, pnpm 10.26.0 and Git, then run:
 
 ```sh
 pnpm install --frozen-lockfile --ignore-scripts
@@ -39,68 +89,26 @@ pnpm cli setup
 pnpm tui /absolute/path/to/your/reviewed/project
 ```
 
-Setup prompts for a masked API key and model. Nebius setup recommends an
-available NVIDIA Nemotron with tool support. Use `/setup` or `/models` in the TUI
-to change it later. Setup makes no inference request; submitting a task does.
-Keys stay in a local database, not an encrypted OS keychain.
-
-TUI commands: `/models`, `/new`, `/sessions`, `/compact`, `/setup`, `/help`
-and `/exit`. Code changes remain visible in tool results.
-
-For a single CLI request:
+For one request:
 
 ```sh
 pnpm cli ask "Inspect this repository and explain its test command" --project /absolute/path/to/project
 ```
 
-Source launches isolate state under `.local/home`. Override with
-`PHINS_LOCAL_HOME`. Keep credentials outside the task repository.
+Inside TUI: `/models`, `/new`, `/sessions`, `/compact`, `/setup`, `/help`, `/exit`. Credentials are stored locally, **not in an encrypted OS keychain**. Source runs isolate state beneath `.local/home` (overridable using `PHINS_LOCAL_HOME`). Keep credentials outside the project under review.
 
-## Reproduce the historical bug demo
+To reproduce the historical source demo on the qualified environment:
 
 ```sh
 pnpm demo:prepare
-pnpm demo:test
+pnpm demo:test       # Expected to fail before the fix
 pnpm demo:setup
 pnpm demo:tui
 ```
 
-Preparation copies the pinned, attributed `vercel/ms` input and the 27-check
-oracle into `.local/demo-ms-pr111/project`. It creates no Git commit or remote,
-overwrites nothing and calls no model. The first test command **should fail**:
-it demonstrates the original bug.
+Paste the request from `.local/demo-ms-pr111/task.txt` into the demo TUI. After the run, use `pnpm demo:test` again and inspect changes and the independent verification receipt. See [Judging Guide](docs/JUDGING_GUIDE.md).
 
-Demo setup uses its own isolated state under `.local/demo-ms-pr111/state`.
-After that setup, open the demo TUI and paste `.local/demo-ms-pr111/task.txt`.
-This is the paid inference step. The profile permits changes only to `index.js`,
-allows one exact test command, protects the oracle and enables the macOS sandbox
-and bounded correction workflow. It pins `nvidia/nemotron-3-super-120b-a12b`
-on Nebius; account availability and credits are required.
-
-After the agent finishes, run `pnpm demo:test` again and inspect the diff and
-independent verification receipt. Final prose alone is not verification.
-See [the judging guide](docs/JUDGING_GUIDE.md) for the full sequence.
-
-## Capabilities and architecture
-
-- Select relevant context rather than loading whole repositories by default.
-- Plan work, read/search/edit files and execute approved commands.
-- Use actual test failures for bounded correction.
-- Keep sessions, tools, usage and estimated cost visible.
-- In the reviewed profile, independently check a read-only snapshot.
-
-```text
-CLI / TUI → engine session → selected context → model request
-                  ↑                                  ↓
-           verification ← tests ← edits ← permitted tools
-```
-
-`packages/engine` owns workflows, providers, storage and authenticated local
-transport. `packages/terminal` owns CLI and Solid/OpenTUI. TypeScript, Bun,
-Effect and SQLite are the main runtime technologies. Nebius is optional outside
-the competition. See [architecture](docs/ARCHITECTURE.md).
-
-## Build and test
+## Build, tests, and evidence
 
 ```sh
 pnpm source:check
@@ -110,32 +118,22 @@ pnpm build
 pnpm test:coding
 ```
 
-The native build produces `dist/phins` (`dist/phins.exe` on Windows) without
-fetching model metadata. `pnpm build:all` builds macOS ARM64/x64, Linux ARM64/x64
-and Windows x64. `pnpm build:package <new-name>` creates local review archives.
-The Mac binaries are ad-hoc signed, not notarized. Tests use local/scripted
-providers; they do not prove real model decisions.
-[Evaluation](docs/BENCHMARK.md) separates the evidence.
+The local build generates `dist/phins` or `dist/phins.exe`. `pnpm build:all` targets macOS ARM64/x64, Linux ARM64/x64 and Windows x64. macOS binaries are ad-hoc signed, not notarized. Scripted-provider tests are distinct from real model evaluations; see [Benchmark](docs/BENCHMARK.md).
 
-## Limits
+**Known limits:** The reviewed hardened profile and snapshot check are qualified on macOS; Linux/Windows hardened execution, broad task success, and CPU/memory quotas have not been qualified. Independent final verification requires tests that run without network access or filesystem writes. API inference consumes Nebius credits; application spending indicators are not provider billing caps. See [Local Operation](docs/LOCAL_OPERATION.md).
 
-The reviewed profile is qualified on macOS. Recorded Nebius/NVIDIA
-trials passed the fixed historical oracle; one required a test-driven correction.
-See [measured evidence](docs/BENCHMARK.md). Linux/Windows hardened workflows,
-CPU/memory quotas and broad task success remain unqualified.
-The independent final check needs tests that require neither network nor writes.
+## Hackathon submission notes
 
-Normal setup does not create a USD allowance. Run limits and displayed costs
-are not a provider billing cap. Review prices and credits before inference.
-[Local operation](docs/LOCAL_OPERATION.md) covers configuration and spending.
+- **Track:** Coding and Agentic Engineering.
+- **Video:** [Public YouTube demo](https://www.youtube.com/watch?v=zNPvf9Mw8LQ).
+- **Working test build:** [Release v0.1.0](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.0), with [installation and verification instructions](docs/QUICKSTART.md).
+- **Evidence:** [Benchmark](docs/BENCHMARK.md) and [Judging Guide](docs/JUDGING_GUIDE.md).
+- **Nebius/NVIDIA feedback:** To be submitted in the Devpost submission form based on actual development and inference experience.
+- **Project evolution during the submission period:** If PHINs Agent predates August 26, 2026, the Devpost entry must identify and substantiate substantial changes made since that date. Consult commits and release history; do not infer dates or contributions from this README.
+- **Judge access:** The build is publicly linked, but using the model currently requires an API key and available inference credits. **Free, unrestricted judging access is not yet established by this README.** Arrange access for judges without publishing credentials, and confirm it meets the [official rules](https://nebiusglobalaihackathon.devpost.com/rules).
 
-## License
+## License and third-party notices
 
-PHINs contributions: Copyright 2026 Duy Huynh, [Apache-2.0](LICENSE).
-Inherited MIT portions retain their terms: [NOTICE](NOTICE),
-[provenance](PROVENANCE.md), [third-party licenses](THIRD_PARTY.md).
-`Apache-2.0 AND MIT` is not a choice of either license for all code.
-No model weights are bundled. Branding does not grant general trademark rights.
+PHINs contributions: Copyright 2026 Duy Huynh, **[Apache-2.0](LICENSE)**. Inherited MIT-licensed code retains its terms: [NOTICE](NOTICE), [Provenance](PROVENANCE.md), [Third-party licenses](THIRD_PARTY.md). `Apache-2.0 AND MIT` does not mean users may choose either license for every file. Respect applicable attribution and trademark rights.
 
-[Submission copy](docs/SUBMISSION.md) and the [video script](docs/DEMO_SCRIPT.md)
-remain drafts until current live evidence, judge access and video are finalized.
+[Devpost submission draft](docs/SUBMISSION.md) · [Demo script](docs/DEMO_SCRIPT.md) · [Official hackathon rules](https://nebiusglobalaihackathon.devpost.com/rules)

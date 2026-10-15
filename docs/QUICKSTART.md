@@ -81,7 +81,7 @@ In PHINs Agent:
 3. Select **NVIDIA Nemotron 3 Super** (`nvidia/nemotron-3-super-120b-a12b`).
 4. Confirm the selection. A successful **real task response** verifies inference access; a saved model list alone does not.
 
-Get a key at [Nebius Token Factory](https://tokenfactory.nebius.com/) → **API keys**. Keep it private. Nebius calls use credits.
+To get an API key, sign in to [Nebius Token Factory](https://tokenfactory.nebius.com/), open **API keys**, and create a key. See the [official authentication guide](https://docs.tokenfactory.nebius.com/api-reference/introduction#authentication). Keep your key private; inference requires available credits and may incur charges.
 
 ## 3. Try the coding demo
 

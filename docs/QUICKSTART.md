@@ -1,263 +1,143 @@
 # PHINs Agent — Quick Start
 
-PHINs Agent is a terminal-native AI coding agent designed to turn developer intent into verifiable engineering outcomes.
+**Try a real AI coding agent in your terminal.** In this demo, PHINs Agent investigates a bug, edits code, and runs tests using **NVIDIA Nemotron 3 Super via Nebius Token Factory**.
 
-Get running in approximately **5 minutes**, with an API key ready. Download
-speed and model response time vary. **No Bun, pnpm, npm install, Docker or local
-GPU is needed to launch the binary.**
+**Start here:** [Watch the 2-minute demo](https://www.youtube.com/watch?v=zNPvf9Mw8LQ) · [Download v0.1.0](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.0) · [Source code](https://github.com/phins-group/phins-agent-cli)
 
-## Prerequisites
+> **Before you begin:** You need a [Nebius Token Factory](https://tokenfactory.nebius.com/) API key with access to `nvidia/nemotron-3-super-120b-a12b` and available inference credits. The agent runs without Docker, a local GPU, or npm installation. **The coding demo requires Node.js 22+ and Git.** Allow roughly 5 minutes for setup; agent execution may take longer and consume credits.
 
-- A supported system from the download table below and a real terminal.
-  Use Windows Terminal on Windows; the included Windows PowerShell validates
-  private runtime permissions.
-- A **Nebius Token Factory API key**, access to NVIDIA Nemotron 3 Super, and
-  available inference credits.
-- Internet access to download the archive and contact Nebius.
-- `curl` and `tar` for the macOS/Linux commands below, or use the download
-  links and your archive manager. Windows commands use built-in PowerShell tools.
-- **For the coding demo only:** Node.js **22+** and Git on your PATH. These run
-  the sample repository's tests; they are not agent installation dependencies.
+## 1. Download and launch
 
-## Installation
+Choose **one** option for your machine. Use a fresh directory. The commands download, extract, and launch PHINs Agent. By default, the agent opens normally; to work on your own repository, use the project-path command shown in the same section (replace the example with an existing trusted folder).
 
-Download the archive for your operating system and processor:
+### macOS — Apple Silicon (M1/M2/M3/M4)
 
-| Operating system | Direct download | System requirements |
-|---|---|---|
-| **macOS** | [Apple Silicon / ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-arm64.tar.gz) · [Intel / x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-x64.tar.gz) | macOS 13+ |
-| **Linux** | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz) | glibc 2.30+, libstdc++ and libgcc; Alpine/musl unsupported |
-| **Windows** | [Windows x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip) | Windows 10 1809+ / Windows 11, Windows Terminal; no Windows ARM64 build |
+Requires macOS 13+.
 
-### Copy, paste and run
-
-Open a terminal and copy **one** block for your system. It creates a new
-`phins-agent-preview` folder, downloads and extracts the binary, and opens the
-TUI. No administrator access or package installation is needed. If that folder
-already exists, use another parent folder or reopen the existing binary.
-
-**macOS — Apple Silicon / ARM64:**
-
-```sh
-mkdir phins-agent-preview &&
-cd phins-agent-preview &&
-curl -fL --retry 2 -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-arm64.tar.gz &&
-tar -xzf phins-0.1.0-local-darwin-arm64.tar.gz &&
-cd phins-0.1.0-local-darwin-arm64 &&
+```bash
+mkdir phins-agent-preview && cd phins-agent-preview
+curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-arm64.tar.gz
+tar -xzf phins-0.1.0-local-darwin-arm64.tar.gz
+cd phins-0.1.0-local-darwin-arm64
 ./phins
+# Or open your own project instead:
+# ./phins "/path/to/your/reviewed/project"
 ```
 
-**macOS — Intel / x64:**
+### macOS — Intel
 
-```sh
-mkdir phins-agent-preview &&
-cd phins-agent-preview &&
-curl -fL --retry 2 -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-x64.tar.gz &&
-tar -xzf phins-0.1.0-local-darwin-x64.tar.gz &&
-cd phins-0.1.0-local-darwin-x64 &&
+```bash
+mkdir phins-agent-preview && cd phins-agent-preview
+curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-x64.tar.gz
+tar -xzf phins-0.1.0-local-darwin-x64.tar.gz
+cd phins-0.1.0-local-darwin-x64
 ./phins
+# Or open your own project instead:
+# ./phins "/path/to/your/reviewed/project"
 ```
 
-**Linux — x64:**
+### Linux — x64
 
-```sh
-mkdir phins-agent-preview &&
-cd phins-agent-preview &&
-curl -fL --retry 2 -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz &&
-tar -xzf phins-0.1.0-local-linux-x64.tar.gz &&
-cd phins-0.1.0-local-linux-x64 &&
+Requires glibc 2.30+ (not Alpine/musl).
+
+```bash
+mkdir phins-agent-preview && cd phins-agent-preview
+curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz
+tar -xzf phins-0.1.0-local-linux-x64.tar.gz
+cd phins-0.1.0-local-linux-x64
 ./phins
+# Or open your own project instead:
+# ./phins "/path/to/your/reviewed/project"
 ```
 
-**Linux — ARM64:**
+Linux ARM64: [download the ARM64 archive](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz), extract it, enter `phins-0.1.0-local-linux-arm64`, and run `./phins` (or `./phins "/path/to/your/reviewed/project"` to open a project).
 
-```sh
-mkdir phins-agent-preview &&
-cd phins-agent-preview &&
-curl -fL --retry 2 -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz &&
-tar -xzf phins-0.1.0-local-linux-arm64.tar.gz &&
-cd phins-0.1.0-local-linux-arm64 &&
-./phins
-```
+### Windows — x64
 
-**Windows — x64, PowerShell in Windows Terminal:**
+Requires Windows 10 (1809+) or Windows 11. Open **PowerShell in Windows Terminal**.
 
 ```powershell
-& {
-  $ErrorActionPreference = "Stop"
-  New-Item -ItemType Directory -Path phins-agent-preview | Out-Null
-  Set-Location phins-agent-preview
-  Invoke-WebRequest -Uri https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip -OutFile phins.zip
-  Expand-Archive -LiteralPath phins.zip -DestinationPath .
-  Set-Location phins-0.1.0-local-windows-x64
-  .\phins.exe
-}
-```
-
-In the TUI, type `/setup` to configure your private Nebius key. Use `/exit`
-to return to the shell; your terminal remains in the extracted folder.
-Keep the accompanying notices. Optionally compare the downloaded archive against
-[SHA256SUMS](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/SHA256SUMS).
-This is the **0.1.0 hackathon preview**, whose executable reports `0.1.0-local`.
-Platform qualification and limitations are in [the validation report](QUICKSTART_VALIDATION.md).
-
-## Configure Nebius Token Factory
-
-1. Sign in to [Nebius Token Factory](https://tokenfactory.nebius.com/), open
-   **API keys → Create API key**, and save the key privately. See the
-   [official instructions](https://docs.tokenfactory.nebius.com/api-reference/introduction#authentication).
-   Never publish a test key or paste it into source, screenshots or issues.
-2. In the running TUI, type `/setup` and press **Enter** to open masked setup.
-   Alternatively, exit the TUI first with `/exit`, then run setup from the shell:
-
-   **macOS / Linux:**
-
-   ```sh
-   ./phins setup
-   ```
-
-   **Windows PowerShell:**
-
-   ```powershell
-   .\phins.exe setup
-   ```
-
-3. Choose **Nebius Token Factory** if prompted, enter the key, and select
-   **NVIDIA Nemotron 3 Super** with Enter. Exact model ID:
-   **`nvidia/nemotron-3-super-120b-a12b`**. The preset uses
-   **`https://api.tokenfactory.nebius.com/v1`**.
-4. Confirm the saved model. Setup refreshes the account's model catalog without
-   inference. **“API refresh failed” / “saved list” does not verify the
-   connection**; correct the key/network first. A real task response verifies
-   inference access.
-
-No environment variables or JSON edits are required. The optional credential
-variable is **`NEBIUS_API_KEY`**; masked setup is preferred. Keys are stored
-locally beneath `~/.phins-agent-cli` (Windows: `%USERPROFILE%\.phins-agent-cli`),
-not an encrypted OS keychain. Tasks consume credits; displayed costs and run
-limits are not a provider billing cap.
-
-## Launch PHINs Agent
-
-**macOS / Linux:**
-
-```sh
-./phins
-```
-
-**Windows PowerShell:**
-
-```powershell
+$ErrorActionPreference = "Stop"
+New-Item -ItemType Directory -Path phins-agent-preview | Out-Null
+Set-Location phins-agent-preview
+Invoke-WebRequest -Uri https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip -OutFile phins.zip
+Expand-Archive -LiteralPath phins.zip -DestinationPath .
+Set-Location phins-0.1.0-local-windows-x64
 .\phins.exe
+# Or open your own project instead:
+# .\phins.exe "C:\path\to\your\reviewed\project"
 ```
 
-Expect the welcome message, focused task input, **Ready** status, current
-project path and selected Nebius/NVIDIA model. No task runs until you submit
-one. In the TUI, use these commands individually to select a model, configure
-credentials or exit:
+**Expected:** The PHINs Agent terminal interface appears with a **Ready** status.
 
-```text
-/models
-/setup
-/exit
-```
+The project-path command in each OS section is an **alternative** to the default launch, not an additional step. Remove the leading `#` to run it. Use quotation marks for paths containing spaces. For the prepared hackathon sample, follow **Step 3** instead.
 
-## Try the Working Demo
+## 2. Connect Nebius
 
-The archive includes the MIT-licensed historical
-[vercel/ms bug](https://github.com/vercel/ms/pull/111), pinned buggy source and
-27 regression checks. **Do not install packages in the sample project.**
-From the extracted archive folder:
+In PHINs Agent:
 
-```sh
-node --version
-git --version
+1. Enter `/setup`.
+2. Choose **Nebius Token Factory** and enter your API key when prompted.
+3. Select **NVIDIA Nemotron 3 Super** (`nvidia/nemotron-3-super-120b-a12b`).
+4. Confirm the selection. A successful **real task response** verifies inference access; a saved model list alone does not.
+
+Get a key at [Nebius Token Factory](https://tokenfactory.nebius.com/) → **API keys**. Keep it private. Nebius calls use credits.
+
+## 3. Try the coding demo
+
+The release includes a sample based on a historical [vercel/ms bug](https://github.com/vercel/ms/pull/111) and **27 PHINs regression checks**. Do **not** install packages inside the sample project.
+
+First, in PHINs Agent enter `/exit` to return to your terminal. You should remain in the extracted release directory. Make sure Node.js **22+** and Git are installed.
+
+**Prepare and confirm the failing tests:**
+
+```bash
 node scripts/demo.mjs prepare
 node scripts/demo.mjs test
 ```
 
-The initial test should **exit 1: 22 passed, 5 failed, 27 total**. This is the
-bug, not an installation failure. Preparation creates
-`.local/demo-ms-pr111/project` and refuses to overwrite an earlier trial.
+**Expected starting point: `22 passed, 5 failed` (exit code 1).** These failures are intentional.
 
-**Recommended judging path — macOS:**
+**Launch the demo:**
 
-```sh
-node scripts/demo.mjs setup
-node scripts/demo.mjs tui
-```
+- **macOS (recommended, isolated demo profile):**
 
-This runs the adjacent binary with an isolated demo profile. Enter your key
-once for this separate profile and select the same Nemotron model. The profile
-protects the tests, allows edits only to `index.js`, uses the macOS sandbox and
-permits the exact regression command. No Bun/pnpm is invoked.
+  ```bash
+  node scripts/demo.mjs setup
+  node scripts/demo.mjs tui
+  ```
 
-**Linux:** use your ordinary setup from above and open the prepared project:
+  Enter your Nebius key and select Nemotron again if prompted; this demo uses a separate profile.
 
-```sh
-./phins .local/demo-ms-pr111/project
-```
+- **Linux:** `./phins .local/demo-ms-pr111/project`
+- **Windows PowerShell:** `.\phins.exe .local\demo-ms-pr111\project`
 
-**Windows PowerShell:**
+Open **`.local/demo-ms-pr111/task.txt`**, copy the task text, paste it into PHINs Agent, and press **Enter**. Observe the agent inspect the repository, propose a fix, edit `index.js`, and run tests. On Linux/Windows, review each requested permission; keep the tests unchanged.
 
-```powershell
-.\phins.exe .local\demo-ms-pr111\project
-```
+## 4. Verify the result yourself
 
-Linux/Windows use the ordinary permission prompts. Review requested actions;
-allow changes to `index.js` and the relevant Node test command, and keep tests
-unchanged. The hardened macOS profile and snapshot-check workflow are not
-qualified on those systems.
+When the agent finishes, enter `/exit`. From the extracted release directory, run:
 
-Open `.local/demo-ms-pr111/task.txt` in a text editor, copy its request into the
-TUI and press **Enter**. It asks the agent to inspect, plan, reproduce the bug,
-fix parsing, run tests and correct failures. Watch actual tools and results.
-After the agent stops, exit the TUI before independent verification.
-
-## Expected Results
-
-From the extracted archive folder:
-
-```sh
+```bash
 node scripts/demo.mjs test
+```
+
+**Successful outcome:** `27 passed, 0 failed` with exit code 0. To inspect the change:
+
+```bash
 git diff --no-index examples/live/ms-pr111/index.js .local/demo-ms-pr111/project/index.js
 ```
 
-Success means **27 passed, 0 failed, test exit 0**, with a reviewable source
-patch. The test helper rejects a modified oracle. The diff exits **1 when
-files differ**, which is expected. On the hardened Mac path, also inspect the
-independent-check receipt; a final message alone is not proof.
+The diff command normally returns exit code **1** when it finds differences. These are PHINs regression tests, not the upstream full test suite. **Results are not guaranteed:** model behavior, permissions, network availability, and run budgets can affect completion. Treat the independent test result—not the agent's final message—as proof.
 
-These are PHINs regression checks, not the upstream full suite. Model behavior
-varies and recorded successes do not guarantee your run. A budget stop is not
-agent completion, even if a subsequent external test passes. See
-[the validation report](QUICKSTART_VALIDATION.md) for observed outcomes.
-Free judge credentials must be arranged privately; this guide never supplies
-a shared public key.
+## Need help?
 
-## Troubleshooting
-
-| Issue | What to do |
+| Problem | Try this |
 |---|---|
-| Missing key / HTTP 401 or 403 | Reopen masked setup and check the key's project/access in Nebius. The hardened demo uses its own setup/profile. |
-| Model missing / unsupported | Search the exact Nemotron model ID and confirm account availability. Do not silently substitute a different model for this demo. |
-| Refresh failure, timeout or HTTP 429 | Check Nebius connectivity, credits and rate limits. Reopen the model picker to refresh; saved models are not proof of authentication. |
-| macOS blocks the download | Verify its checksum and use macOS Privacy & Security to approve the trusted executable. Do not disable system security globally. |
-| CLI does not start | Extract the complete archive, choose the correct OS/CPU and use a real terminal. On macOS/Linux, restore executable permission if your extractor removed it using the command below. |
-| Windows exit shortcut | Use `/exit`. Ctrl+D returned exit 1 in the Windows console harness and is not qualified for this preview. |
-| Demo dependency missing | Install Node.js 22+ / Git for repository testing; Bun/pnpm and sample packages are unnecessary. |
-| Demo already exists | Extract into a new folder for a fresh trial; preserve previous evidence. |
-| Agent stopped at token/time budget | Inspect tests and changes. A deliberate continuation in the same session is supported, consumes credits and may still stop. Use the session picker if reopening; do not claim completion without final evidence. |
+| Missing key or HTTP 401/403 | Run `/setup` again and check your Nebius account permissions. The macOS demo has its own profile. |
+| Model unavailable / refresh error | Check model access, network, credits, and rate limits. A cached model list does not confirm connectivity. |
+| App won't launch | Check your OS/CPU build and extract the **whole** archive. On macOS/Linux, use `chmod +x ./phins` if needed. On macOS, approve a trusted app via **Privacy & Security** if prompted. |
+| Demo setup fails | Install Node.js 22+ and Git; retry in a **new** extracted folder if a previous demo already exists. |
+| Agent stops before success | Check remaining budget/credits and actual test results. A partial run is not a completed repair. |
 
-**macOS / Linux, if executable permission was lost:**
-
-```sh
-chmod +x ./phins
-```
-
-## Useful Links
-
-- [GitHub repository](https://github.com/phins-group/phins-agent-cli) and [0.1.0 downloads](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.0)
-- [Nebius Token Factory](https://tokenfactory.nebius.com/) and [official quickstart](https://docs.tokenfactory.nebius.com/quickstart)
-- [Nebius × NVIDIA Global AI Hackathon](https://nebiusglobalaihackathon.devpost.com/) — project-specific Devpost URL not yet published.
-- [Main documentation](../README.md), [platform/build details](BINARY_DISTRIBUTION.md), and [submission draft](SUBMISSION.md)
+**More information:** [Video demo](https://www.youtube.com/watch?v=zNPvf9Mw8LQ) · [Full validation notes](QUICKSTART_VALIDATION.md) · [GitHub releases](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.0) · [Nebius documentation](https://docs.tokenfactory.nebius.com/quickstart)

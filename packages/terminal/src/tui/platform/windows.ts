@@ -57,9 +57,9 @@ export function win32FlushInputBuffer() {
   k32!.symbols.FlushConsoleInputBuffer(handle)
 }
 
-/** Write to the restored console independently of the renderer's stdout handle. */
-export function win32WriteConsole(text: string) {
-  if (process.platform !== "win32") return false
+/** Own one restored console handle until all exit output has been written. */
+export function openWindowsConsoleOutput() {
+  if (process.platform !== "win32") return undefined
   if (!load()) throw new Error("Unable to open Windows console output")
   const api = k32!.symbols
   // Own a fresh console handle; never close or replace the process stdio handles.
@@ -76,17 +76,17 @@ export function win32WriteConsole(text: string) {
     handle = open()
     if (handle === 0xffffffffffffffffn) return fail()
   }
-  try {
-    const bytes = Buffer.from(text, "utf16le"), written = new Uint32Array(1)
-    let offset = 0
-    while (offset < bytes.length) {
-      const remaining = bytes.subarray(offset)
-      if (!api.WriteConsoleW(handle, remaining, remaining.length / 2, written, null)
-        || written[0] === 0) return fail()
-      offset += written[0] * 2
-    }
-  } finally {
-    api.CloseHandle(handle)
+  return {
+    write(text: string) {
+      const bytes = Buffer.from(text, "utf16le"), written = new Uint32Array(1)
+      let offset = 0
+      while (offset < bytes.length) {
+        const remaining = bytes.subarray(offset)
+        if (!api.WriteConsoleW(handle, remaining, remaining.length / 2, written, null)) return fail()
+        if (written[0] === 0) throw new Error("Windows console write made no progress")
+        offset += written[0] * 2
+      }
+    },
+    close() { api.CloseHandle(handle) },
   }
-  return true
 }

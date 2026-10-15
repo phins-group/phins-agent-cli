@@ -84,7 +84,7 @@ import {
 import type { EventSource } from "./state/agent-client"
 import { createTuiAttention } from "./platform/attention"
 import * as TuiAudio from "./platform/sound"
-import { win32FlushInputBuffer, win32WriteConsole } from "./platform/windows"
+import { win32FlushInputBuffer, openWindowsConsoleOutput } from "./platform/windows"
 import { destroyRenderer, openTerminalRenderer } from "./platform/renderer"
 import { cliErrorMessage, errorFormat } from "../shared/errors"
 
@@ -200,6 +200,7 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
               exit={(reason) => {
                 if (renderer.isDestroyed) return
                 exit.reason = reason
+                win32FlushInputBuffer()
                 destroyRenderer(renderer)
               }}
             >
@@ -303,25 +304,24 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
       return finalOutput
     }),
   )
-  yield* Effect.try({ try: () => {
-    const titleReset = "\x1b]0;\x07"
-    if (!win32WriteConsole(titleReset)) process.stdout.write(titleReset)
-    win32FlushInputBuffer()
-    if (result.reason !== undefined)
-      process.stderr.write((cliErrorMessage(result.reason) ?? errorFormat(result.reason)) + "\n")
-    if (result.epilogue) {
-      const reset = "\x1b[?1049l\x1b[?25h\x1b[0m\x1b[2J\x1b[H"
-      if (!win32WriteConsole(reset)) process.stdout.write(reset)
-    }
-  }, catch: (cause) => cause })
-  const epilogue = result.epilogue
-  if (epilogue) {
-    yield* Effect.promise(() => sleep(1_000))
+  yield* Effect.scoped(Effect.gen(function* () {
+    const output = yield* Effect.acquireRelease(
+      Effect.try({ try: openWindowsConsoleOutput, catch: (cause) => cause }),
+      (value) => Effect.sync(() => value?.close()),
+    )
+    const write = (text: string) => output ? output.write(text) : process.stdout.write(text)
     yield* Effect.try({ try: () => {
-      if (!win32WriteConsole(epilogue + "\n")) process.stdout.write(epilogue + "\n")
+      write("\x1b]0;\x07")
+      if (result.reason !== undefined)
+        process.stderr.write((cliErrorMessage(result.reason) ?? errorFormat(result.reason)) + "\n")
+      if (result.epilogue) write("\x1b[?1049l\x1b[?25h\x1b[0m\x1b[2J\x1b[H")
     }, catch: (cause) => cause })
-    yield* Effect.promise(() => sleep(1_500))
-  }
+    if (result.epilogue) {
+      yield* Effect.promise(() => sleep(1_000))
+      yield* Effect.try({ try: () => write(result.epilogue! + "\n"), catch: (cause) => cause })
+      yield* Effect.promise(() => sleep(1_500))
+    }
+  }))
 })
 
 /** Root component nối SDK/event state, command adapters, routes và plugin API. */

@@ -15,7 +15,7 @@ test("clears the terminal title before destroying the renderer", () => {
   expect(calls).toEqual(["title:", "destroy"])
 })
 
-test("still clears the title after renderer destruction", () => {
+test("never calls native methods on an already destroyed renderer", () => {
   const calls: string[] = []
   destroyRenderer({
     isDestroyed: true,
@@ -26,5 +26,23 @@ test("still clears the title after renderer destruction", () => {
       calls.push("destroy")
     },
   })
-  expect(calls).toEqual(["title:"])
+  expect(calls).toEqual([])
+})
+
+test("teardown is safe when both the exit action and scope finalizer run", () => {
+  const calls: string[] = []
+  const renderer = {
+    isDestroyed: false,
+    setTerminalTitle() {
+      if (this.isDestroyed) throw new Error("Native renderer has been freed")
+      calls.push("title")
+    },
+    destroy() {
+      this.isDestroyed = true
+      calls.push("destroy")
+    },
+  }
+  destroyRenderer(renderer)
+  destroyRenderer(renderer)
+  expect(calls).toEqual(["title", "destroy"])
 })

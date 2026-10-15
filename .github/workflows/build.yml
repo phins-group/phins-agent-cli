@@ -90,4 +90,4 @@ jobs:
           if test -f 'dist/${{ matrix.target }}/build.json'; then
             cat 'dist/${{ matrix.target }}/build.json' >> "$GITHUB_STEP_SUMMARY"
           fi
-          echo 'Offline build/startup checks only. No model credentials or inference. Release packaging and publication are separate.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Build/startup checks only. No model credentials or inference. Release packaging and publication are separate.' >> "$GITHUB_STEP_SUMMARY"

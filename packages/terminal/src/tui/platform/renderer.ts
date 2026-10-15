@@ -28,7 +28,7 @@ export const openTerminalRenderer = Effect.fn("Terminal.open")(function* (mouse:
 })
 
 export function destroyRenderer(renderer: Pick<CliRenderer, "isDestroyed" | "setTerminalTitle" | "destroy">) {
-  renderer.setTerminalTitle("")
   if (renderer.isDestroyed) return
+  renderer.setTerminalTitle("")
   renderer.destroy()
 }

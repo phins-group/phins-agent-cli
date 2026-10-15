@@ -1,4 +1,4 @@
-"""Offline smoke test of a standalone binary. Python is only a test dependency."""
+"""Standalone startup test without model inference. Python is a test dependency."""
 import errno
 import hashlib
 import json

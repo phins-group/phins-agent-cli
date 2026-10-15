@@ -56,7 +56,7 @@ export function win32FlushInputBuffer() {
   k32!.symbols.FlushConsoleInputBuffer(handle)
 }
 
-/** Renderer teardown can invalidate Bun's cached stdout handle on Windows. */
+/** Write to the restored console independently of the renderer's stdout handle. */
 export function win32WriteConsole(text: string) {
   if (process.platform !== "win32") return false
   if (!load()) throw new Error("Unable to open Windows console output")

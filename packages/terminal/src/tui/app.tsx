@@ -178,7 +178,9 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
       )
       yield* Effect.addFinalizer(() => Effect.sync(TuiAudio.dispose))
       const shutdown = yield* Deferred.make<unknown>()
-      renderer.once("destroy", () => Deferred.doneUnsafe(shutdown, Effect.void))
+      // OpenTUI emits before its native cleanup finishes. Resume after that stack
+      // returns so scope finalizers and the epilogue cannot touch closing handles.
+      renderer.once("destroy", () => queueMicrotask(() => Deferred.doneUnsafe(shutdown, Effect.void)))
       const pluginRuntime = createPluginRuntime()
 
       yield* Effect.tryPromise(async () => {

@@ -3140,7 +3140,7 @@
     },
     {
       "path": "packages/terminal/src/cli/uninstall.ts",
-      "sha256": "ebbf8a03c88a32130938dcbaf24783de4b38af8fd8393658f827af9a4aa3c576"
+      "sha256": "69d86d59ddd479414371b2590319be5d583d0489a27d9cc94975cf4513b094d6"
     },
     {
       "path": "packages/terminal/src/index.ts",

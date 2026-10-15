@@ -1,8 +1,7 @@
 /** Remove a release's unchanged files, never an enclosing project directory. */
 import { createHash } from "node:crypto"
-import { spawn } from "node:child_process"
 import { createReadStream } from "node:fs"
-import { lstat, mkdtemp, open, readFile, readdir, realpath, readlink, rm, rmdir, unlink, writeFile } from "node:fs/promises"
+import { lstat, mkdtemp, readFile, readdir, realpath, readlink, rm, rmdir, unlink, writeFile } from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
 
@@ -212,32 +211,23 @@ try {
   const powershell = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32/WindowsPowerShell/v1.0/powershell.exe")
   const scriptPath = path.join(directory, "cleanup.ps1")
   await writeFile(scriptPath, script, { mode: 0o600, flag: "wx" })
-  const errors = await open(path.join(directory, "startup-error.txt"), "wx", 0o600)
   // Bun's detached Windows children can die with their parent (oven-sh/bun#31603).
   // cmd/start launches the helper independently. User paths stay in quoted env
   // values and the local script, never interpolated into command syntax.
-  const bootstrap = 'start "" /b "%PHINS_UNINSTALL_PS%" -NoProfile -NonInteractive -Command "& ([scriptblock]::Create([IO.File]::ReadAllText($env:PHINS_UNINSTALL_SCRIPT)))" <nul >nul 2>&1'
   const cmd = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32/cmd.exe")
-  const child = spawn(cmd, ["/d", "/s", "/c", `"${bootstrap}"`], {
-    windowsVerbatimArguments: true, windowsHide: true,
-    env: { ...process.env, PHINS_UNINSTALL_PS: powershell, PHINS_UNINSTALL_SCRIPT: scriptPath },
-    stdio: ["ignore", errors.fd, errors.fd],
+  const invocation = "& ([scriptblock]::Create([IO.File]::ReadAllText($env:PHINS_UNINSTALL_SCRIPT)))"
+  const child = Bun.spawn([cmd, "/d", "/c", "start", "", "/b", powershell,
+    "-NoProfile", "-NonInteractive", "-EncodedCommand", Buffer.from(invocation, "utf16le").toString("base64")], {
+    windowsHide: true,
+    env: { ...process.env, PHINS_UNINSTALL_SCRIPT: scriptPath },
+    stdin: "ignore", stdout: "ignore", stderr: "ignore",
   })
-  let startupError: Error | undefined
-  let exited = false
-  child.once("error", error => { startupError = error })
-  child.once("exit", () => { exited = true })
-  await errors.close()
   try {
     const deadline = Date.now() + 15_000
+    const exit = await child.exited
+    if (exit !== 0) throw new Error(`Windows uninstall bootstrap failed (exit ${exit}).`)
     while (true) {
-      if (startupError) throw startupError
       if (await stat(ready)) break
-      if (exited && child.exitCode !== 0) {
-        const detail = await readFile(path.join(directory, "startup-error.txt"), "utf8")
-        const failure = await readFile(diagnostic, "utf8").catch(() => "")
-        throw new Error(`Windows uninstall helper could not start (exit ${child.exitCode}): ${(failure + detail).slice(-2000)}`)
-      }
       if (Date.now() >= deadline) throw new Error("Windows uninstall helper startup timed out.")
       await new Promise(resolve => setTimeout(resolve, 100))
     }

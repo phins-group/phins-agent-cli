@@ -3120,7 +3120,7 @@
     },
     {
       "path": "packages/terminal/src/cli/errors.ts",
-      "sha256": "b43174985389ce6a5d920cab1f5d32bcc5b2d949506b6b13bc02512e75059c4d"
+      "sha256": "41cecbd8d773633e53dd8459a66e2ad525125b50bf34f8563bdf30835be61c8c"
     },
     {
       "path": "packages/terminal/src/index.ts",
@@ -3484,7 +3484,7 @@
     },
     {
       "path": "packages/terminal/src/tui/platform/windows.ts",
-      "sha256": "0ae134020aa995a8ee7415f4f7ec5fd483ebb7f9f313aba10b4e6b3f910361cc"
+      "sha256": "6bb39bba62c59fd89dba041d9b49dca54056771d398a999fa9d88977806ab905"
     },
     {
       "path": "packages/terminal/src/tui/platform/zed.ts",

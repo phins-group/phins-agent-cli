@@ -13,6 +13,7 @@ const kernel = () =>
     WriteConsoleW: { args: ["u64", "buffer", "u32", "buffer", "ptr"], returns: "i32" },
     CloseHandle: { args: ["u64"], returns: "i32" },
     GetLastError: { args: [], returns: "u32" },
+    AttachConsole: { args: ["u32"], returns: "i32" },
   })
 
 let k32: ReturnType<typeof kernel> | undefined
@@ -62,12 +63,19 @@ export function win32WriteConsole(text: string) {
   if (!load()) throw new Error("Unable to open Windows console output")
   const api = k32!.symbols
   // Own a fresh console handle; never close or replace the process stdio handles.
-  const handle = api.CreateFileW(Buffer.from("CONOUT$\0", "utf16le"),
+  const open = () => api.CreateFileW(Buffer.from("CONOUT$\0", "utf16le"),
     0x40000000, 3, null, 3, 0, 0n)
+  let handle = open()
   const fail = (): never => {
     throw new Error(`Unable to write Windows console output (Win32: ${api.GetLastError()})`)
   }
-  if (handle === 0xffffffffffffffffn) return fail()
+  if (handle === 0xffffffffffffffffn) {
+    const code = api.GetLastError()
+    // Native terminal cleanup may detach the application from its console.
+    if (![2, 6].includes(code) || !api.AttachConsole(0xffffffff)) return fail()
+    handle = open()
+    if (handle === 0xffffffffffffffffn) return fail()
+  }
   try {
     const bytes = Buffer.from(text, "utf16le"), written = new Uint32Array(1)
     let offset = 0

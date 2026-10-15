@@ -10,6 +10,8 @@ on:
       - scripts/build-local.ts
       - scripts/standalone.ts
       - scripts/smoke-*.py
+      - scripts/windows-launcher.cmd
+      - scripts/package-binaries.py
       - configs/models.json
       - package.json
       - pnpm-lock.yaml
@@ -21,6 +23,8 @@ on:
       - scripts/build-local.ts
       - scripts/standalone.ts
       - scripts/smoke-*.py
+      - scripts/windows-launcher.cmd
+      - scripts/package-binaries.py
       - configs/models.json
       - package.json
       - pnpm-lock.yaml

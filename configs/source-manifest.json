@@ -32,7 +32,7 @@
     },
     {
       "path": ".github/workflows/build.yml",
-      "sha256": "ed2393a1e005dd599c0788e1b2d7d199aa0f0b4b6758644f66687ec789acb6c0"
+      "sha256": "7282e273eac606f15e5e021e8ab0fb03cd9eeb4462d1f1965015e725ff4640f1"
     },
     {
       "path": ".github/workflows/install.yml",
@@ -4196,7 +4196,7 @@
     },
     {
       "path": "scripts/windows-launcher.cmd",
-      "sha256": "7ea69839c8034c95666d86de064a12bbf70d083e921fa1dd3a2879f0fbe1e907"
+      "sha256": "9a7b524690f3664b2289726b4c6b90656976a9a636d31cf96435cfc6cf02ef74"
     }
   ],
   "adaptations": {}

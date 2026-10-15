@@ -6,71 +6,65 @@
 
 > **Before you begin:** You need a [Nebius Token Factory](https://tokenfactory.nebius.com/) API key with access to `nvidia/nemotron-3-super-120b-a12b` and available inference credits. The agent runs without Docker, a local GPU, or npm installation. **The coding demo requires Node.js 22+ and Git.** Allow roughly 5 minutes for setup; agent execution may take longer and consume credits.
 
-## 1. Download and launch
+## 1. Install and launch
 
-Choose **one** option for your machine. Use a fresh directory. The commands download, extract, and launch PHINs Agent. By default, the agent opens normally; to work on your own repository, use the project-path command shown in the same section (replace the example with an existing trusted folder).
+### Automatic installer — macOS and Linux
 
-### macOS — Apple Silicon (M1/M2/M3/M4)
+Paste this **one command** into a terminal. `install.sh` detects your OS and CPU,
+selects the reviewed v0.1.1 binary, verifies SHA-256 checksums, and opens the TUI:
 
-Requires macOS 13+.
-
-```bash
-mkdir phins-agent-preview && cd phins-agent-preview
-curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-arm64.tar.gz
-tar -xzf phins-0.1.1-local-darwin-arm64.tar.gz
-cd phins-0.1.1-local-darwin-arm64
-./phins
-# Or open your own project instead:
-# ./phins "/path/to/your/reviewed/project"
+```sh
+curl -fsSL https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.sh | sh
 ```
 
-### macOS — Intel
+Supports macOS 13+ (Apple Silicon or Intel) and Linux ARM64/x64 with glibc 2.30+
+(not Alpine/musl). Requires `curl`, `tar`, and `sha256sum` or `shasum`; these are
+normally included on the supported desktop systems. No sudo or package manager
+is used. The whole release, including demo files and licenses, is retained.
 
-```bash
-mkdir phins-agent-preview && cd phins-agent-preview
-curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-x64.tar.gz
-tar -xzf phins-0.1.1-local-darwin-x64.tar.gz
-cd phins-0.1.1-local-darwin-x64
-./phins
-# Or open your own project instead:
-# ./phins "/path/to/your/reviewed/project"
-```
+### Windows — automatic x64 installer
 
-### Linux — x64
-
-Requires glibc 2.30+ (not Alpine/musl).
-
-```bash
-mkdir phins-agent-preview && cd phins-agent-preview
-curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-x64.tar.gz
-tar -xzf phins-0.1.1-local-linux-x64.tar.gz
-cd phins-0.1.1-local-linux-x64
-./phins
-# Or open your own project instead:
-# ./phins "/path/to/your/reviewed/project"
-```
-
-Linux ARM64: [download the ARM64 archive](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-arm64.tar.gz), extract it, enter `phins-0.1.1-local-linux-arm64`, and run `./phins` (or `./phins "/path/to/your/reviewed/project"` to open a project).
-
-### Windows — x64
-
-Requires Windows 10 (1809+) or Windows 11. Open **PowerShell in Windows Terminal**.
+Open **PowerShell in Windows Terminal** on Windows 10 (1809+) or Windows 11:
 
 ```powershell
-$ErrorActionPreference = "Stop"
-New-Item -ItemType Directory -Path phins-agent-preview | Out-Null
-Set-Location phins-agent-preview
-Invoke-WebRequest -Uri https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-windows-x64.zip -OutFile phins.zip
-Expand-Archive -LiteralPath phins.zip -DestinationPath .
-Set-Location phins-0.1.1-local-windows-x64
-.\phins.exe
-# Or open your own project instead:
-# .\phins.exe "C:\path\to\your\reviewed\project"
+irm https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.ps1 | iex
 ```
 
-**Expected:** The PHINs Agent terminal interface appears with a **Ready** status.
+The installer checks Windows/CPU compatibility, verifies checksums, and opens
+the TUI. Windows ARM64 and x86 are unsupported. PowerShell does not include `sh`;
+use this native command there. `install.sh` also detects Git Bash/MSYS/Cygwin
+and delegates Windows installation to PowerShell.
 
-The project-path command in each OS section is an **alternative** to the default launch, not an additional step. Remove the leading `#` to run it. Use quotation marks for paths containing spaces. For the prepared hackathon sample, follow **Step 3** instead.
+**Expected:** The PHINs Agent interface appears with a **Ready** status. In a
+non-interactive shell the installer prints the launch path instead of opening
+an interactive application. Repeating the installer reuses the verified build;
+an unrelated existing command or changed installation is preserved and reported.
+
+To reopen PHINs Agent later:
+
+```sh
+"$HOME/.local/bin/phins"                         # macOS / Linux
+```
+
+```powershell
+& "$env:LOCALAPPDATA\PHINsAgent\bin\phins.cmd"    # Windows PowerShell
+```
+
+Pass an existing trusted project directory as an argument to open that project.
+The installer prints the full installation and demo-folder paths.
+
+### Direct downloads — optional manual installation
+
+| OS | Download | Requirements |
+| --- | --- | --- |
+| **macOS — Apple Silicon** | [ARM64 archive](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-arm64.tar.gz) | macOS 13+ |
+| **macOS — Intel** | [x64 archive](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-x64.tar.gz) | macOS 13+ |
+| **Linux** | [x64 archive](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-x64.tar.gz) · [ARM64 archive](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-arm64.tar.gz) | glibc 2.30+, libstdc++ and libgcc |
+| **Windows** | [x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-windows-x64.zip) | Windows 10 1809+ / Windows 11; Windows Terminal |
+
+Extract the **whole** archive into a fresh directory and open a terminal in the
+extracted folder. Run `./phins` on macOS/Linux or `.\phins.exe` in Windows
+PowerShell. Manual downloads do not run the installer.
 
 ## 2. Connect Nebius
 
@@ -87,7 +81,23 @@ To get an API key, sign in to [Nebius Token Factory](https://tokenfactory.nebius
 
 The release includes a sample based on a historical [vercel/ms bug](https://github.com/vercel/ms/pull/111) and **27 PHINs regression checks**. Do **not** install packages inside the sample project.
 
-First, in PHINs Agent enter `/exit` to return to your terminal. You should remain in the extracted release directory. Make sure Node.js **22+** and Git are installed.
+First, enter `/exit` to return to your terminal. Make sure Node.js **22+** and
+Git are installed. If you used the automatic installer, enter its demo folder:
+
+**macOS / Linux:**
+
+```sh
+cd "$(dirname "$(readlink "$HOME/.local/bin/phins")")"
+```
+
+**Windows PowerShell:**
+
+```powershell
+Set-Location "$env:LOCALAPPDATA\PHINsAgent\phins-0.1.1-local-windows-x64"
+```
+
+For manual downloads, stay in the extracted release directory. Run all remaining
+commands from this folder.
 
 **Prepare and confirm the failing tests:**
 
@@ -136,6 +146,7 @@ The diff command normally returns exit code **1** when it finds differences. The
 |---|---|
 | Missing key or HTTP 401/403 | Run `/setup` again and check your Nebius account permissions. The macOS demo has its own profile. |
 | Model unavailable / refresh error | Check model access, network, credits, and rate limits. A cached model list does not confirm connectivity. |
+| Installer stops | Check OS/CPU support and the reported tool/checksum error. Existing unrelated commands or modified installs are preserved; use a fresh manual download if needed. |
 | App won't launch | Check your OS/CPU build and extract the **whole** archive. On macOS/Linux, use `chmod +x ./phins` if needed. On macOS, approve a trusted app via **Privacy & Security** if prompted. |
 | Demo setup fails | Install Node.js 22+ and Git; retry in a **new** extracted folder if a previous demo already exists. |
 | Agent stops before success | Check remaining budget/credits and actual test results. A partial run is not a completed repair. |

@@ -14,6 +14,8 @@
 
 Download a standalone build for your platform. **No Docker, local GPU, or Bun/pnpm installation is needed to run the binary.**
 
+The [automatic installer](docs/QUICKSTART.md#1-install-and-launch) detects your OS/CPU, verifies checksums and opens the TUI. macOS/Linux use `install.sh`; Windows has a native PowerShell command. Direct downloads are also available below.
+
 | Platform | Download |
 | --- | --- |
 | macOS — Apple Silicon (M1/M2/M3/M4) | [ARM64 build](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-arm64.tar.gz) |

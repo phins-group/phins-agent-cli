@@ -1,0 +1,108 @@
+name: Verify standalone installers
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [install.sh, install.ps1, scripts/install.test.mjs, .github/workflows/install.yml]
+  pull_request:
+    paths: [install.sh, install.ps1, scripts/install.test.mjs, .github/workflows/install.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: darwin-arm64
+            runner: macos-15
+          - target: darwin-x64
+            runner: macos-15-intel
+          - target: linux-arm64
+            runner: ubuntu-24.04-arm
+          - target: linux-x64
+            runner: ubuntu-24.04
+          - target: windows-x64
+            runner: windows-2025
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - name: Check installer regression cases
+        run: node --test scripts/install.test.mjs
+      - name: Install and repeat on macOS or Linux
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          install_home="$RUNNER_TEMP/PHINs install à"
+          mkdir -p "$install_home"
+          url="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/$GITHUB_SHA/install.sh"
+          curl -fsSL "$url" | env HOME="$install_home" sh -s -- --no-launch
+          curl -fsSL "$url" | env HOME="$install_home" sh -s -- --no-launch
+          echo "INSTALLED_BINARY=$install_home/.local/bin/phins" >> "$GITHUB_ENV"
+      - name: Install and repeat on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $env:LOCALAPPDATA = Join-Path $env:RUNNER_TEMP 'PHINs install à/AppData/Local'
+          $url = "https://raw.githubusercontent.com/$env:GITHUB_REPOSITORY/$env:GITHUB_SHA/install.ps1"
+          $script = [scriptblock]::Create((Invoke-RestMethod $url))
+          & $script -NoLaunch
+          & $script -NoLaunch
+          "INSTALL_LOCALAPPDATA=$env:LOCALAPPDATA" >> $env:GITHUB_ENV
+          "INSTALLED_BINARY=$env:LOCALAPPDATA/PHINsAgent/phins-0.1.1-local-windows-x64/phins.exe" >> $env:GITHUB_ENV
+      - name: Check native Windows PowerShell onboarding
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $env:LOCALAPPDATA = $env:INSTALL_LOCALAPPDATA
+          $url = "https://raw.githubusercontent.com/$env:GITHUB_REPOSITORY/$env:GITHUB_SHA/install.ps1"
+          powershell.exe -NoProfile -Command "Invoke-RestMethod '$url' | Invoke-Expression"
+          if ($LASTEXITCODE -ne 0) { throw 'Windows PowerShell onboarding failed' }
+          & "$env:LOCALAPPDATA/PHINsAgent/bin/phins.cmd" --version
+          if ($LASTEXITCODE -ne 0) { throw 'Windows launcher failed' }
+      - name: Verify the actual installed binary
+        shell: bash
+        run: python scripts/smoke-binary.py "$INSTALLED_BINARY"
+      - name: Reproduce the bundled historical baseline
+        shell: python
+        run: |
+          import os, pathlib, subprocess
+          bundle = pathlib.Path(os.environ['INSTALLED_BINARY']).resolve().parent
+          subprocess.run(['node', 'scripts/demo.mjs', 'prepare'], cwd=bundle, check=True)
+          result = subprocess.run(['node', 'scripts/demo.mjs', 'test'], cwd=bundle, text=True, capture_output=True)
+          print(result.stdout)
+          assert result.returncode == 1
+          assert all(value in result.stdout for value in ('# tests 27', '# pass 22', '# fail 5'))
+      - name: Verify Windows protects an existing command and changed binary
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $env:LOCALAPPDATA = $env:INSTALL_LOCALAPPDATA
+          $launcher = Join-Path $env:LOCALAPPDATA 'PHINsAgent/bin/phins.cmd'
+          $original = [IO.File]::ReadAllText($launcher)
+          [IO.File]::WriteAllText($launcher, 'user-owned fixture')
+          $rejected = $false
+          try { & ./install.ps1 -NoLaunch } catch {
+            if ($_.Exception.Message -notlike '*Existing command preserved*') { throw }
+            $rejected = $true
+          }
+          if (-not $rejected -or [IO.File]::ReadAllText($launcher) -ne 'user-owned fixture') { throw 'Existing command was not protected' }
+          [IO.File]::WriteAllText($launcher, $original)
+          Add-Content -LiteralPath $env:INSTALLED_BINARY -Value 'changed fixture'
+          $before = (Get-FileHash -LiteralPath $env:INSTALLED_BINARY).Hash
+          $rejected = $false
+          try { & ./install.ps1 -NoLaunch } catch {
+            if ($_.Exception.Message -notlike '*Existing installation changed*') { throw }
+            $rejected = $true
+          }
+          if (-not $rejected -or (Get-FileHash -LiteralPath $env:INSTALLED_BINARY).Hash -ne $before) { throw 'Changed binary was not preserved' }

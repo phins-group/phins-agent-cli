@@ -35,6 +35,10 @@
       "sha256": "657eae27fcc52d6b3d9b3aaa6174879c4a4f763a2d48c014b1e62021da42093f"
     },
     {
+      "path": ".github/workflows/install.yml",
+      "sha256": "e19ba0357d499679e57f5243ee0eea349da245aea148ec7cf63443e1448437c7"
+    },
+    {
       "path": ".gitignore",
       "sha256": "2c72764777cf99bd53f447168c26291a2ef2a20bfb7f7b1c5275a72258a5a27b"
     },
@@ -52,7 +56,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "54f91c7ed8f5b21a9e0e790623ce0927675c9224f29f549537e02624cd06ba5d"
+      "sha256": "426f1dac1208bc1f2a12d77b88a4d00289d86992af686a4fe0f476d189d4fbe2"
     },
     {
       "path": "THIRD_PARTY.md",
@@ -96,7 +100,7 @@
     },
     {
       "path": "docs/QUICKSTART.md",
-      "sha256": "a1b09cfc8ab5734b20dc66c04d176482a7cf79b9c83c666a5024eb2e73d49e13"
+      "sha256": "570d4b19810e5032786a2caf535af0f44fc09b884ea2d451ef56b3a0e9ce0d7a"
     },
     {
       "path": "docs/QUICKSTART_VALIDATION.md",
@@ -209,6 +213,14 @@
     {
       "path": "examples/seeded/retry-delay/test/delay.test.mjs",
       "sha256": "59360764e1b80c3ad7f1e69e5b6e9b143ec4cc2a1e75afc1ebbbea674a1343d0"
+    },
+    {
+      "path": "install.ps1",
+      "sha256": "6c1709b45521d630f8f1ad7ab2435a8d87a9b17397fb31c35398ca1ef9fa4ba4"
+    },
+    {
+      "path": "install.sh",
+      "sha256": "9edf3405883eb0ef04f24b33e28b53f6099006d7586bab19fc4023fdedc562fc"
     },
     {
       "path": "notices/bun-LICENSE.md",
@@ -4125,6 +4137,10 @@
     {
       "path": "scripts/demo.test.mjs",
       "sha256": "d2c8aa5754e0ba3fb9072595857a3a120a5e665eec01a50587e47f9038d4cc0d"
+    },
+    {
+      "path": "scripts/install.test.mjs",
+      "sha256": "9b6b3e5b47b3d9f3fad4e0dfb1d5f35f6af6eeb1249be8ea47144c9685e3d889"
     },
     {
       "path": "scripts/local-agent.ts",

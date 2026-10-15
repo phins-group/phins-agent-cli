@@ -1,5 +1,27 @@
 # Quick Start validation
 
+## Windows PowerShell compatibility — 2026-10-15
+
+[Native installer CI](https://github.com/phins-group/phins-agent-cli/actions/runs/38739475934)
+passes six jobs: macOS ARM64/Intel, Linux ARM64/x64, and Windows x64 on both
+Windows Server 2022 and 2025. Windows installs from scratch and repeats under
+Windows PowerShell 5.1, then checks PowerShell 7 onboarding. Nine Windows
+preflight regressions cover architecture metadata, an actual 32-bit PowerShell
+process on x64 Windows, and clear rejection of reported versions below 5.1.
+The ARM64/x86 cases are input fixtures, not physical-machine qualification.
+
+The installer uses native Windows architecture variables, avoiding the null
+RuntimeInformation property reported on an owner's PowerShell 5.1 machine.
+Windows tar extracts the pinned archive, including notice paths beyond 260
+characters. Every installed file is independently checked against the bundled
+SHA-256 inventory. Real TUI/project/session/exit, the intentional 22-pass/5-fail
+baseline, confirmed uninstall and file/profile/project preservation also pass.
+
+These checks run without credentials or inference. The binaries and v0.1.2
+release assets are unchanged; use the current installers linked from Quick Start.
+This is CI console/filesystem evidence, not testing every consumer Windows version
+or a new human visual/model-coding qualification.
+
 ## v0.1.2 confirmed uninstall — 2026-10-15
 
 [Native CI](https://github.com/phins-group/phins-agent-cli/actions/runs/38712390661)

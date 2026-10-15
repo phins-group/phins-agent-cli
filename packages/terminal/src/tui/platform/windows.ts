@@ -51,4 +51,3 @@ export function win32FlushInputBuffer() {
   const handle = k32!.symbols.GetStdHandle(STD_INPUT_HANDLE)
   k32!.symbols.FlushConsoleInputBuffer(handle)
 }
-

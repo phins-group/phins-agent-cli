@@ -160,7 +160,24 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
   const global = yield* AppPaths.Service
   const write = (text: string) => process.platform === "win32"
     ? writeSync(1, text) : process.stdout.write(text)
-  const exit = { epilogue: undefined as string | undefined, reason: undefined as unknown }
+  const printExit = (value: { epilogue?: string; reason?: unknown }) => Effect.gen(function* () {
+    yield* Effect.try({ try: () => {
+      write("\x1b]0;\x07")
+      if (value.reason !== undefined)
+        process.stderr.write((cliErrorMessage(value.reason) ?? errorFormat(value.reason)) + "\n")
+      if (value.epilogue) {
+        if (process.platform !== "win32") write("\x1b[?1049l")
+        write("\x1b[?25h\x1b[0m\x1b[2J\x1b[H")
+      }
+    }, catch: (cause) => cause })
+    if (value.epilogue) {
+      yield* Effect.promise(() => sleep(1_000))
+      yield* Effect.try({ try: () => write(value.epilogue! + "\n"), catch: (cause) => cause })
+      yield* Effect.promise(() => sleep(1_500))
+    }
+  })
+  const exit = { epilogue: undefined as string | undefined, reason: undefined as unknown,
+    requested: false }
   const result = yield* Effect.scoped(
     Effect.gen(function* () {
       const renderer = yield* openTerminalRenderer(!Flag.PHINS_DISABLE_MOUSE && input.config.mouse)
@@ -181,6 +198,7 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
       )
       yield* Effect.addFinalizer(() => Effect.sync(TuiAudio.dispose))
       const shutdown = yield* Deferred.make<unknown>()
+      const exitRequested = yield* Deferred.make<void>()
       let finalOutput: { epilogue?: string; reason?: unknown } = {}
       // OpenTUI emits before its native cleanup finishes. Resume after that stack
       // returns so scope finalizers and the epilogue cannot touch closing handles.
@@ -201,10 +219,12 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
           return (
             <ExitProvider
               exit={(reason) => {
-                if (renderer.isDestroyed) return
+                if (renderer.isDestroyed || exit.requested) return
+                exit.requested = true
                 exit.reason = reason
                 win32FlushInputBuffer()
-                destroyRenderer(renderer)
+                if (process.platform === "win32") Deferred.doneUnsafe(exitRequested, Effect.void)
+                else destroyRenderer(renderer)
               }}
             >
               <EpilogueProvider set={(value) => (exit.epilogue = value)}>
@@ -303,25 +323,19 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
           )
         }, renderer)
       })
-      yield* Deferred.await(shutdown)
+      yield* Effect.race(Deferred.await(shutdown), Deferred.await(exitRequested))
+      if (process.platform === "win32" && exit.requested && !renderer.isDestroyed) {
+        // Windows closes its console transport during native destruction. Suspend
+        // the view, print on the restored screen, then release the renderer.
+        const output = { epilogue: exit.epilogue, reason: exit.reason }
+        yield* Effect.try({ try: () => renderer.suspend(), catch: (cause) => cause })
+        yield* printExit(output).pipe(Effect.ensuring(Effect.sync(() => renderer.destroy())))
+        yield* Deferred.await(shutdown)
+      }
       return finalOutput
     }),
   )
-    yield* Effect.try({ try: () => {
-      write("\x1b]0;\x07")
-      if (result.reason !== undefined)
-        process.stderr.write((cliErrorMessage(result.reason) ?? errorFormat(result.reason)) + "\n")
-      if (result.epilogue) {
-        // The renderer already restores the Windows screen buffer.
-        if (process.platform !== "win32") write("\x1b[?1049l")
-        write("\x1b[?25h\x1b[0m\x1b[2J\x1b[H")
-      }
-    }, catch: (cause) => cause })
-    if (result.epilogue) {
-      yield* Effect.promise(() => sleep(1_000))
-      yield* Effect.try({ try: () => write(result.epilogue! + "\n"), catch: (cause) => cause })
-      yield* Effect.promise(() => sleep(1_500))
-    }
+  if (process.platform !== "win32") yield* printExit(result)
 })
 
 /** Root component nối SDK/event state, command adapters, routes và plugin API. */

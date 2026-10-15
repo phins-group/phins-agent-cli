@@ -52,11 +52,27 @@ def main():
                 spec = importlib.util.spec_from_file_location("windows_smoke", Path(__file__).with_name("smoke-windows.py"))
                 windows = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(windows)
-                windows.check_tui(binary, home, env)
+                check = windows.check_tui
+                check(binary, home, env)
                 result["checks"]["default_tui"] = "pass (native ConPTY; visual Windows Terminal review separate)"
             else:
-                check_tui(binary, home, env)
+                check = check_tui
+                check(binary, home, env)
                 result["checks"]["default_tui"] = "pass"
+            project = home / "Sample project à"
+            project.mkdir()
+            (project / "README.md").write_text("# Standalone startup fixture\n", encoding="utf-8")
+            initialized = subprocess.run(["git", "-c", "init.defaultBranch=main", "init", "--quiet", str(project)],
+                                         cwd=home, env=env, capture_output=True, timeout=15)
+            assert initialized.returncode == 0, "Git fixture initialization failed"
+            check(binary, home, env, [str(project)])
+            result["checks"]["explicit_project_with_spaces_and_unicode"] = "pass"
+            check(binary, project, env)
+            result["checks"]["repository_cwd"] = "pass"
+            registrations = [json.loads(file.read_text()) for file in (state / ".phins/state/agents").glob("*.json")]
+            assert any(os.path.normcase(entry["directory"]) == os.path.normcase(str(project.resolve()))
+                       for entry in registrations), "Wrong project selected"
+            result["checks"]["project_identity"] = "pass"
         except Exception:
             if os.name == "nt":
                 # This profile is created without credentials. Retain bounded,
@@ -86,7 +102,7 @@ def main():
     print(json.dumps(result, indent=2))
 
 
-def check_tui(binary, home, env):
+def check_tui(binary, home, env, arguments=()):
     import fcntl
     import pty
     import select
@@ -95,7 +111,7 @@ def check_tui(binary, home, env):
 
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 36, 120, 0, 0))
-    child = subprocess.Popen([str(binary)], cwd=home, env=env, stdin=slave,
+    child = subprocess.Popen([str(binary), *arguments], cwd=home, env=env, stdin=slave,
                              stdout=slave, stderr=slave, start_new_session=True)
     os.close(slave)
     output = bytearray()

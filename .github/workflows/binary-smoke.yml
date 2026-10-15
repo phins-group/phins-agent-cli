@@ -6,7 +6,7 @@ on:
       release_tag:
         description: Release tag containing the candidate assets
         required: true
-        default: v0.1.0
+        default: v0.1.1
 
 permissions:
   contents: read
@@ -30,14 +30,18 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
+          if ($env:RELEASE_TAG -notmatch '^v([0-9]+\.[0-9]+\.[0-9]+)$') { throw "Expected a versioned release tag" }
+          $label = "phins-$($Matches[1])-local-windows-x64"
+          "PHINS_BINARY_LABEL=$label" >> $env:GITHUB_ENV
           $stage = Join-Path $env:RUNNER_TEMP "phins-release"
           New-Item -ItemType Directory -Path $stage | Out-Null
-          gh release download "$env:RELEASE_TAG" --pattern "phins-0.1.0-local-windows-x64.zip" --dir "$stage"
+          gh release download "$env:RELEASE_TAG" --pattern "$label.zip" --dir "$stage"
           if ($LASTEXITCODE -ne 0) { throw "Binary download failed" }
           gh release download "$env:RELEASE_TAG" --pattern "SHA256SUMS" --dir "$stage"
           if ($LASTEXITCODE -ne 0) { throw "Checksum download failed" }
-          $archive = Join-Path $stage "phins-0.1.0-local-windows-x64.zip"
-          $line = Get-Content (Join-Path $stage "SHA256SUMS") | Where-Object { $_ -match "  phins-0.1.0-local-windows-x64.zip$" }
+          $archive = Join-Path $stage "$label.zip"
+          $pattern = '  ' + [regex]::Escape("$label.zip") + '$'
+          $line = Get-Content (Join-Path $stage "SHA256SUMS") | Where-Object { $_ -match $pattern }
           if (-not $line) { throw "Archive checksum missing" }
           $expected = ($line -split "\s+")[0]
           if ((Get-FileHash -Algorithm SHA256 $archive).Hash.ToLower() -ne $expected) { throw "Archive checksum mismatch" }
@@ -47,10 +51,11 @@ jobs:
         env:
           BUN_BE_BUN: "1"
         run: |
-          $binary = Join-Path $env:RUNNER_TEMP "phins-release/phins-0.1.0-local-windows-x64/phins.exe"
+          $binary = Join-Path $env:RUNNER_TEMP "phins-release/$env:PHINS_BINARY_LABEL/phins.exe"
           $probe = Join-Path $env:RUNNER_TEMP "phins-acl-tests"
           New-Item -ItemType Directory -Path "$probe/src/agent", "$probe/test/agent" -Force | Out-Null
           Copy-Item packages/terminal/src/agent/runtime-privacy.ts "$probe/src/agent/runtime-privacy.ts"
+          Copy-Item packages/terminal/src/agent/windows-acl.ts "$probe/src/agent/windows-acl.ts"
           Copy-Item packages/terminal/test/agent/runtime-privacy.test.ts "$probe/test/agent/runtime-privacy.test.ts"
           Push-Location $probe
           & $binary test test/agent/runtime-privacy.test.ts
@@ -60,14 +65,14 @@ jobs:
       - name: Check standalone startup without installing agent packages
         shell: pwsh
         run: |
-          $binary = Join-Path $env:RUNNER_TEMP "phins-release/phins-0.1.0-local-windows-x64/phins.exe"
+          $binary = Join-Path $env:RUNNER_TEMP "phins-release/$env:PHINS_BINARY_LABEL/phins.exe"
           python scripts/smoke-binary.py "$binary"
           if ($LASTEXITCODE -ne 0) { throw "Windows startup smoke failed" }
       - name: Reproduce bundled demo without installing packages
         if: ${{ !cancelled() }}
         shell: pwsh
         run: |
-          $bundle = Join-Path $env:RUNNER_TEMP "phins-release/phins-0.1.0-local-windows-x64"
+          $bundle = Join-Path $env:RUNNER_TEMP "phins-release/$env:PHINS_BINARY_LABEL"
           Set-Location $bundle
           node --version
           git --version

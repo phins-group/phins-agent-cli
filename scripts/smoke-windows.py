@@ -34,7 +34,7 @@ def stop_runtime(pid):
         k.CloseHandle(handle)
 
 
-def check_tui(binary, directory, environment):
+def check_tui(binary, directory, environment, arguments=()):
     k = ctypes.WinDLL("kernel32", use_last_error=True)
     pointer = ctypes.c_void_p
 
@@ -115,14 +115,14 @@ def check_tui(binary, directory, environment):
             'out = os.open("CONOUT$", os.O_RDWR | os.O_BINARY)\n'
             'err = os.open(sys.argv[2], os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)\n'
             'try:\n'
-            '    result = subprocess.run([sys.argv[1]], stdin=inp, stdout=out, stderr=err)\n'
+            '    result = subprocess.run([sys.argv[1], *sys.argv[3:]], stdin=inp, stdout=out, stderr=err)\n'
             'finally:\n'
             '    os.close(inp)\n'
             '    os.close(out)\n'
             '    os.close(err)\n'
             'sys.exit(result.returncode)\n')
         command = ctypes.create_unicode_buffer(
-            subprocess.list2cmdline([sys.executable, str(launcher), str(binary), str(errors)]))
+            subprocess.list2cmdline([sys.executable, str(launcher), str(binary), str(errors), *arguments]))
         block = ctypes.create_unicode_buffer("\0".join(f"{key}={value}" for key, value in
             sorted(environment.items(), key=lambda item: item[0].upper())) + "\0\0")
         require(k.CreateProcessW(sys.executable, command, None, None, False, 0x00080000 | 0x00000400,

@@ -5,10 +5,14 @@ const ENABLE_PROCESSED_INPUT = 0x0001
 
 const kernel = () =>
   dlopen("kernel32.dll", {
-    GetStdHandle: { args: ["i32"], returns: "ptr" },
-    GetConsoleMode: { args: ["ptr", "ptr"], returns: "i32" },
-    SetConsoleMode: { args: ["ptr", "u32"], returns: "i32" },
-    FlushConsoleInputBuffer: { args: ["ptr"], returns: "i32" },
+    GetStdHandle: { args: ["i32"], returns: "u64" },
+    GetConsoleMode: { args: ["u64", "ptr"], returns: "i32" },
+    SetConsoleMode: { args: ["u64", "u32"], returns: "i32" },
+    FlushConsoleInputBuffer: { args: ["u64"], returns: "i32" },
+    CreateFileW: { args: ["buffer", "u32", "u32", "ptr", "u32", "u32", "u64"], returns: "u64" },
+    WriteConsoleW: { args: ["u64", "buffer", "u32", "buffer", "ptr"], returns: "i32" },
+    CloseHandle: { args: ["u64"], returns: "i32" },
+    GetLastError: { args: [], returns: "u32" },
   })
 
 let k32: ReturnType<typeof kernel> | undefined
@@ -50,4 +54,31 @@ export function win32FlushInputBuffer() {
 
   const handle = k32!.symbols.GetStdHandle(STD_INPUT_HANDLE)
   k32!.symbols.FlushConsoleInputBuffer(handle)
+}
+
+/** Renderer teardown can invalidate Bun's cached stdout handle on Windows. */
+export function win32WriteConsole(text: string) {
+  if (process.platform !== "win32") return false
+  if (!load()) throw new Error("Unable to open Windows console output")
+  const api = k32!.symbols
+  // Own a fresh console handle; never close or replace the process stdio handles.
+  const handle = api.CreateFileW(Buffer.from("CONOUT$\0", "utf16le"),
+    0x40000000, 3, null, 3, 0, 0n)
+  const fail = (): never => {
+    throw new Error(`Unable to write Windows console output (Win32: ${api.GetLastError()})`)
+  }
+  if (handle === 0xffffffffffffffffn) return fail()
+  try {
+    const bytes = Buffer.from(text, "utf16le"), written = new Uint32Array(1)
+    let offset = 0
+    while (offset < bytes.length) {
+      const remaining = bytes.subarray(offset)
+      if (!api.WriteConsoleW(handle, remaining, remaining.length / 2, written, null)
+        || written[0] === 0) return fail()
+      offset += written[0] * 2
+    }
+  } finally {
+    api.CloseHandle(handle)
+  }
+  return true
 }

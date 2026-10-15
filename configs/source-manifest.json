@@ -3152,7 +3152,7 @@
     },
     {
       "path": "packages/terminal/src/tui/app.tsx",
-      "sha256": "66281c43af3124dee014d827a8d679d408eee6dced75b2f473296512b1b55574"
+      "sha256": "456873f99d7e562e8a6ed643b7586314e34330dabafbe22c77763117ef03c1a3"
     },
     {
       "path": "packages/terminal/src/tui/assets.d.ts",
@@ -3484,7 +3484,7 @@
     },
     {
       "path": "packages/terminal/src/tui/platform/windows.ts",
-      "sha256": "85210101b508d4f9dc2a69746db9cf3b35f6d253935c6aab3a5f92cce997e890"
+      "sha256": "e237876c7f9c5969fe6ff2942f55c96132ef919e6f95a29428ecd1f976ed590f"
     },
     {
       "path": "packages/terminal/src/tui/platform/zed.ts",
@@ -4140,7 +4140,7 @@
     },
     {
       "path": "scripts/smoke-windows.py",
-      "sha256": "d4ebb80745f01083e2c8f8df9929135ce5a7b3c8f78961232ac6c5f103d8d4a3"
+      "sha256": "18048fab690e7ef1a09dd44928e41416f32cc6bec621f14c54473c50b19f8818"
     },
     {
       "path": "scripts/spending.ts",

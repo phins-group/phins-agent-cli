@@ -84,7 +84,7 @@ import {
 import type { EventSource } from "./state/agent-client"
 import { createTuiAttention } from "./platform/attention"
 import * as TuiAudio from "./platform/sound"
-import { win32FlushInputBuffer } from "./platform/windows"
+import { win32FlushInputBuffer, win32WriteConsole } from "./platform/windows"
 import { destroyRenderer, openTerminalRenderer } from "./platform/renderer"
 import { cliErrorMessage, errorFormat } from "../shared/errors"
 
@@ -301,12 +301,17 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
     win32FlushInputBuffer()
     if (result.reason !== undefined)
       process.stderr.write((cliErrorMessage(result.reason) ?? errorFormat(result.reason)) + "\n")
-    if (result.epilogue) process.stdout.write("\x1b[?1049l\x1b[?25h\x1b[0m\x1b[2J\x1b[H")
+    if (result.epilogue) {
+      const reset = "\x1b[?1049l\x1b[?25h\x1b[0m\x1b[2J\x1b[H"
+      if (!win32WriteConsole(reset)) process.stdout.write(reset)
+    }
   })
   const epilogue = result.epilogue
   if (epilogue) {
     yield* Effect.promise(() => sleep(1_000))
-    yield* Effect.sync(() => process.stdout.write(epilogue + "\n"))
+    yield* Effect.sync(() => {
+      if (!win32WriteConsole(epilogue + "\n")) process.stdout.write(epilogue + "\n")
+    })
     yield* Effect.promise(() => sleep(1_500))
   }
 })

@@ -174,6 +174,7 @@ def check_tui(binary, directory, environment, arguments=()):
         detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
         assert stopped, f"ConPTY exit timed out: {detail}"
         assert exit_code.value == 0, f"ConPTY exit code {exit_code.value}: {detail}"
+        assert "Goodbye!" in detail, "Exit epilogue was not rendered"
     finally:
         if process.process and k.WaitForSingleObject(process.process, 0) != 0:
             k.TerminateProcess(process.process, 1)

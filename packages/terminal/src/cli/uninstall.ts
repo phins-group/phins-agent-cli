@@ -1,7 +1,7 @@
 /** Remove a release's unchanged files, never an enclosing project directory. */
 import { createHash } from "node:crypto"
 import { createReadStream } from "node:fs"
-import { lstat, mkdtemp, readFile, readdir, realpath, readlink, rm, rmdir, unlink, writeFile } from "node:fs/promises"
+import { lstat, readFile, readdir, realpath, readlink, rm, rmdir, unlink, writeFile } from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
 
@@ -84,6 +84,8 @@ async function idleProfile(profile: string) {
 export async function inspectUninstall(options: UninstallOptions): Promise<UninstallPlan> {
   const executable = await realpath(options.executable)
   const root = path.dirname(executable)
+  if (await stat(path.join(root, ".git")))
+    throw new Error("Release directory is a Git repository; project files are preserved.")
   const binary = process.platform === "win32" ? "phins.exe" : "phins"
   if (path.basename(executable) !== binary || !(await plainFile(root, inventoryName)))
     throw new Error("Uninstall requires a release bundle with INSTALL_MANIFEST.json. Source checkouts and loose binaries are preserved.")
@@ -143,9 +145,13 @@ export async function inspectUninstall(options: UninstallOptions): Promise<Unins
       files.push({ path: receipt, sha256: await digest(path.join(root, receipt)) })
     if (process.platform === "win32") {
       const command = path.join(base, "bin/phins.cmd")
-      const content = `@rem PHINs Agent installer launcher\r\n@"%~dp0..\\${path.basename(root)}\\phins.exe" %*\r\n`
-      if (await plainFile(base, "bin/phins.cmd") && await readFile(command, "utf8") === content)
-        launcher = { path: command, content, symlink: false }
+      const entry = files.find(file => file.path === "phins.cmd")
+      if (entry && await plainFile(root, entry.path)) {
+        const content = (await readFile(path.join(root, entry.path), "utf8"))
+          .replaceAll("%~dp0phins.exe", `%~dp0..\\${path.basename(root)}\\phins.exe`)
+        if (await plainFile(base, "bin/phins.cmd") && await readFile(command, "utf8") === content)
+          launcher = { path: command, content, symlink: false }
+      }
     } else {
       const command = path.join(home, ".local/bin/phins")
       if ((await stat(command))?.isSymbolicLink() && samePath(await realpath(path.dirname(command)), path.dirname(command))) {
@@ -176,22 +182,16 @@ async function removeEmptyDirectories(plan: UninstallPlan) {
   }
 }
 
-/** Windows cannot unlink its running executable. A local helper waits for exit. */
+/** The Windows launcher runs this receipt only after the binary exits. */
 async function windowsCleanup(plan: UninstallPlan, binary: InstalledFile) {
-  const directory = await mkdtemp(path.join(os.tmpdir(), "phins-uninstall-"))
-  const commit = path.join(directory, "commit")
-  const ready = path.join(directory, "ready")
-  const diagnostic = path.join(directory, "error.txt")
+  const receipt = process.env.PHINS_UNINSTALL_RECEIPT
+  if (!receipt || !path.isAbsolute(receipt)
+    || !/^phins-uninstall-[0-9]+-[0-9]+\.ps1$/.test(path.basename(receipt))
+    || !samePath(await realpath(path.dirname(receipt)), await realpath(os.tmpdir())))
+    throw new Error("Use the release's phins.cmd launcher for Windows uninstall; nothing removed.")
   const literal = (value: string) => "'" + value.replaceAll("'", "''") + "'"
   const script = `$ErrorActionPreference = 'Stop'
 try {
-  [IO.File]::WriteAllText(${literal(ready)}, 'ready')
-  Wait-Process -Id ${process.pid} -Timeout 60 -ErrorAction SilentlyContinue
-  if (Get-Process -Id ${process.pid} -ErrorAction SilentlyContinue) { throw 'Parent did not exit.' }
-  if (-not (Test-Path -LiteralPath ${literal(commit)})) {
-    if (Test-Path -LiteralPath ${literal(directory)}) { Remove-Item -LiteralPath ${literal(directory)} -Recurse -Force }
-    return
-  }
   $binary = ${literal(plan.executable)}
   $parent = Split-Path -LiteralPath $binary
   while ($parent) {
@@ -205,43 +205,11 @@ try {
   Remove-Item -LiteralPath $binary -Force
   $root = ${literal(plan.root)}
   if (-not (Get-ChildItem -LiteralPath $root -Force | Select-Object -First 1)) { Remove-Item -LiteralPath $root }
-  Remove-Item -LiteralPath ${literal(directory)} -Recurse -Force
-} catch { [IO.File]::WriteAllText(${literal(diagnostic)}, $_.Exception.Message); exit 1 }
+  [Console]::Out.WriteLine('PHINs Agent uninstalled.')
+} finally { Remove-Item -LiteralPath ${literal(receipt)} -Force -ErrorAction SilentlyContinue }
 `
-  const powershell = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32/WindowsPowerShell/v1.0/powershell.exe")
-  const scriptPath = path.join(directory, "cleanup.ps1")
-  await writeFile(scriptPath, script, { mode: 0o600, flag: "wx" })
-  // Bun's detached Windows children can die with their parent (oven-sh/bun#31603).
-  // cmd/start launches the helper independently. User paths stay in quoted env
-  // values and the local script, never interpolated into command syntax.
-  const cmd = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32/cmd.exe")
-  const invocation = "& ([scriptblock]::Create([IO.File]::ReadAllText($env:PHINS_UNINSTALL_SCRIPT)))"
-  const child = Bun.spawn([cmd, "/d", "/c", "start", "", "/b", powershell,
-    "-NoProfile", "-NonInteractive", "-EncodedCommand", Buffer.from(invocation, "utf16le").toString("base64")], {
-    windowsHide: true,
-    env: { ...process.env, PHINS_UNINSTALL_SCRIPT: scriptPath },
-    stdin: "ignore", stdout: "ignore", stderr: "ignore",
-  })
-  try {
-    const deadline = Date.now() + 15_000
-    const exit = await child.exited
-    if (exit !== 0) throw new Error(`Windows uninstall bootstrap failed (exit ${exit}).`)
-    while (true) {
-      if (await stat(ready)) break
-      if (Date.now() >= deadline) throw new Error("Windows uninstall helper startup timed out.")
-      await new Promise(resolve => setTimeout(resolve, 100))
-    }
-  } catch (error) {
-    child.kill()
-    await rm(directory, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 })
-    throw error
-  }
-  child.unref()
-  return {
-    diagnostic,
-    commit: () => writeFile(commit, "confirmed\n", { mode: 0o600, flag: "wx" }),
-    async cancel() { child.kill(); await rm(directory, { recursive: true, force: true, maxRetries: 20, retryDelay: 100 }) },
-  }
+  await writeFile(receipt, script, { mode: 0o600, flag: "wx" })
+  return { cancel: () => unlink(receipt) }
 }
 
 export async function removeInstallation(plan: UninstallPlan) {
@@ -265,8 +233,7 @@ export async function removeInstallation(plan: UninstallPlan) {
     }
     if (plan.all) await rm(plan.profile, { recursive: true, force: true })
     await removeEmptyDirectories(plan)
-    await helper?.commit()
-    return { pendingWindowsExit: !!helper, diagnostic: helper?.diagnostic }
+    return { pendingWindowsExit: !!helper }
   } catch (error) {
     await helper?.cancel()
     throw error

@@ -118,6 +118,12 @@ def write_install_inventory(bundle, version, target):
     (bundle / "INSTALL_MANIFEST.json").write_text(json.dumps(inventory, indent=2) + "\n")
 
 
+def write_windows_launcher(bundle):
+    template = (ROOT / "scripts/windows-launcher.cmd").read_text()
+    content = template.replace("__PHINS_EXECUTABLE__", "%~dp0phins.exe")
+    (bundle / "phins.cmd").write_bytes(content.replace("\n", "\r\n").encode("ascii"))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("name", nargs="?", default="binary-candidate")
@@ -223,6 +229,9 @@ def main():
                 "See README.md and DEPENDENCIES.json for limitations and outstanding notices.\n"
                 "No API key, provider balance, hosted access or model weights are included.\n")
         # Uninstall removes only unchanged release files; user-created files stay.
+        if target.startswith("windows"):
+            shutil.copyfile(ROOT / "scripts/windows-launcher.cmd", bundle / "scripts/windows-launcher.cmd")
+            write_windows_launcher(bundle)
         write_install_inventory(bundle, build["version"], target)
         windows = target.startswith("windows")
         archive = destination / (label + (".zip" if windows else ".tar.gz"))

@@ -11,6 +11,8 @@ export default CommandDispatcher.defineHandler(Commands.commands.uninstall, inpu
   Effect.gen(function* () {
     if (!process.stdin.isTTY || !process.stdout.isTTY)
       return yield* Effect.fail(new Error("Run uninstall in an interactive terminal. Confirmation is required; nothing removed."))
+    if (process.platform === "win32" && !process.env.PHINS_UNINSTALL_RECEIPT)
+      return yield* Effect.fail(new Error("On Windows, run phins.cmd uninstall (optionally --all) from the release folder, or use the installed phins command. Nothing removed."))
     const plan = yield* Effect.tryPromise(() => inspectUninstall({
       executable: process.execPath, version: InstallationVersion,
       profile: AppPaths.directories.home, all: input.all,
@@ -28,7 +30,7 @@ export default CommandDispatcher.defineHandler(Commands.commands.uninstall, inpu
     const result = yield* Effect.tryPromise(() => removeInstallation(plan))
     yield* Effect.sync(() => process.stdout.write(
       result.pendingWindowsExit
-        ? `Release files removed. Windows will remove phins.exe after this process exits. If it remains, check: ${result.diagnostic}\n`
+        ? "Release files removed. The Windows launcher will finish executable removal after this command returns.\n"
         : "PHINs Agent uninstalled.\n",
     ))
     yield* Effect.sync(() => process.stdout.write(input.all ? "Default profile removed.\n" : "Profile retained.\n"))

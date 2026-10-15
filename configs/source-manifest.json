@@ -3116,7 +3116,7 @@
     },
     {
       "path": "packages/terminal/src/cli/actions/uninstall.ts",
-      "sha256": "a4104285fdc51231dc021330b2616aca20de8eb9c23cfade4d173ca8a2d955c1"
+      "sha256": "8421705687971c4458a43fcea06c8c934af48613e9113b679b3ed2b0a6a8de2b"
     },
     {
       "path": "packages/terminal/src/cli/command-tree.ts",
@@ -3140,7 +3140,7 @@
     },
     {
       "path": "packages/terminal/src/cli/uninstall.ts",
-      "sha256": "69d86d59ddd479414371b2590319be5d583d0489a27d9cc94975cf4513b094d6"
+      "sha256": "d3971de17dd429664108941454d1d645434869e050a5bafbf4509134cbe9c6da"
     },
     {
       "path": "packages/terminal/src/index.ts",
@@ -3880,7 +3880,7 @@
     },
     {
       "path": "packages/terminal/test/integration/uninstall.test.ts",
-      "sha256": "61b7f0b3fc57f05b36062c81c26a709e1226d71c69a13a7359e75f54e5c5a5b3"
+      "sha256": "7265286c7a05423af998554e433765ccc508cd4204eeea4fb0eb15b997234caa"
     },
     {
       "path": "packages/terminal/test/preload.ts",
@@ -4160,7 +4160,7 @@
     },
     {
       "path": "scripts/package-binaries.py",
-      "sha256": "242e3208cfafb162b69da4bb7f8ec63aa4fae8470cd478d1ca93ee99a91f5deb"
+      "sha256": "9460c66a6cf206600ae6dbf5b22aad8555811cc238bc2477f3bc084d74a9bd97"
     },
     {
       "path": "scripts/smoke-binary.py",
@@ -4168,11 +4168,11 @@
     },
     {
       "path": "scripts/smoke-uninstall.py",
-      "sha256": "cdbbdd5a8c43b7f484280b35eb2309548d968adf0fa67170143a1873341f7e6d"
+      "sha256": "ff99fd6166f28792245355bc3c31ab82219f5d9ebcffa530b57dc037c51d3af1"
     },
     {
       "path": "scripts/smoke-windows.py",
-      "sha256": "1af4a246f82975b2e4ee0c39fcfab3c7d43e0439046f1b6090b3e57b47ee44ba"
+      "sha256": "dd9d13abd4092aa1a3cd077224b0073511a3fbd9fa6e04bbc39e3c5590fdb307"
     },
     {
       "path": "scripts/spending.ts",
@@ -4193,6 +4193,10 @@
     {
       "path": "scripts/test-shards.ts",
       "sha256": "8a7061d528cc7e508c86b404f2e37fded17fb5a9f877ea53085d1d0014a9c255"
+    },
+    {
+      "path": "scripts/windows-launcher.cmd",
+      "sha256": "15f8bab6de8417cbd48f32c049d08ca785b569744a1577b0161c475b5dbef076"
     }
   ],
   "adaptations": {}

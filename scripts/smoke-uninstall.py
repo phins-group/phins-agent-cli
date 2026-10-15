@@ -22,17 +22,9 @@ def confirm(binary, directory, env, all_data=False, answer=b"y"):
     arguments = ["uninstall", *(["--all"] if all_data else [])]
     prompt = b"Uninstall and permanently delete" if all_data else b"Uninstall PHINs Agent?"
     if os.name == "nt":
-        def after_exit():
-            # A user's terminal stays open after the command. Closing ConPTY
-            # early kills attached helpers before their post-exit work finishes.
-            deadline = time.monotonic() + 20
-            while binary.exists() and time.monotonic() < deadline:
-                time.sleep(.1)
-            errors = [file.read_text() for file in directory.glob("phins-uninstall-*/error.txt")]
-            assert not binary.exists(), "Windows post-exit deletion failed: " + "\n".join(errors)
         return module("windows_console", "smoke-windows.py").check_tui(
-            binary, directory, env, arguments, prompt=prompt, keys=answer,
-            on_exit=after_exit if answer else None)
+            Path(env["LOCALAPPDATA"]) / "PHINsAgent/bin/phins.cmd", directory, env,
+            arguments, prompt=prompt, keys=answer)
     import fcntl
     import pty
     import select
@@ -107,6 +99,8 @@ def main():
             docs.mkdir()
             (docs / "guide.md").write_text("unmodified release file\n")
             (bundle / "NOTICE").write_text("notice fixture\n")
+            if os.name == "nt":
+                packager.write_windows_launcher(bundle)
             packager.write_install_inventory(bundle, version, target)
             (bundle / ".phins-install").write_text("a" * 64)
             # Added/changed files deliberately remain outside the release inventory.
@@ -124,7 +118,8 @@ def main():
             if os.name == "nt":
                 launcher = base / "bin/phins.cmd"
                 launcher.parent.mkdir()
-                launcher.write_bytes((f'@rem PHINs Agent installer launcher\r\n@"%~dp0..\\{label}\\phins.exe" %*\r\n').encode("ascii"))
+                launcher.write_bytes((bundle / "phins.cmd").read_bytes().replace(
+                    b"%~dp0phins.exe", f"%~dp0..\\{label}\\phins.exe".encode("ascii")))
                 # Directory junctions need no elevation; the external project must survive --all.
                 linked = subprocess.run([str(Path(env['SystemRoot']) / 'System32/cmd.exe'),
                                          '/d', '/c', 'mklink', '/J', str(profile / 'linked-project'), str(project)],
@@ -148,13 +143,13 @@ def main():
             deadline = time.monotonic() + 20
             while executable.exists() and time.monotonic() < deadline:
                 time.sleep(.1)
-            diagnostics = [file.read_text() for file in home.glob("phins-uninstall-*/error.txt")]
+            diagnostics = [file.read_text() for file in home.glob("phins-uninstall-*.ps1")]
             assert not executable.exists(), completed[-3000:] + "\n" + "\n".join(diagnostics)
             if os.name == "nt":
                 deadline = time.monotonic() + 5
-                while list(home.glob("phins-uninstall-*")) and time.monotonic() < deadline:
+                while list(home.glob("phins-uninstall-*.ps1")) and time.monotonic() < deadline:
                     time.sleep(.1)
-                assert not list(home.glob("phins-uninstall-*")), 'Windows helper did not finish its cleanup'
+                assert not list(home.glob("phins-uninstall-*.ps1")), 'Windows helper did not finish its cleanup'
             assert not launcher.exists()
             assert not (docs / "guide.md").exists()
             assert not (bundle / "INSTALL_MANIFEST.json").exists()

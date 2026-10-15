@@ -51,7 +51,7 @@ test.skipIf(process.platform === "win32")("managed uninstall removes release and
   await writeFile(added, "user demo edits")
   const plan = await inspectUninstall(f.options)
   expect(plan.launcher?.path).toBe(launcher)
-  expect(await removeInstallation(plan)).toEqual({ pendingWindowsExit: false, diagnostic: undefined })
+  expect(await removeInstallation(plan)).toEqual({ pendingWindowsExit: false })
   expect(await exists(f.executable)).toBe(false)
   expect(await readFile(launcher).catch(() => undefined)).toBeUndefined()
   expect(await exists(path.join(f.root, "NOTICE"))).toBe(false)
@@ -78,6 +78,13 @@ test.skipIf(process.platform === "win32")("--all deletes the default profile wit
 test("--all refuses a custom profile", async () => {
   const f = await fixture()
   await expect(inspectUninstall({ ...f.options, all: true, profile: f.project })).rejects.toThrow("default")
+  expect(await exists(f.executable)).toBe(true)
+})
+
+test("a release placed in a Git repository cannot remove project files", async () => {
+  const f = await fixture()
+  await mkdir(path.join(f.root, ".git"))
+  await expect(inspectUninstall(f.options)).rejects.toThrow("Git repository")
   expect(await exists(f.executable)).toBe(true)
 })
 

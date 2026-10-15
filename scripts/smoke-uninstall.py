@@ -68,7 +68,8 @@ def main():
     result = {"platform": sys.platform, "checks": {}, "inference": False}
     for all_data in (False, True):
         with tempfile.TemporaryDirectory(prefix="phins-uninstall-smoke-") as temporary:
-            home = Path(temporary).resolve()
+            home = Path(temporary).resolve() / "User's home à"
+            home.mkdir()
             env = {key: os.environ[key] for key in
                    ("PATH", "SystemRoot", "WINDIR", "PATHEXT", "COMSPEC", "SystemDrive",
                     "ProgramFiles", "ProgramFiles(x86)", "ProgramW6432", "ProgramData", "ALLUSERSPROFILE") if key in os.environ}

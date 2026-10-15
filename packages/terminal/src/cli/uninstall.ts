@@ -189,7 +189,10 @@ try {
   [IO.File]::WriteAllText(${literal(ready)}, 'ready')
   Wait-Process -Id ${process.pid} -Timeout 60 -ErrorAction SilentlyContinue
   if (Get-Process -Id ${process.pid} -ErrorAction SilentlyContinue) { throw 'Parent did not exit.' }
-  if (-not (Test-Path -LiteralPath ${literal(commit)})) { return }
+  if (-not (Test-Path -LiteralPath ${literal(commit)})) {
+    if (Test-Path -LiteralPath ${literal(directory)}) { Remove-Item -LiteralPath ${literal(directory)} -Recurse -Force }
+    return
+  }
   $binary = ${literal(plan.executable)}
   $parent = Split-Path -LiteralPath $binary
   while ($parent) {
@@ -210,9 +213,15 @@ try {
   const scriptPath = path.join(directory, "cleanup.ps1")
   await writeFile(scriptPath, script, { mode: 0o600, flag: "wx" })
   const errors = await open(path.join(directory, "startup-error.txt"), "wx", 0o600)
-  const child = spawn(powershell, ["-NoProfile", "-NonInteractive", "-Command",
-    `& ([scriptblock]::Create([IO.File]::ReadAllText(${literal(scriptPath)})))`], {
-    detached: true, windowsHide: true, stdio: ["ignore", errors.fd, errors.fd],
+  // Bun's detached Windows children can die with their parent (oven-sh/bun#31603).
+  // cmd/start launches the helper independently. User paths stay in quoted env
+  // values and the local script, never interpolated into command syntax.
+  const bootstrap = 'start "" /b "%PHINS_UNINSTALL_PS%" -NoProfile -NonInteractive -Command "& ([scriptblock]::Create([IO.File]::ReadAllText($env:PHINS_UNINSTALL_SCRIPT)))" <nul >nul 2>&1'
+  const cmd = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32/cmd.exe")
+  const child = spawn(cmd, ["/d", "/s", "/c", `"${bootstrap}"`], {
+    windowsVerbatimArguments: true, windowsHide: true,
+    env: { ...process.env, PHINS_UNINSTALL_PS: powershell, PHINS_UNINSTALL_SCRIPT: scriptPath },
+    stdio: ["ignore", errors.fd, errors.fd],
   })
   let startupError: Error | undefined
   let exited = false
@@ -224,7 +233,7 @@ try {
     while (true) {
       if (startupError) throw startupError
       if (await stat(ready)) break
-      if (exited) {
+      if (exited && child.exitCode !== 0) {
         const detail = await readFile(path.join(directory, "startup-error.txt"), "utf8")
         const failure = await readFile(diagnostic, "utf8").catch(() => "")
         throw new Error(`Windows uninstall helper could not start (exit ${child.exitCode}): ${(failure + detail).slice(-2000)}`)

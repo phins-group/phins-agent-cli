@@ -3140,7 +3140,7 @@
     },
     {
       "path": "packages/terminal/src/cli/uninstall.ts",
-      "sha256": "1cf391463e4cfe99e0df5d14953a5f3d65ed107dac7bdcfc81fedbf1ad85761a"
+      "sha256": "ebbf8a03c88a32130938dcbaf24783de4b38af8fd8393658f827af9a4aa3c576"
     },
     {
       "path": "packages/terminal/src/index.ts",
@@ -4168,7 +4168,7 @@
     },
     {
       "path": "scripts/smoke-uninstall.py",
-      "sha256": "1873bc99148877df82d5d44c7bdfedd81f1084ac98cc42032b47104b85264356"
+      "sha256": "4d3e7de49890cf30a70b3798acd350a0e4deea11cd297a7bc713574355c5a419"
     },
     {
       "path": "scripts/smoke-windows.py",

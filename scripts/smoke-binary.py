@@ -67,18 +67,20 @@ def main():
             initialized = subprocess.run(["git", "-c", "init.defaultBranch=main", "init", "--quiet", str(project)],
                                          cwd=home, env=env, capture_output=True, timeout=15)
             assert initialized.returncode == 0, "Git fixture initialization failed"
-            check(binary, home, env, [str(project)])
+            def project_registration():
+                registrations = [json.loads(file.read_text(encoding="utf-8")) for file in (state / ".phins/state/agents").glob("*.json")]
+                selected = next((entry for entry in registrations
+                                 if os.path.normcase(entry["directory"]) == os.path.normcase(str(project.resolve()))), None)
+                assert selected is not None, "Wrong active project selected"
+                return selected
+
+            check(binary, home, env, [str(project)], on_ready=project_registration)
             result["checks"]["explicit_project_with_spaces_and_unicode"] = "pass"
-            check(binary, project, env)
+            sessions = []
+            check(binary, project, env, on_ready=lambda: sessions.append(empty_session(project_registration(), project)))
             result["checks"]["repository_cwd"] = "pass"
-            registrations = [json.loads(file.read_text()) for file in (state / ".phins/state/agents").glob("*.json")]
-            assert any(os.path.normcase(entry["directory"]) == os.path.normcase(str(project.resolve()))
-                       for entry in registrations), "Wrong project selected"
             result["checks"]["project_identity"] = "pass"
-            registration = next(entry for entry in registrations
-                                if os.path.normcase(entry["directory"]) == os.path.normcase(str(project.resolve())))
-            session = empty_session(registration, project)
-            check(binary, project, env, ["--session", session], expect_epilogue=True)
+            check(binary, project, env, ["--session", sessions[0]], expect_epilogue=True)
             result["checks"]["resumed_session_exit_epilogue"] = "pass"
         except Exception:
             if os.name == "nt":
@@ -96,7 +98,7 @@ def main():
             # The authenticated local host is detached. Only stop hosts registered
             # inside this freshly created profile, never the installed application.
             for registration in (state / ".phins/state/agents").glob("*.json"):
-                data = json.loads(registration.read_text())
+                data = json.loads(registration.read_text(encoding="utf-8"))
                 pid = data.get("pid")
                 if isinstance(pid, int) and pid > 1:
                     try:
@@ -133,7 +135,7 @@ def empty_session(registration, project):
         post("/api/agent/client/close", {"background": False})
 
 
-def check_tui(binary, home, env, arguments=(), expect_epilogue=False):
+def check_tui(binary, home, env, arguments=(), expect_epilogue=False, on_ready=None):
     import fcntl
     import pty
     import select
@@ -162,6 +164,8 @@ def check_tui(binary, home, env, arguments=(), expect_epilogue=False):
                 output.extend(chunk)
             ready = b"Ask Phins" in output and (not expect_epilogue or b"Console exit fixture" in output)
             if ready and not sent_exit:
+                if on_ready:
+                    on_ready()
                 os.write(master, b"\x04")
                 sent_exit = True
             if child.poll() is not None:

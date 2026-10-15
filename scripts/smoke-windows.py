@@ -34,7 +34,7 @@ def stop_runtime(pid):
         k.CloseHandle(handle)
 
 
-def check_tui(binary, directory, environment, arguments=(), expect_epilogue=False):
+def check_tui(binary, directory, environment, arguments=(), expect_epilogue=False, on_ready=None):
     k = ctypes.WinDLL("kernel32", use_last_error=True)
     pointer = ctypes.c_void_p
 
@@ -150,6 +150,8 @@ def check_tui(binary, directory, environment, arguments=(), expect_epilogue=Fals
             if ready and ready_since is None:
                 ready_since = time.monotonic()
             if ready_since is not None and time.monotonic() - ready_since >= 1 and not sent_exit:
+                if on_ready:
+                    on_ready()
                 count = w.DWORD()
                 # Separate key events from paste input and let autocomplete settle.
                 for key in b"/exit":
@@ -171,7 +173,7 @@ def check_tui(binary, directory, environment, arguments=(), expect_epilogue=Fals
         detail = re.sub(r"[ \t]{2,}", " ", detail)
         detail = "\n".join(line.strip() for line in detail.splitlines() if line.strip())[-10000:]
         if errors.exists():
-            detail += "\n" + errors.read_text(errors="replace")[-4000:]
+            detail += "\n" + errors.read_text(encoding="utf-8", errors="replace")[-4000:]
         detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
         assert stopped, f"ConPTY exit timed out: {detail}"
         assert exit_code.value == 0, f"ConPTY exit code {exit_code.value}: {detail}"

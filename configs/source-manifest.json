@@ -4136,11 +4136,11 @@
     },
     {
       "path": "scripts/smoke-binary.py",
-      "sha256": "f4bfcd0d8a9d4b35cff1612d84b593688f082810afbd85a7bfdb20c5f6830fa5"
+      "sha256": "83702b580282a5f2cb5c39cd0e63268eb799ac54915791c54a75d78146680071"
     },
     {
       "path": "scripts/smoke-windows.py",
-      "sha256": "b5f62019ee5ba0183bb2071b5bf19e6f942114a73d9948b9a1a38558c27d0e2b"
+      "sha256": "f39248b62790cd83bc4dcfcebf2bbeaff13e24974da64edfd6971e27de12105b"
     },
     {
       "path": "scripts/spending.ts",

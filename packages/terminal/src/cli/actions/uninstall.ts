@@ -11,7 +11,7 @@ export default CommandDispatcher.defineHandler(Commands.commands.uninstall, inpu
   Effect.gen(function* () {
     if (!process.stdin.isTTY || !process.stdout.isTTY)
       return yield* Effect.fail(new Error("Run uninstall in an interactive terminal. Confirmation is required; nothing removed."))
-    if (process.platform === "win32" && !process.env.PHINS_UNINSTALL_RECEIPT)
+    if (process.platform === "win32" && (!process.env.PHINS_UNINSTALL_RECEIPT || !process.env.PHINS_UNINSTALL_LAUNCHER))
       return yield* Effect.fail(new Error("On Windows, run phins.cmd uninstall (optionally --all) from the release folder, or use the installed phins command. Nothing removed."))
     const plan = yield* Effect.tryPromise(() => inspectUninstall({
       executable: process.execPath, version: InstallationVersion,

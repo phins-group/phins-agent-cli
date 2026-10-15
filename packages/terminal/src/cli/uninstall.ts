@@ -190,6 +190,7 @@ async function windowsCleanup(plan: UninstallPlan, binary: InstalledFile) {
     || !samePath(await realpath(path.dirname(receipt)), await realpath(os.tmpdir())))
     throw new Error("Use the release's phins.cmd launcher for Windows uninstall; nothing removed.")
   const literal = (value: string) => "'" + value.replaceAll("'", "''") + "'"
+  const removeRoot = !inside(plan.root, await realpath(process.cwd()))
   const script = `$ErrorActionPreference = 'Stop'
 try {
   $binary = ${literal(plan.executable)}
@@ -204,7 +205,7 @@ try {
   if ((Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash.ToLowerInvariant() -ne '${binary.sha256}') { throw 'Executable changed; preserved.' }
   Remove-Item -LiteralPath $binary -Force
   $root = ${literal(plan.root)}
-  if (-not (Get-ChildItem -LiteralPath $root -Force | Select-Object -First 1)) { Remove-Item -LiteralPath $root }
+  if (${removeRoot ? "$true" : "$false"} -and -not (Get-ChildItem -LiteralPath $root -Force | Select-Object -First 1)) { Remove-Item -LiteralPath $root }
   [Console]::Out.WriteLine('PHINs Agent uninstalled.')
 } finally { Remove-Item -LiteralPath ${literal(receipt)} -Force -ErrorAction SilentlyContinue }
 `
@@ -217,15 +218,26 @@ export async function removeInstallation(plan: UninstallPlan) {
   const binary = plan.files.find(file => path.join(plan.root, file.path) === plan.executable)!
   if (!binary || !(await plainFile(plan.root, binary.path)) || await digest(plan.executable) !== binary.sha256)
     throw new Error("Executable changed since confirmation; no files removed.")
+  const currentLauncher = process.platform === "win32" && process.env.PHINS_UNINSTALL_LAUNCHER
+    ? await realpath(process.env.PHINS_UNINSTALL_LAUNCHER) : undefined
+  if (process.platform === "win32") {
+    const bundled = plan.files.find(file => file.path === "phins.cmd")
+    const approved = currentLauncher && ((plan.launcher && samePath(currentLauncher, plan.launcher.path)
+      && await readFile(currentLauncher, "utf8") === plan.launcher.content)
+      || (bundled && samePath(currentLauncher, path.join(plan.root, bundled.path))
+        && await digest(currentLauncher) === bundled.sha256))
+    if (!approved) throw new Error("Windows launcher changed or is unrecognized; files are preserved.")
+  }
   const helper = process.platform === "win32" ? await windowsCleanup(plan, binary) : undefined
   try {
     // Recheck all paths/hashes after confirmation. New/changed files are retained.
     for (const file of plan.files) {
       if (helper && file === binary) continue
+      if (currentLauncher && samePath(path.join(plan.root, file.path), currentLauncher)) continue
       if (await plainFile(plan.root, file.path) && await digest(path.join(plan.root, file.path)) === file.sha256)
         await unlink(path.join(plan.root, file.path))
     }
-    if (plan.launcher) {
+    if (plan.launcher && (!currentLauncher || !samePath(plan.launcher.path, currentLauncher))) {
       const { path: file, content, symlink } = plan.launcher
       const info = await stat(file)
       if (samePath(await realpath(path.dirname(file)), path.dirname(file)) && (symlink ? info?.isSymbolicLink() && await readlink(file) === content

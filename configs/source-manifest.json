@@ -3116,7 +3116,7 @@
     },
     {
       "path": "packages/terminal/src/cli/actions/uninstall.ts",
-      "sha256": "8421705687971c4458a43fcea06c8c934af48613e9113b679b3ed2b0a6a8de2b"
+      "sha256": "d5973acd7e477c1b6f0cbae14d2df5fa2e704a7dfedb758a9c66dd6106359349"
     },
     {
       "path": "packages/terminal/src/cli/command-tree.ts",
@@ -3140,7 +3140,7 @@
     },
     {
       "path": "packages/terminal/src/cli/uninstall.ts",
-      "sha256": "d3971de17dd429664108941454d1d645434869e050a5bafbf4509134cbe9c6da"
+      "sha256": "7295f13a1ccc9e23f123a0cd002791c3cca74ec78d97397c00ebec0c8572b21e"
     },
     {
       "path": "packages/terminal/src/index.ts",
@@ -4196,7 +4196,7 @@
     },
     {
       "path": "scripts/windows-launcher.cmd",
-      "sha256": "15f8bab6de8417cbd48f32c049d08ca785b569744a1577b0161c475b5dbef076"
+      "sha256": "7ea69839c8034c95666d86de064a12bbf70d083e921fa1dd3a2879f0fbe1e907"
     }
   ],
   "adaptations": {}

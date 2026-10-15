@@ -32,6 +32,8 @@ jobs:
             runner: windows-2025
           - target: windows-x64
             runner: windows-2022
+          - target: windows-x64-emulated
+            runner: windows-11-arm
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -57,6 +59,7 @@ jobs:
         run: |
           if ($PSVersionTable.PSVersion.Major -ne 5) { throw 'Expected Windows PowerShell 5.1' }
           Write-Host "Fresh install with Windows PowerShell $($PSVersionTable.PSVersion)"
+          Write-Host "64-bit OS: $([Environment]::Is64BitOperatingSystem); shell CPU: $env:PROCESSOR_ARCHITECTURE; native CPU: $env:PROCESSOR_ARCHITEW6432"
           $installDirectory = 'PHINs install ' + [char]0x00e0 + '/AppData/Local'
           $env:LOCALAPPDATA = Join-Path $env:RUNNER_TEMP $installDirectory
           $url = "https://raw.githubusercontent.com/$env:GITHUB_REPOSITORY/$env:GITHUB_SHA/install.ps1"

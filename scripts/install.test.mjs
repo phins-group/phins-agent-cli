@@ -133,7 +133,7 @@ test("Windows shell detection delegates to the native PowerShell installer", opt
 })
 
 // Exercise the actual Windows PowerShell 5.1 installer before any download or
-// installation writes. A supported CPU reaches the invalid-path guard.
+// installation writes. CPU environment metadata must not block a 64-bit OS.
 const windowsOptions = { skip: process.platform !== "win32" }
 
 async function windowsPreflight(t, architecture, nativeArchitecture, systemDirectory = "System32", reportedVersion) {
@@ -162,21 +162,20 @@ async function windowsPreflight(t, architecture, nativeArchitecture, systemDirec
   return result.stdout.trim()
 }
 
-for (const [name, architecture, nativeArchitecture, supported] of [
-  ["native x64", "AMD64", "", true],
-  ["WOW64 x86 on x64", "x86", "AMD64", true],
-  ["native ARM64", "ARM64", "", false],
-  ["x64 emulation on ARM64", "AMD64", "ARM64", false],
-  ["x86 without a native x64 architecture", "x86", "", false],
-  ["unknown CPU", "", "", false],
+for (const [name, architecture, nativeArchitecture] of [
+  ["native x64", "AMD64", ""],
+  ["WOW64 x86 on x64", "x86", "AMD64"],
+  ["native ARM64", "ARM64", ""],
+  ["x64 emulation on ARM64", "AMD64", "ARM64"],
+  ["incomplete x86 metadata", "x86", ""],
+  ["missing CPU metadata", "", ""],
 ])
-  test(`Windows PowerShell preflight handles ${name}`, windowsOptions, async t => {
+  test(`64-bit Windows preflight accepts ${name} metadata`, windowsOptions, async t => {
     const message = await windowsPreflight(t, architecture, nativeArchitecture)
-    assert.equal(message, supported ? "LOCALAPPDATA must be an absolute path."
-      : "This release supports Windows x64; Windows ARM64 and x86 are unsupported.")
+    assert.equal(message, "LOCALAPPDATA must be an absolute path.")
   })
 
-test("32-bit Windows PowerShell recognizes the native x64 OS", windowsOptions, async t => {
+test("32-bit Windows PowerShell recognizes the 64-bit OS", windowsOptions, async t => {
   assert.equal(await windowsPreflight(t, undefined, undefined, "SysWOW64"),
     "LOCALAPPDATA must be an absolute path.")
 })

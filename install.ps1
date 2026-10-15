@@ -8,11 +8,9 @@
     throw 'PowerShell 5.1 or newer is required. Use Windows PowerShell 5.1 or PowerShell 7.'
   }
   if ($env:OS -ne 'Windows_NT') { throw 'Use install.sh on macOS or Linux.' }
-  # WOW64 exposes the native CPU separately from a 32-bit PowerShell process.
-  $architecture = $env:PROCESSOR_ARCHITEW6432
-  if (-not $architecture) { $architecture = $env:PROCESSOR_ARCHITECTURE }
-  if (-not [Environment]::Is64BitOperatingSystem -or $architecture -ne 'AMD64') {
-    throw 'This release supports Windows x64; Windows ARM64 and x86 are unsupported.'
+  # Check the OS, not the shell's CPU metadata. Verify the actual x64 executable below.
+  if (-not [Environment]::Is64BitOperatingSystem) {
+    throw 'PHINs Agent requires 64-bit Windows; 32-bit Windows is unsupported.'
   }
   if ([Environment]::OSVersion.Version.Build -lt 17763) { throw 'Windows 10 1809 or newer is required.' }
   if (-not $env:LOCALAPPDATA -or -not [IO.Path]::IsPathRooted($env:LOCALAPPDATA)) {
@@ -96,8 +94,12 @@
     throw 'Installed Windows launcher changed; preserved.'
   }
   # Probe at the final location: Windows can retain a lock after executing an image.
-  & $binary --version
-  if ($LASTEXITCODE -ne 0) { throw 'The executable cannot run on this Windows installation.' }
+  try {
+    & $binary --version
+    if ($LASTEXITCODE -ne 0) { throw "Executable exited with code $LASTEXITCODE." }
+  } catch {
+    throw "The x64 executable cannot run on this Windows installation. On ARM64, Windows 11 with x64 emulation is required. $($_.Exception.Message)"
+  }
   $launcherText = [IO.File]::ReadAllText($rootLauncher).Replace('%~dp0phins.exe', "%~dp0..\$label\phins.exe")
   if (-not (Test-Path -LiteralPath $launcher)) {
     $bytes = [Text.Encoding]::ASCII.GetBytes($launcherText)

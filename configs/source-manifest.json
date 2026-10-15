@@ -36,7 +36,7 @@
     },
     {
       "path": ".github/workflows/install.yml",
-      "sha256": "0e2aebd32d6b6969f36b9ac9418b795be030bb7f35f09ca2f2830ed094be528e"
+      "sha256": "5af17693169f1d3afb409bb30559d896331b49f7e7e2dd47dd61401b42e91437"
     },
     {
       "path": ".gitignore",
@@ -216,7 +216,7 @@
     },
     {
       "path": "install.ps1",
-      "sha256": "161cf8762a8cbf2fd0e0d2cc203eddd462a46eb789f5a3ef8a72da8fe6d5034e"
+      "sha256": "478f194d8f8fa198614c288bfb266c6271178a826338af3c2c76791b1003d2d3"
     },
     {
       "path": "install.sh",
@@ -4152,7 +4152,7 @@
     },
     {
       "path": "scripts/install.test.mjs",
-      "sha256": "0280e6e2f04425305fc7d217035cdad8f57f926ac1cda16e92b1181ec5f6a31e"
+      "sha256": "4d0ae922290ffd35a342689c155a8a63b2a5cf04cbb73a33abbb49027511d2b0"
     },
     {
       "path": "scripts/local-agent.ts",

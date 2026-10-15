@@ -8,7 +8,7 @@
 
 **Nebius × NVIDIA Global AI Hackathon 2026** · **Coding and Agentic Engineering**
 
-**[Watch the demo](https://www.youtube.com/watch?v=zNPvf9Mw8LQ)** · **[Try PHINs Agent — Quick Start](docs/QUICKSTART.md)** · **[Download v0.1.0](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.0)** · **[Review test evidence](docs/BENCHMARK.md)**
+**[Watch the demo](https://www.youtube.com/watch?v=zNPvf9Mw8LQ)** · **[Try PHINs Agent — Quick Start](docs/QUICKSTART.md)** · **[Download v0.1.1](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.1)** · **[Review test evidence](docs/BENCHMARK.md)**
 
 ## Try it in your terminal
 
@@ -16,10 +16,10 @@ Download a standalone build for your platform. **No Docker, local GPU, or Bun/pn
 
 | Platform | Download |
 | --- | --- |
-| macOS — Apple Silicon (M1/M2/M3/M4) | [ARM64 build](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-arm64.tar.gz) |
-| macOS — Intel | [x64 build](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-x64.tar.gz) |
-| Linux | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz) |
-| Windows | [x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip) |
+| macOS — Apple Silicon (M1/M2/M3/M4) | [ARM64 build](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-arm64.tar.gz) |
+| macOS — Intel | [x64 build](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-x64.tar.gz) |
+| Linux | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-arm64.tar.gz) |
+| Windows | [x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-windows-x64.zip) |
 
 **Requirements:** a terminal, internet access, and a [Nebius Token Factory](https://tokenfactory.nebius.com/) API key with access to the NVIDIA model and available inference credits. The reproducible coding demo additionally needs **Node.js 22+ and Git**. Supported OS versions and limitations are documented in the [Quick Start](docs/QUICKSTART.md).
 
@@ -126,7 +126,7 @@ The local build generates `dist/phins` or `dist/phins.exe`. `pnpm build:all` tar
 
 - **Track:** Coding and Agentic Engineering.
 - **Video:** [Public YouTube demo](https://www.youtube.com/watch?v=zNPvf9Mw8LQ).
-- **Working test build:** [Release v0.1.0](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.0), with [installation and verification instructions](docs/QUICKSTART.md).
+- **Working test build:** [Release v0.1.1](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.1), with [installation and verification instructions](docs/QUICKSTART.md).
 - **Evidence:** [Benchmark](docs/BENCHMARK.md) and [Judging Guide](docs/JUDGING_GUIDE.md).
 - **Nebius/NVIDIA feedback:** To be submitted in the Devpost submission form based on actual development and inference experience.
 - **Project evolution during the submission period:** If PHINs Agent predates August 26, 2026, the Devpost entry must identify and substantiate substantial changes made since that date. Consult commits and release history; do not infer dates or contributions from this README.

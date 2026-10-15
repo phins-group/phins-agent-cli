@@ -52,7 +52,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "6009e1bf80bcf82e82b9d08331ead1b9fed8fc96de6cc135766b04a714b3311d"
+      "sha256": "54f91c7ed8f5b21a9e0e790623ce0927675c9224f29f549537e02624cd06ba5d"
     },
     {
       "path": "THIRD_PARTY.md",
@@ -80,7 +80,7 @@
     },
     {
       "path": "docs/BINARY_DISTRIBUTION.md",
-      "sha256": "dbeb6abd58181629d944175bea8c179e60c33a78fd7d7895847a481f6318a551"
+      "sha256": "f9230f5b024e99d3b9992add318d62a836b670b08f12e3d3e883756364dda50b"
     },
     {
       "path": "docs/DEMO_SCRIPT.md",
@@ -96,11 +96,11 @@
     },
     {
       "path": "docs/QUICKSTART.md",
-      "sha256": "2a4814a599e5db32da9febe08beb3acb4a1f72f26b2e6ca0f4c6bab9b3a90bb6"
+      "sha256": "a1b09cfc8ab5734b20dc66c04d176482a7cf79b9c83c666a5024eb2e73d49e13"
     },
     {
       "path": "docs/QUICKSTART_VALIDATION.md",
-      "sha256": "62fd85c3eb926f6afc001572da8515cdea86969ac7ca438354fdc177d8b3df91"
+      "sha256": "ab6dcbec28af16c853c4a06cb0c284b6c85125c0d2b15d6bbc89ee0890452fec"
     },
     {
       "path": "docs/RUNTIME_SOURCE.md",

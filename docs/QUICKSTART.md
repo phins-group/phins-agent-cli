@@ -2,7 +2,7 @@
 
 **Try a real AI coding agent in your terminal.** In this demo, PHINs Agent investigates a bug, edits code, and runs tests using **NVIDIA Nemotron 3 Super via Nebius Token Factory**.
 
-**Start here:** [Watch the 2-minute demo](https://www.youtube.com/watch?v=zNPvf9Mw8LQ) · [Download v0.1.0](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.0) · [Source code](https://github.com/phins-group/phins-agent-cli)
+**Start here:** [Watch the 2-minute demo](https://www.youtube.com/watch?v=zNPvf9Mw8LQ) · [Download v0.1.1](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.1) · [Source code](https://github.com/phins-group/phins-agent-cli)
 
 > **Before you begin:** You need a [Nebius Token Factory](https://tokenfactory.nebius.com/) API key with access to `nvidia/nemotron-3-super-120b-a12b` and available inference credits. The agent runs without Docker, a local GPU, or npm installation. **The coding demo requires Node.js 22+ and Git.** Allow roughly 5 minutes for setup; agent execution may take longer and consume credits.
 
@@ -16,9 +16,9 @@ Requires macOS 13+.
 
 ```bash
 mkdir phins-agent-preview && cd phins-agent-preview
-curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-arm64.tar.gz
-tar -xzf phins-0.1.0-local-darwin-arm64.tar.gz
-cd phins-0.1.0-local-darwin-arm64
+curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-arm64.tar.gz
+tar -xzf phins-0.1.1-local-darwin-arm64.tar.gz
+cd phins-0.1.1-local-darwin-arm64
 ./phins
 # Or open your own project instead:
 # ./phins "/path/to/your/reviewed/project"
@@ -28,9 +28,9 @@ cd phins-0.1.0-local-darwin-arm64
 
 ```bash
 mkdir phins-agent-preview && cd phins-agent-preview
-curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-x64.tar.gz
-tar -xzf phins-0.1.0-local-darwin-x64.tar.gz
-cd phins-0.1.0-local-darwin-x64
+curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-x64.tar.gz
+tar -xzf phins-0.1.1-local-darwin-x64.tar.gz
+cd phins-0.1.1-local-darwin-x64
 ./phins
 # Or open your own project instead:
 # ./phins "/path/to/your/reviewed/project"
@@ -42,15 +42,15 @@ Requires glibc 2.30+ (not Alpine/musl).
 
 ```bash
 mkdir phins-agent-preview && cd phins-agent-preview
-curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz
-tar -xzf phins-0.1.0-local-linux-x64.tar.gz
-cd phins-0.1.0-local-linux-x64
+curl -fL -O https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-x64.tar.gz
+tar -xzf phins-0.1.1-local-linux-x64.tar.gz
+cd phins-0.1.1-local-linux-x64
 ./phins
 # Or open your own project instead:
 # ./phins "/path/to/your/reviewed/project"
 ```
 
-Linux ARM64: [download the ARM64 archive](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz), extract it, enter `phins-0.1.0-local-linux-arm64`, and run `./phins` (or `./phins "/path/to/your/reviewed/project"` to open a project).
+Linux ARM64: [download the ARM64 archive](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-arm64.tar.gz), extract it, enter `phins-0.1.1-local-linux-arm64`, and run `./phins` (or `./phins "/path/to/your/reviewed/project"` to open a project).
 
 ### Windows — x64
 
@@ -60,9 +60,9 @@ Requires Windows 10 (1809+) or Windows 11. Open **PowerShell in Windows Terminal
 $ErrorActionPreference = "Stop"
 New-Item -ItemType Directory -Path phins-agent-preview | Out-Null
 Set-Location phins-agent-preview
-Invoke-WebRequest -Uri https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip -OutFile phins.zip
+Invoke-WebRequest -Uri https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-windows-x64.zip -OutFile phins.zip
 Expand-Archive -LiteralPath phins.zip -DestinationPath .
-Set-Location phins-0.1.0-local-windows-x64
+Set-Location phins-0.1.1-local-windows-x64
 .\phins.exe
 # Or open your own project instead:
 # .\phins.exe "C:\path\to\your\reviewed\project"
@@ -140,4 +140,4 @@ The diff command normally returns exit code **1** when it finds differences. The
 | Demo setup fails | Install Node.js 22+ and Git; retry in a **new** extracted folder if a previous demo already exists. |
 | Agent stops before success | Check remaining budget/credits and actual test results. A partial run is not a completed repair. |
 
-**More information:** [Video demo](https://www.youtube.com/watch?v=zNPvf9Mw8LQ) · [Full validation notes](QUICKSTART_VALIDATION.md) · [GitHub releases](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.0) · [Nebius documentation](https://docs.tokenfactory.nebius.com/quickstart)
+**More information:** [Video demo](https://www.youtube.com/watch?v=zNPvf9Mw8LQ) · [Full validation notes](QUICKSTART_VALIDATION.md) · [GitHub releases](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.1) · [Nebius documentation](https://docs.tokenfactory.nebius.com/quickstart)

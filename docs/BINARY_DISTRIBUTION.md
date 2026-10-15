@@ -1,6 +1,6 @@
 # PHINs Agent — standalone builds
 
-Download an archive from the [0.1.0 hackathon preview](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.0),
+Download an archive from the [0.1.1 hackathon preview](https://github.com/phins-group/phins-agent-cli/releases/tag/v0.1.1),
 extract it, and run **`phins`** (`phins.exe` on Windows). No arguments open the
 TUI. Bun, pnpm and agent package installation are unnecessary. Follow the
 [Quick Start](QUICKSTART.md) for masked Nebius setup and the bundled demo.
@@ -9,12 +9,12 @@ TUI. Bun, pnpm and agent package installation are unnecessary. Follow the
 
 | Operating system | Direct download | Minimum system |
 | --- | --- | --- |
-| **macOS** | [Apple Silicon / ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-arm64.tar.gz) · [Intel / x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-darwin-x64.tar.gz) | macOS 13+ |
-| **Linux** | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-linux-arm64.tar.gz) | glibc 2.30+, libstdc++ and libgcc |
-| **Windows** | [Windows x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.0/phins-0.1.0-local-windows-x64.zip) | Windows 10 1809+ / Windows 11, Windows Terminal |
+| **macOS** | [Apple Silicon / ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-arm64.tar.gz) · [Intel / x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-darwin-x64.tar.gz) | macOS 13+ |
+| **Linux** | [x64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-x64.tar.gz) · [ARM64](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-linux-arm64.tar.gz) | glibc 2.30+, libstdc++ and libgcc |
+| **Windows** | [Windows x64 ZIP](https://github.com/phins-group/phins-agent-cli/releases/download/v0.1.1/phins-0.1.1-local-windows-x64.zip) | Windows 10 1809+ / Windows 11, Windows Terminal |
 
 Alpine/musl and Windows ARM64 are unsupported. The executable reports
-`0.1.0-local`. macOS binaries are ad-hoc signed, not notarized; Windows binaries
+`0.1.1-local`. macOS binaries are ad-hoc signed, not notarized; Windows binaries
 are unsigned. The optional Windows FFF binding imports `VCRUNTIME140.dll` and
 remains disabled by default.
 
@@ -57,7 +57,9 @@ python3 scripts/smoke-binary.py /absolute/path/to/phins
 ```
 
 It checks version/help, the isolated default profile, rejection of a
-non-terminal TUI launch, and no-argument TUI startup/clean exit. Windows uses
+non-terminal TUI launch, no-argument TUI startup/clean exit, and opening a Git
+project by path and from its own working directory. The path fixture contains
+spaces and a non-ASCII character. Windows uses
 native ConPTY. This makes no inference request. A ConPTY check does not replace
 human visual review in Windows Terminal.
 
@@ -94,3 +96,19 @@ archives and refuses to overwrite an existing candidate. The packager's
 `--release-review` option requires a completed local record binding all target
 hashes, retained runtime notices and source assets; it does not upload or
 publish. Owner publication authorization remains a separate requirement.
+
+## Native build checks
+
+The [native build workflow](https://github.com/phins-group/phins-agent-cli/actions/workflows/build.yml)
+compiles and tests on macOS ARM64/Intel, Linux ARM64/x64 and Windows x64
+runners, with pinned Bun/pnpm and a frozen dependency lockfile. It uses no
+provider key and makes no model requests. Release archives are packaged and
+checked separately; a successful build alone does not qualify all coding tools.
+
+Windows runtime permissions are checked through Win32 ACL APIs. PowerShell
+script execution and an elevated administrator session are not required for
+this permission check. Broad access still causes the runtime to refuse access.
+
+For native Windows compilation, use the pinned Bun x64 baseline runtime selected
+by the native workflow. This avoids Bun 1.3.12 trying to extract a different
+compiler executable during the build. Judge downloads need no Bun installation.

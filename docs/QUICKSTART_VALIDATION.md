@@ -1,5 +1,39 @@
 # Quick Start validation
 
+## v0.1.1 Windows compatibility update — 2026-10-15
+
+[Native CI](https://github.com/phins-group/phins-agent-cli/actions/runs/38679314958)
+built and tested all five targets: macOS ARM64/Intel, Linux ARM64/x64 and
+Windows x64. Each actual executable passed version/help, non-terminal rejection,
+isolated-profile startup, opening a Git project by explicit path and by cwd,
+and resuming a real empty session with a visible exit epilogue. The project
+path contains spaces and a non-ASCII character; its identity is checked while
+the authenticated runtime is live. The runtime may remove its registration
+when the last client exits.
+
+Windows passed six ACL tests, including rejection of an Everyone grant and
+operation with an empty PATH and invalid PowerShell module path. Runtime
+permissions now use Win32 APIs. Windows exit output is printed on the restored
+screen before native console destruction; renderer cleanup is idempotent.
+
+These checks make **no model inference request**. Builds/installations and a
+first repository scan can download pinned dependencies or ripgrep. This is
+startup/console qualification, not a claim that every Windows/Linux coding tool,
+hardened sandbox, provider request or physical OS version has been qualified.
+The GitHub Windows runner is not a human visual review of the owner's Windows
+Terminal. Use `/exit`; Ctrl+D remains outside Windows shortcut qualification.
+
+The macOS preparation suite recorded **1,907 passes, 14 skips and zero failures**
+before the last Windows console changes. The affected lifecycle, renderer and
+command regressions passed afterward. Exact release-archive checks are recorded
+separately in the release notes. Native CI binaries and maintainer cross-built
+release binaries have separate checksums and runtime checks.
+
+The original model repair footage and inference figures below remain historical
+evidence; they are not new inference runs of v0.1.1.
+
+## Original v0.1.0 qualification
+
 Checked on **2026-10-14**. The guide uses standalone release archives; starting
 PHINs needs no Bun, pnpm or agent package installation. Node.js 22+ and Git
 are needed only for the bundled repository's demo/tests.

@@ -207,19 +207,24 @@ try {
 } catch { [IO.File]::WriteAllText(${literal(diagnostic)}, $_.Exception.Message); exit 1 }
 `
   const powershell = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32/WindowsPowerShell/v1.0/powershell.exe")
+  const scriptPath = path.join(directory, "cleanup.ps1")
+  await writeFile(scriptPath, script, { mode: 0o600, flag: "wx" })
   const errors = await open(path.join(directory, "startup-error.txt"), "wx", 0o600)
-  const child = spawn(powershell, ["-NoProfile", "-NonInteractive", "-EncodedCommand", Buffer.from(script, "utf16le").toString("base64")], {
+  const child = spawn(powershell, ["-NoProfile", "-NonInteractive", "-Command",
+    `& ([scriptblock]::Create([IO.File]::ReadAllText(${literal(scriptPath)})))`], {
     detached: true, windowsHide: true, stdio: ["ignore", errors.fd, errors.fd],
   })
   let startupError: Error | undefined
+  let exited = false
   child.once("error", error => { startupError = error })
+  child.once("exit", () => { exited = true })
   await errors.close()
   try {
     const deadline = Date.now() + 15_000
     while (true) {
       if (startupError) throw startupError
       if (await stat(ready)) break
-      if (typeof child.exitCode === "number") {
+      if (exited) {
         const detail = await readFile(path.join(directory, "startup-error.txt"), "utf8")
         const failure = await readFile(diagnostic, "utf8").catch(() => "")
         throw new Error(`Windows uninstall helper could not start (exit ${child.exitCode}): ${(failure + detail).slice(-2000)}`)

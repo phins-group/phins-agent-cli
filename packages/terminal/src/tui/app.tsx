@@ -303,7 +303,9 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
       return finalOutput
     }),
   )
-  yield* Effect.sync(() => {
+  yield* Effect.try({ try: () => {
+    const titleReset = "\x1b]0;\x07"
+    if (!win32WriteConsole(titleReset)) process.stdout.write(titleReset)
     win32FlushInputBuffer()
     if (result.reason !== undefined)
       process.stderr.write((cliErrorMessage(result.reason) ?? errorFormat(result.reason)) + "\n")
@@ -311,13 +313,13 @@ export const run = Effect.fn("Tui.run")(function* (input: TuiInput) {
       const reset = "\x1b[?1049l\x1b[?25h\x1b[0m\x1b[2J\x1b[H"
       if (!win32WriteConsole(reset)) process.stdout.write(reset)
     }
-  })
+  }, catch: (cause) => cause })
   const epilogue = result.epilogue
   if (epilogue) {
     yield* Effect.promise(() => sleep(1_000))
-    yield* Effect.sync(() => {
+    yield* Effect.try({ try: () => {
       if (!win32WriteConsole(epilogue + "\n")) process.stdout.write(epilogue + "\n")
-    })
+    }, catch: (cause) => cause })
     yield* Effect.promise(() => sleep(1_500))
   }
 })

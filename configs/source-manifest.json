@@ -3152,7 +3152,7 @@
     },
     {
       "path": "packages/terminal/src/tui/app.tsx",
-      "sha256": "f10a800b4d941280258f929b637325ec542a2f210cccea14d6396ef46071d420"
+      "sha256": "48693d7ea9ece826003fbc97628eab8dd065547bc8fe5c13f74c1eeb0ddac918"
     },
     {
       "path": "packages/terminal/src/tui/assets.d.ts",
@@ -3468,7 +3468,7 @@
     },
     {
       "path": "packages/terminal/src/tui/platform/renderer.ts",
-      "sha256": "2080bf6f575227363969fe1d240fbd4a98282ba742c92143bc734620c24f27be"
+      "sha256": "d744120a85a4758c627569e48865b6aacf785cd9e8ce6f9eaf9d914b5a672424"
     },
     {
       "path": "packages/terminal/src/tui/platform/scroll.ts",
@@ -3876,7 +3876,7 @@
     },
     {
       "path": "packages/terminal/test/ui/app-lifecycle.test.tsx",
-      "sha256": "c3e4f9dc4454e97ba2e2e84a6aa1f1857dc0de4eb25b7c16cbe6991bc3b51a12"
+      "sha256": "50c1c4bb055deed09a648abb8e54b4fb8d4678d1339094acb0c420245b9438f6"
     },
     {
       "path": "packages/terminal/test/ui/cli/cmd/tui/__snapshots__/verification-history.test.tsx.snap",

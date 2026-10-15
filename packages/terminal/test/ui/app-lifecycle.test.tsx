@@ -13,9 +13,16 @@ test("SIGHUP clears title and disposes scoped resources once", async () => {
   const titles: string[] = []
   const setTitle = setup.renderer.setTerminalTitle.bind(setup.renderer)
   setup.renderer.setTerminalTitle = (title) => {
+    if (setup.renderer.isDestroyed) throw new Error("Native renderer has been destroyed")
     titles.push(title)
     setTitle(title)
   }
+  const originalWrite = process.stdout.write
+  let stdout = ""
+  process.stdout.write = ((chunk: string | Uint8Array) => {
+    stdout += String(chunk)
+    return true
+  }) as typeof process.stdout.write
   const listeners = new Set(process.listeners("SIGHUP"))
   const events = createEventSource()
   const calls = createFetch()
@@ -50,10 +57,11 @@ test("SIGHUP clears title and disposes scoped resources once", async () => {
     await task
 
     expect(setup.renderer.isDestroyed).toBe(true)
-    expect(titles.at(-1)).toBe("")
+    expect(stdout).toContain("\x1b]0;\x07")
     expect(disposes).toBe(1)
     expect(process.listeners("SIGHUP").every((listener) => listeners.has(listener))).toBe(true)
   } finally {
+    process.stdout.write = originalWrite
     if (!setup.renderer.isDestroyed) setup.renderer.destroy()
     mock.restore()
   }

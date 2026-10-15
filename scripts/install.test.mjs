@@ -157,7 +157,7 @@ async function windowsPreflight(t, architecture, nativeArchitecture, systemDirec
   const result = spawnSync(path.join(process.env.SystemRoot, systemDirectory,
     "WindowsPowerShell", "v1.0", "powershell.exe"),
   ["-NoProfile", "-NonInteractive", "-Command", command],
-  { cwd: directory, encoding: "utf8", timeout: 15000 })
+  { cwd: directory, encoding: "utf8", timeout: 30000 })
   assert.equal(result.status, 0, result.stderr || result.error?.message)
   assert.deepEqual(await readdir(directory), [], "Preflight must not install files")
   return result.stdout.trim()

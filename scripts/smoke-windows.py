@@ -166,10 +166,6 @@ def check_tui(binary, directory, environment, arguments=(), expect_epilogue=Fals
                 sent_exit = True
             if k.WaitForSingleObject(process.process, 100) == 0:
                 break
-        if prompt is not None:
-            assert sent_exit, "ConPTY confirmation did not appear: " + output[-2000:].decode(errors="replace")
-        elif prompt is None:
-            assert sent_exit, "ConPTY composer did not appear: " + output[-2000:].decode(errors="replace")
         stopped = k.WaitForSingleObject(process.process, 10000) == 0
         exit_code = w.DWORD()
         require(k.GetExitCodeProcess(process.process, ctypes.byref(exit_code)))
@@ -182,6 +178,8 @@ def check_tui(binary, directory, environment, arguments=(), expect_epilogue=Fals
         if errors.exists():
             detail += "\n" + errors.read_text(encoding="utf-8", errors="replace")[-4000:]
         detail = re.sub(r"\b[a-fA-F0-9]{32,}\b", "[redacted-id]", detail)
+        expected = "confirmation" if prompt is not None else "composer"
+        assert sent_exit, f"ConPTY {expected} did not appear (exit code {exit_code.value}): {detail}"
         assert stopped, f"ConPTY exit timed out: {detail}"
         assert exit_code.value == expected_exit, f"ConPTY exit code {exit_code.value}: {detail}"
         if expect_epilogue:

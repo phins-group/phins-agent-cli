@@ -4152,7 +4152,7 @@
     },
     {
       "path": "scripts/install.test.mjs",
-      "sha256": "1cbd7c8d366de20b7eb4e8dae0e48a2e1f63db7d8785c841fc47dcc0d2587f0e"
+      "sha256": "bb21d02378d97e3139a245f243412aa0c19e56b1593fb74dc3c5765d50fb931c"
     },
     {
       "path": "scripts/local-agent.ts",
@@ -4172,7 +4172,7 @@
     },
     {
       "path": "scripts/smoke-windows.py",
-      "sha256": "dd9d13abd4092aa1a3cd077224b0073511a3fbd9fa6e04bbc39e3c5590fdb307"
+      "sha256": "e74fdf45fd9cdde3d9226f4589976599ef8cf5087bda58065f7229f017afd9b1"
     },
     {
       "path": "scripts/spending.ts",

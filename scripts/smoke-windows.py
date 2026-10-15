@@ -35,7 +35,7 @@ def stop_runtime(pid):
 
 
 def check_tui(binary, directory, environment, arguments=(), expect_epilogue=False, on_ready=None,
-              prompt=None, keys=b"/exit", expected_exit=0):
+              prompt=None, keys=b"/exit", expected_exit=0, on_exit=None):
     k = ctypes.WinDLL("kernel32", use_last_error=True)
     pointer = ctypes.c_void_p
 
@@ -183,6 +183,8 @@ def check_tui(binary, directory, environment, arguments=(), expect_epilogue=Fals
         assert exit_code.value == expected_exit, f"ConPTY exit code {exit_code.value}: {detail}"
         if expect_epilogue:
             assert "Goodbye!" in detail, "Session exit epilogue was not rendered"
+        if on_exit:
+            on_exit()
         return detail
     finally:
         if process.process and k.WaitForSingleObject(process.process, 0) != 0:

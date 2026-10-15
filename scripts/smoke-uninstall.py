@@ -22,8 +22,17 @@ def confirm(binary, directory, env, all_data=False, answer=b"y"):
     arguments = ["uninstall", *(["--all"] if all_data else [])]
     prompt = b"Uninstall and permanently delete" if all_data else b"Uninstall PHINs Agent?"
     if os.name == "nt":
+        def after_exit():
+            # A user's terminal stays open after the command. Closing ConPTY
+            # early kills attached helpers before their post-exit work finishes.
+            deadline = time.monotonic() + 20
+            while binary.exists() and time.monotonic() < deadline:
+                time.sleep(.1)
+            errors = [file.read_text() for file in directory.glob("phins-uninstall-*/error.txt")]
+            assert not binary.exists(), "Windows post-exit deletion failed: " + "\n".join(errors)
         return module("windows_console", "smoke-windows.py").check_tui(
-            binary, directory, env, arguments, prompt=prompt, keys=answer)
+            binary, directory, env, arguments, prompt=prompt, keys=answer,
+            on_exit=after_exit if answer else None)
     import fcntl
     import pty
     import select

@@ -4168,11 +4168,11 @@
     },
     {
       "path": "scripts/smoke-uninstall.py",
-      "sha256": "4d3e7de49890cf30a70b3798acd350a0e4deea11cd297a7bc713574355c5a419"
+      "sha256": "cdbbdd5a8c43b7f484280b35eb2309548d968adf0fa67170143a1873341f7e6d"
     },
     {
       "path": "scripts/smoke-windows.py",
-      "sha256": "cbb1f2c30b31fee358d3c1d0a4c96300e80157b77763cad81719ba064a92f5c2"
+      "sha256": "1af4a246f82975b2e4ee0c39fcfab3c7d43e0439046f1b6090b3e57b47ee44ba"
     },
     {
       "path": "scripts/spending.ts",

@@ -80,6 +80,19 @@ verification ← tests ← approved edits/tools ← Nebius API
 
 `packages/engine` manages agent workflows, providers, storage, and authenticated local transport. `packages/terminal` provides the CLI and Solid/OpenTUI interface. Primary technologies include TypeScript, Bun, Effect, and SQLite. See [Architecture](docs/ARCHITECTURE.md).
 
+## Our Vision
+
+We envision an AI-assisted engineering ecosystem that helps teams turn business
+requirements into system designs, database schemas, working applications,
+verified deployments, and continuously improving business processes.
+
+The hackathon edition focuses on repository-aware coding and verification in a
+local CLI/TUI. The diagram below illustrates our longer-term vision across CLI,
+desktop, and web experiences, extending agent assistance to architecture, data
+modeling, business workflows, and operations.
+
+![PHINs Agent ecosystem vision](docs/our-vision.png)
+
 ## Run from source (developers)
 
 Source workflow qualified on **macOS ARM64**. Install Node.js 22+, Bun 1.3.12+, pnpm 10.26.0 and Git, then run:

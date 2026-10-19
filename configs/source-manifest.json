@@ -36,7 +36,7 @@
     },
     {
       "path": ".github/workflows/install.yml",
-      "sha256": "b4da4df2e538f72dfb71da4d85c9c16490fb4d88f6a093d11530e13f92cd1645"
+      "sha256": "330ba97a56805f4a8758f556aca0e0488d141a1cae7b50b27db67f5ae466883c"
     },
     {
       "path": ".gitignore",
@@ -56,7 +56,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "5b7050b5a7769ec2ef544880806b7267c8a512b0d90f68d9bba16b277788875b"
+      "sha256": "22d7c6e3f41bf85968c4353694c3e54462047886eb43114f11243f73ab927802"
     },
     {
       "path": "THIRD_PARTY.md",
@@ -100,11 +100,11 @@
     },
     {
       "path": "docs/QUICKSTART.md",
-      "sha256": "bc605c99bf886952afd5b5735f15e71b6db114869f3afd1db5ebc22be9377d7c"
+      "sha256": "47b4837e5067fe98dbe82f2f0cbb8163a7fdc5c703028de08a577591ac27f7b4"
     },
     {
       "path": "docs/QUICKSTART_VALIDATION.md",
-      "sha256": "a536b42697479214da89d8611e783c06d9e3900a32457cfb2c5af578ba7b68a4"
+      "sha256": "393c3b6bfc16c5ea1fbea030f1a108e68bd3a8aa5550361f6f5eee0f2a1a092c"
     },
     {
       "path": "docs/RUNTIME_SOURCE.md",
@@ -4156,7 +4156,7 @@
     },
     {
       "path": "scripts/install.test.mjs",
-      "sha256": "bb21d02378d97e3139a245f243412aa0c19e56b1593fb74dc3c5765d50fb931c"
+      "sha256": "8e813f75fce5ebc86cac6b2fe2f24f28aedd02a91b3b87e7c156a58505d3f5a7"
     },
     {
       "path": "scripts/local-agent.ts",

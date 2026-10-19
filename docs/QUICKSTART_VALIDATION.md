@@ -1,5 +1,22 @@
 # Quick Start validation
 
+## POSIX download bootstrap — 2026-10-19
+
+A reported Linux installation stopped at `curl: command not found`, before
+downloading or running PHINs Agent. Quick Start now lists the download tools,
+includes Ubuntu/Debian instructions for installing `curl`, and checks download
+success before executing the installer or opening the app. A failed download
+also leaves any existing installation unopened.
+
+The exact documented macOS/Linux command passes three isolated shell cases:
+successful download, partial download failure, and missing `curl`. The focused
+installer suite passes locally on macOS: **15 passed, 9 Windows-only skipped,
+0 failed**. Shell and JavaScript syntax checks also pass. Fixtures make no
+network or inference requests and are separate from native Linux execution.
+The native installer workflow now uses the guarded download method and runs
+when Quick Start changes. The v0.1.2 binaries are unchanged; this does not claim
+a successful retry on the owner's Linux machine.
+
 ## 64-bit Windows installer — 2026-10-15
 
 The installer now checks `Is64BitOperatingSystem` instead of rejecting CPU

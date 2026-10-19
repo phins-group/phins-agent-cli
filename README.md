@@ -25,6 +25,10 @@ The [one-command installation](docs/QUICKSTART.md#1-install-and-launch) detects 
 
 **Requirements:** a terminal, internet access, and a [Nebius Token Factory](https://tokenfactory.nebius.com/) API key with access to the NVIDIA model and available inference credits. The reproducible coding demo additionally needs **Node.js 22+ and Git**. Supported OS versions and limitations are documented in the [Quick Start](docs/QUICKSTART.md).
 
+Automatic installation on macOS/Linux also needs `curl`, `tar`, and a SHA-256
+utility. The [Linux instructions](docs/QUICKSTART.md#linux--x64-or-arm64) explain
+how to install `curl` if it is missing.
+
 **For judges:** Open **[the 5-minute Quick Start](docs/QUICKSTART.md)**, choose your OS, download and launch the build, enter `/setup`, and select Nebius Token Factory and NVIDIA Nemotron 3 Super. Then follow the included coding demo. Setup takes approximately five minutes with prerequisites ready; the agent task itself may take longer and consume credits.
 
 From the extracted build folder, launch PHINs Agent against a project you trust:

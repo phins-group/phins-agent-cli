@@ -2,7 +2,7 @@ import { test } from "node:test"
 import assert from "node:assert/strict"
 import { createHash } from "node:crypto"
 import { execFileSync, spawnSync } from "node:child_process"
-import { mkdtemp, mkdir, readFile, writeFile, readdir, rm, readlink } from "node:fs/promises"
+import { mkdtemp, mkdir, readFile, writeFile, readdir, rm, readlink, symlink } from "node:fs/promises"
 import os from "node:os"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
@@ -11,6 +11,41 @@ const source = await readFile(fileURLToPath(new URL("../install.sh", import.meta
 const hash = value => createHash("sha256").update(value).digest("hex")
 const quote = value => "'" + value.replaceAll("'", "'\\''") + "'"
 const options = { skip: process.platform === "win32" }
+
+const quickStart = await readFile(fileURLToPath(new URL("../docs/QUICKSTART.md", import.meta.url)), "utf8")
+const bootstrapCommands = [...quickStart.matchAll(/```sh\n([^\n]+)\n```/g)]
+  .map(match => match[1]).filter(command => command.includes("/main/install.sh"))
+assert.equal(bootstrapCommands.length, 2, "Expected macOS and Linux installation commands")
+assert.equal(bootstrapCommands[0], bootstrapCommands[1], "Use the same POSIX bootstrap on both platforms")
+
+for (const [name, curlExit] of [["successful download", 0], ["partial download failure", 22], ["missing curl", null]])
+  test(`documented bootstrap handles ${name} before launching the app`, options, async t => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "phins-bootstrap-test-"))
+    t.after(() => rm(root, { recursive: true, force: true }))
+    const home = path.join(root, "user's home à")
+    const tools = path.join(root, "tools")
+    const log = path.join(root, "actions.log")
+    await mkdir(path.join(home, ".local/bin"), { recursive: true })
+    await mkdir(tools)
+    await symlink("/bin/sh", path.join(tools, "sh"))
+    const installer = 'printf "%s\\n" installer >> "$PHINS_BOOTSTRAP_TEST_LOG"\n'
+    if (curlExit !== null)
+      await writeFile(path.join(tools, "curl"),
+        `#!/bin/sh\nprintf '%s' ${quote(installer)}\nexit ${curlExit}\n`, { mode: 0o755 })
+    // Keep an existing launcher: failed downloads must not start an older app either.
+    await writeFile(path.join(home, ".local/bin/phins"),
+      '#!/bin/sh\nprintf "%s\\n" launch >> "$PHINS_BOOTSTRAP_TEST_LOG"\n', { mode: 0o755 })
+    const result = spawnSync("/bin/sh", ["-c", bootstrapCommands[0]], {
+      env: { PATH: tools, HOME: home, PHINS_BOOTSTRAP_TEST_LOG: log },
+      encoding: "utf8", timeout: 15000,
+    })
+    assert.equal(result.status, curlExit === null ? 127 : curlExit, result.stderr)
+    assert.equal(await readFile(log, "utf8").catch(error => {
+      if (error.code !== "ENOENT") throw error
+      return ""
+    }), curlExit === 0 ? "installer\nlaunch\n" : "")
+    if (curlExit === null) assert.match(result.stderr, /curl/)
+  })
 
 // Replace only release checksum data in a temporary script; installer logic and
 // the real system SHA-256 implementation are unchanged. No network/model calls.

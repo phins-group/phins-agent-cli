@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [install.sh, install.ps1, scripts/install.test.mjs, .github/workflows/install.yml]
+    paths: [install.sh, install.ps1, docs/QUICKSTART.md, scripts/install.test.mjs, .github/workflows/install.yml]
   pull_request:
-    paths: [install.sh, install.ps1, scripts/install.test.mjs, .github/workflows/install.yml]
+    paths: [install.sh, install.ps1, docs/QUICKSTART.md, scripts/install.test.mjs, .github/workflows/install.yml]
 
 permissions:
   contents: read
@@ -48,8 +48,9 @@ jobs:
           install_home="$RUNNER_TEMP/PHINs install à"
           mkdir -p "$install_home"
           url="https://raw.githubusercontent.com/$GITHUB_REPOSITORY/$GITHUB_SHA/install.sh"
-          curl -fsSL "$url" | env HOME="$install_home" sh
-          curl -fsSL "$url" | env HOME="$install_home" sh
+          phins_installer="$(curl -fsSL "$url")"
+          env HOME="$install_home" sh -c "$phins_installer"
+          env HOME="$install_home" sh -c "$phins_installer"
           echo "INSTALLED_BINARY=$install_home/.local/bin/phins" >> "$GITHUB_ENV"
       - name: Install and repeat on Windows
         if: runner.os == 'Windows'

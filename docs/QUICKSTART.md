@@ -15,16 +15,29 @@ Copy **one command** for your operating system. The installer selects the approp
 macOS 13+:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.sh | sh && "$HOME/.local/bin/phins"
+phins_installer="$(curl -fsSL https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.sh)" && sh -c "$phins_installer" && "$HOME/.local/bin/phins"
 ```
 
 ### Linux — x64 or ARM64
 
-Requires glibc 2.30+; Alpine/musl is not supported.
+Requires glibc 2.30+, `curl`, `tar`, and a SHA-256 utility (`sha256sum` or
+`shasum`). Alpine/musl is not supported. If `curl` is missing on Ubuntu/Debian,
+install it first:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.sh | sh && "$HOME/.local/bin/phins"
+sudo apt-get update && sudo apt-get install -y curl
 ```
+
+On other distributions, install `curl` with your distribution's package manager.
+Then install and launch PHINs Agent:
+
+```sh
+phins_installer="$(curl -fsSL https://raw.githubusercontent.com/phins-group/phins-agent-cli/main/install.sh)" && sh -c "$phins_installer" && "$HOME/.local/bin/phins"
+```
+
+The command stops if downloading or running the installer fails. The system
+package command above may require administrator privileges; the PHINs installer
+itself installs only for your user.
 
 ### Windows — x64
 
@@ -134,6 +147,7 @@ git diff --no-index examples/live/ms-pr111/index.js .local/demo-ms-pr111/project
 
 | Issue | What to do |
 | --- | --- |
+| `curl: command not found` | Install `curl` first using the Linux instructions above, then rerun installation. The app has not been installed by this failed download. |
 | API key rejected (401/403) | Reopen `/setup`; verify your key and Nebius access. The macOS demo has a separate profile. |
 | Model request fails | Check model access, remaining credits, connectivity, and rate limits. |
 | App does not start | Confirm your OS/CPU is supported. For manual installation, extract the full archive. On macOS, review **Privacy & Security** if prompted. |

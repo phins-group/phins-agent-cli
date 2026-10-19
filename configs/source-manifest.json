@@ -135,6 +135,10 @@
       "sha256": "7b931332847611f2713496aaa3e5f47aec202b78aa298fe0d14167a28e1ada26"
     },
     {
+      "path": "docs/our-vision.png",
+      "sha256": "e9843033fbb4224884243e2c6909446661a50d32c0d4aa0cc3f67970f2c4dfa1"
+    },
+    {
       "path": "examples/live/README.md",
       "sha256": "15a4f1ff6e0dce2c9035ce8b9c0423f0d548b848f2c52869bde001166a0a47d6"
     },

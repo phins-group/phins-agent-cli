@@ -12,7 +12,8 @@ const hash = value => createHash("sha256").update(value).digest("hex")
 const quote = value => "'" + value.replaceAll("'", "'\\''") + "'"
 const options = { skip: process.platform === "win32" }
 
-const quickStart = await readFile(fileURLToPath(new URL("../docs/QUICKSTART.md", import.meta.url)), "utf8")
+const quickStart = (await readFile(fileURLToPath(new URL("../docs/QUICKSTART.md", import.meta.url)), "utf8"))
+  .replaceAll("\r\n", "\n")
 const bootstrapCommands = [...quickStart.matchAll(/```sh\n([^\n]+)\n```/g)]
   .map(match => match[1]).filter(command => command.includes("/main/install.sh"))
 assert.equal(bootstrapCommands.length, 2, "Expected macOS and Linux installation commands")
